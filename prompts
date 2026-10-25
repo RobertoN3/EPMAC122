@@ -1,0 +1,32 @@
+//1
+
+1. Tecnica: Método guloso
+2. Algoritmo: Kruskal para árvore espalhada mínima
+3. Autores: Joseph Kruskal
+4. Data: 1956
+5. Conceitos: Grafos, Árvores, árvore espalhada mínima, union-find
+6. Problema: Dado um grafo não dirigido com pesos nas arestas, determinar sua árvore espalhada mínima
+
+//2 **havia mandado um prompt relacionado ao 1, mas sem nenhuma ordem, é ele q se referencia
+
+ok, quero então um programa em C, que pegue de uma pasta chamada entradatxt
+ uma série de arquivos txt e que o cabeçalho/inicio de cada txt tenha o formato
+  de 5, como falado anteriormente. 1 sempre será relacionado a tecnica, 2 ao
+   algoritmo, 3 de autores. caso esteja pulando um número, só ignorar, o sexto 
+   elemento que eu dei deve ser ignorado, ou seja, o 'Problema' . Ai, esse 
+   programa pega e gera um index.html, e nele haverá 5 ''botões'' que clicando 
+   em cada redirecionará a página correspondente. esses 5 botões são os 
+   principais do cabeçalho de entrada e as opções que aparecem são cada 
+   subcategoria colocada em cada txt. Por exemplo, se em um arquivo chamado 
+   kruskal.txt estiver escrito 
+1. Técnica: Método guloso....
+haverá em index um botão 'Técnica' e clicando nele, na outra pagina 
+tecnica.html, haverá a opçao 'Método guloso', que clicando nessa outra 
+abrirá varias opções, agora sem trocar de html, e uma delas sendo o 'kruskal', 
+que redirecionará para um kruskal.html. Este primeiro programa deve apenas 
+gerar as rotas e htmls e redirecionamento, o conteúdo gravado na última opção, 
+que nesse caso era kruskal.html não deve ser criado, um outro programa em C 
+fará isso. Portanto, haverão diversas rotas que podem levar a um mesmo arquivo, 
+como se fosse uma busca por filtros diferentes mesmo. Todos os html deverão ser 
+gerados em uma pasta chamada 'saida'. As pastas saida e entradatxt já estão 
+criadas e dentro de uma mesma pasta na qual o programa gerador.c roda
