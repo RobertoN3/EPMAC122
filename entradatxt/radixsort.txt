@@ -1,0 +1,19 @@
+1. Técnica: Ordenação por distribuição
+2. Algoritmo: Radix Sort
+3. Autores: Herman Hollerith
+4. Data: 1887
+5. Conceitos: Ordenação, Vetores, Dígitos, Counting Sort, Algoritmo estável
+6. Problema: Dado um vetor de números inteiros, reorganizá-lo em ordem crescente sem comparar os elementos entre si
+
+Resumo:
+O Radix Sort não compara elementos diretamente. Ele ordena os números
+dígito por dígito, começando pelo menos significativo (unidades), depois as
+dezenas, centenas e assim por diante. Em cada etapa, os números são
+distribuídos em "baldes" de 0 a 9 conforme o dígito atual, usando uma
+ordenação estável (normalmente o Counting Sort). Depois do último dígito,
+o vetor está completamente ordenado.
+
+Complexidade: O(d · (n + b)), em que d é o número de dígitos e b é a base
+(10, por exemplo). Pode ser mais rápido que os métodos por comparação quando
+d é pequeno, mas precisa de memória extra e funciona melhor com inteiros ou
+dados que possam ser decompostos em dígitos.

@@ -1,0 +1,18 @@
+1. Técnica: Divisão e conquista
+2. Algoritmo: Quick Sort
+3. Autores: Tony Hoare
+4. Data: 1959
+5. Conceitos: Ordenação, Vetores, Recursão, Pivô, Partição
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+
+Resumo:
+O Quick Sort escolhe um elemento chamado pivô e particiona o vetor: os
+elementos menores que o pivô vão para a esquerda e os maiores para a direita,
+deixando o pivô na sua posição final. Em seguida, o mesmo processo é aplicado
+recursivamente às duas partes. Não há etapa de junção no final, pois a
+partição já deixa os elementos nos lugares certos. A escolha do pivô
+(primeiro, aleatório, mediana de três) influencia muito o desempenho.
+
+Complexidade: O(n log n) no caso médio, O(n²) no pior caso (por exemplo,
+pivô ruim em vetor já ordenado). Ordena no próprio vetor, com pouca memória
+extra, e não é estável. Na prática costuma ser muito rápido.

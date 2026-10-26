@@ -1,0 +1,18 @@
+1. Técnica: Força bruta
+2. Algoritmo: Bubble Sort
+3. Autores: Desconhecido
+4. Data: Desconhecida
+5. Conceitos: Ordenação, Vetores, Comparação, Algoritmo estável
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+
+Resumo:
+O Bubble Sort percorre o vetor várias vezes comparando pares de elementos
+vizinhos. Se dois vizinhos estão fora de ordem, eles trocam de lugar. A cada
+passada completa, o maior elemento restante "flutua" como uma bolha até o
+final do vetor, onde fica na posição definitiva. O processo se repete,
+ignorando a parte final já ordenada, até que uma passada ocorra sem nenhuma
+troca.
+
+Complexidade: O(n²) no pior caso e no caso médio, O(n) no melhor caso (com a
+verificação de "nenhuma troca"). Usa memória extra constante e é estável.
+É mais útil para ensino do que para uso prático.

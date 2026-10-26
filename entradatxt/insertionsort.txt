@@ -1,0 +1,18 @@
+1. Técnica: Método incremental
+2. Algoritmo: Insertion Sort
+3. Autores: Desconhecido
+4. Data: Desconhecida
+5. Conceitos: Ordenação, Vetores, Comparação, Algoritmo estável
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+
+Resumo:
+O Insertion Sort funciona como ordenar cartas na mão. O vetor é dividido em
+uma parte já ordenada (no início, só o primeiro elemento) e outra ainda não
+ordenada. A cada passo, pega-se o próximo elemento da parte não ordenada e
+ele é comparado com os elementos da parte ordenada, da direita para a
+esquerda, deslocando para a direita os que forem maiores, até encontrar a
+posição correta para inseri-lo.
+
+Complexidade: O(n²) no pior caso e no caso médio, O(n) se o vetor já estiver
+quase ordenado. Usa memória extra constante e é estável. É muito usado para
+vetores pequenos.

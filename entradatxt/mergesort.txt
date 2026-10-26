@@ -1,0 +1,18 @@
+1. Técnica: Divisão e conquista
+2. Algoritmo: Merge Sort
+3. Autores: John von Neumann
+4. Data: 1945
+5. Conceitos: Ordenação, Vetores, Recursão, Intercalação, Algoritmo estável
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+
+Resumo:
+O Merge Sort divide o vetor ao meio, ordena recursivamente cada metade e
+depois as intercala (merge) em um único vetor ordenado. A intercalação é
+simples: como as duas metades já estão ordenadas, basta comparar os primeiros
+elementos de cada uma, copiar o menor para o resultado e avançar, repetindo
+até acabarem os elementos. O caso base da recursão é um vetor com 0 ou 1
+elemento, que já está ordenado.
+
+Complexidade: O(n log n) em todos os casos. Precisa de O(n) de memória extra
+para a intercalação e é estável. Seu desempenho é previsível, o que o torna
+bom para grandes volumes de dados e ordenação em disco.

@@ -13,7 +13,7 @@
    0 = o rótulo é o campo 2 (Kruskal para árvore espalhada mínima) */
 #define ROTULO_PELO_ARQUIVO 0
 
-static const char *CAT_ROTULO[NUM_CAT] = {"Técnica", "Algoritmo", "Autores", "Data", "Conceitos"};
+static const char *CAT_ROTULO[NUM_CAT] = {"Tecnica", "Algoritmo", "Autores", "Data", "Conceitos"};
 static const char *CAT_SLUG[NUM_CAT]   = {"tecnica", "algoritmo", "autores", "data", "conceitos"};
 /* campos que aceitam vários valores separados por vírgula */
 static const int   CAT_MULTI[NUM_CAT]  = {1, 0, 1, 0, 1};
