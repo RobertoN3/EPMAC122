@@ -1,0 +1,30 @@
+# Organização do projeto
+
+O desenvolvimento será feito por etapas, discutindo as decisões antes de implementar os programas.
+
+- gerador.c já existe e gera index.html e as páginas indexadoras, com links para as páginas de conteúdo. Manter essa responsabilidade.
+- Um novo programa, ainda sem nome definido, gerará as páginas de conteúdo dos TXT.
+- Um terceiro programa gerará páginas separadas com o código C e a coloração dos itens léxicos exigida pelo enunciado.
+
+# Formato dos TXT
+
+- Manter os campos existentes do cabeçalho numerado: Tecnica, Algoritmo, Autores, Data, Conceitos e Problema. Campos ausentes ou vazios devem ser ignorados.
+- Acrescentar o marcador Titulo. Proposta a confirmar: usar `7. Titulo: ...`, preservando a numeração existente. O título identifica a página e o texto de seus links, mas não cria uma sétima categoria.
+- Um TXT pode tratar apenas de um conceito, sem algoritmo. Exemplo: um arquivo sobre grafos pode ter Titulo e Conceitos, sem os demais campos.
+- Em Conceitos, o separador entre conceitos é exatamente vírgula seguida de espaço (`, `).
+- Depois do cabeçalho vem a explicação do conteúdo.
+- As referências ficam ao final do conteúdo explicativo, na mesma página HTML. Não gerar uma página separada para elas. Proposta: uma linha `REFERENCIAS:` inicia essa seção.
+- O código C é opcional e fica depois do conteúdo e das referências, como última parte do TXT. Ele será apresentado em uma página HTML separada, ligada à página de conteúdo.
+- Proposta de delimitação do código para permitir expansão futura: linhas isoladas `INICIO_CODIGO_C` e `FIM_CODIGO_C`. Não depender de `#include <stdio.h>`: o código pode começar com comentários, outro include ou não usar stdio.h. Os marcadores não aparecem no HTML. Esta proposta está apenas anotada; não foi implementada.
+
+# Ajustes futuros em gerador.c
+
+- Ler Titulo e usá-lo como rótulo dos links, inclusive para conteúdos que não têm Algoritmo. Definir o comportamento quando não houver título antes da implementação.
+- Respeitar o separador `, ` em Conceitos. Atualmente o programa separa em qualquer vírgula.
+- O programa atual gera cinco categorias e ignora Problema, conforme os prompts anteriores. O enunciado pede seis categorias, incluindo Problema; falta alinhar essa alteração antes de implementar.
+
+# Arquivo auxiliar: sugestão ainda não adotada
+
+Um catálogo intermediário poderia registrar, por TXT, seu título, os nomes dos HTMLs, os campos do cabeçalho e a existência de código C. Os outros programas poderiam consultá-lo em vez de reler os TXT.
+
+Isso não é obrigatório. A ideia original de cada programa ler os TXT continua válida e evita definir mais um formato de arquivo. A decisão permanece em discussão.
