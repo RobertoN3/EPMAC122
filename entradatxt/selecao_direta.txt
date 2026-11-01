@@ -1,0 +1,164 @@
+1. Tecnica: Método guloso
+2. Algoritmo: Ordenação por seleção direta
+5. Conceitos: Ordenação, Vetores, Invariante, Algoritmo estável
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+7. Titulo: Seleção direta
+
+## Ideia geral
+
+A seleção direta (selection sort) é talvez o método de ordenação mais
+intuitivo. É o que fazemos ao ordenar cartas na mesa: procuramos a menor
+carta e a colocamos na primeira posição; depois procuramos a menor entre as
+que sobraram e a colocamos na segunda posição; e assim por diante.
+
+Para ordenar v[0..n-1]:
+
+  para i de 0 até n-2:
+      menor <- índice do menor elemento de v[i..n-1]
+      troque v[i] com v[menor]
+
+No passo i, o vetor está dividido em duas partes:
+- v[0..i-1]: a parte já ordenada, com os i menores elementos do vetor, cada
+  um em sua posição definitiva;
+- v[i..n-1]: a parte ainda não ordenada.
+O passo seleciona o menor elemento da parte não ordenada e o leva para a
+fronteira, aumentando a parte ordenada em uma posição.
+
+## Seleção direta como método guloso
+
+O algoritmo se encaixa perfeitamente no método guloso:
+- candidatos: os elementos de v[i..n-1], ainda não posicionados;
+- função critério: "o menor elemento restante";
+- decisão: colocar esse elemento na próxima posição livre, v[i];
+- a decisão é definitiva: v[i] nunca mais será alterado.
+
+É o "espelho" da ordenação bolha: a bolha fixa, a cada passada, o MAIOR
+elemento restante no FIM do vetor; a seleção fixa o MENOR elemento restante
+no INÍCIO. A diferença é a forma de levar o elemento até lá: a bolha faz uma
+série de trocas entre vizinhos, enquanto a seleção primeiro localiza o
+elemento e depois faz uma única troca.
+
+## Exemplo
+
+v = (29, 10, 14, 37, 13, 5)
+
+  i = 0: menor de v[0..5] é 5 (posição 5)   -> (5, 10, 14, 37, 13, 29)
+  i = 1: menor de v[1..5] é 10 (posição 1)  -> (5, 10, 14, 37, 13, 29)
+  i = 2: menor de v[2..5] é 13 (posição 4)  -> (5, 10, 13, 37, 14, 29)
+  i = 3: menor de v[3..5] é 14 (posição 4)  -> (5, 10, 13, 14, 37, 29)
+  i = 4: menor de v[4..5] é 29 (posição 5)  -> (5, 10, 13, 14, 29, 37)
+
+Note que, no passo i = 1, o elemento já estava no lugar e a "troca" é de v[1]
+com ele mesmo.
+
+## Correção: o invariante
+
+Um invariante é uma propriedade que vale no início de cada iteração de um
+laço. Ele é a ferramenta para provar que o laço faz o que deve. Para a
+seleção direta, no início de cada iteração (para cada valor de i):
+
+  (a) v[0..i-1] está em ordem crescente; e
+  (b) todo elemento de v[0..i-1] é menor ou igual a todo elemento de
+      v[i..n-1].
+
+- No início (i = 0), a parte v[0..-1] é vazia e (a) e (b) valem
+  trivialmente.
+- Se valem no início do passo i, o passo coloca em v[i] o menor elemento de
+  v[i..n-1]. Por (b), ele é maior ou igual a todos de v[0..i-1], então
+  v[0..i] continua ordenado; e, por ser o menor do resto, é menor ou igual a
+  todos de v[i+1..n-1]. Logo (a) e (b) valem para i+1.
+- O laço termina com i = n-1. Por (a), v[0..n-2] está ordenado e, por (b),
+  v[n-1] é maior ou igual a todos eles: o vetor inteiro está ordenado.
+
+O laço interno, que procura o menor, tem seu próprio invariante: no início de
+cada iteração com índice j, v[menor] é o menor elemento de v[i..j-1].
+
+## Análise
+
+- Comparações: no passo i, encontrar o menor de v[i..n-1] exige n-1-i
+  comparações. Total: (n-1) + (n-2) + ... + 1 = n(n-1)/2. Esse número é o
+  mesmo em TODOS os casos: a seleção direta não aproveita uma eventual
+  ordenação prévia do vetor. É O(n²) no melhor, no pior e no caso médio.
+- Trocas: exatamente uma por passo, no máximo n-1. É o método elementar que
+  menos movimenta os dados, o que é uma vantagem quando cada elemento é um
+  registro grande e mover custa caro (ou quando escrever na memória é
+  caro, como em memórias flash).
+- Memória extra: O(1).
+
+Comparação com os outros métodos elementares:
+- a inserção direta faz, em média, cerca de n²/4 comparações e é O(n) para
+  vetores já ordenados, mas faz até n²/2 movimentações;
+- a bolha também é O(n²), mas faz muito mais trocas;
+- na prática, a inserção direta costuma ser a mais rápida das três.
+
+## Estabilidade
+
+A versão com trocas apresentada acima NÃO é estável.
+
+A busca do menor, usando comparação estrita (v[j] < v[menor]), sempre escolhe
+o PRIMEIRO entre os elementos empatados como menores; isso, sozinho, seria
+compatível com a estabilidade. O problema é a troca: o elemento que estava
+em v[i] é levado para a posição antiga do menor, que pode ficar DEPOIS de um
+outro elemento com a mesma chave que ele, invertendo a ordem relativa dos
+dois.
+
+Contraexemplo: sejam 2a e 2b dois elementos de chave 2 (a e b indicam a
+ordem original) e o vetor (2a, 2b, 1).
+- i = 0: o menor é 1, na posição 2; troca v[0] com v[2] -> (1, 2b, 2a).
+- i = 1: o menor de (2b, 2a) é 2b (o primeiro dos empatados); nada muda.
+Resultado: (1, 2b, 2a). Os dois elementos de chave 2 trocaram de ordem
+relativa: o método não é estável.
+
+Como torná-la estável: em vez de trocar, retira-se o menor da sua posição e
+desloca-se todo o trecho v[i..menor-1] uma posição para a direita, inserindo
+o menor em v[i]. Assim os demais elementos mantêm sua ordem relativa. O custo
+é perder a principal vantagem do método (poucas movimentações), que passam a
+ser O(n²). Em listas encadeadas esse deslocamento não é necessário, e a
+seleção estável é natural.
+
+## Variações
+
+- Seleção bidirecional: em cada passada encontra o menor e o maior,
+  colocando-os nas duas pontas; reduz o número de passadas pela metade.
+- Heap Sort: usa a mesma ideia de "selecionar o máximo e colocá-lo no lugar",
+  mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca
+  linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma
+  seleção direta com uma estrutura de dados melhor.
+
+## Sobre o código
+
+O programa de exemplo ordena o vetor do exemplo desta página por seleção
+direta, com o invariante indicado em um comentário.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Algoritmos de ordenação estáveis (seleção direta). MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html
+- FEOFILOFF, P. Ordenação: algoritmos elementares. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.3 (Sorting by selection).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 6.2 (Selection sort).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Exercício 2.2-2 e seção 2.1 (invariantes de laço).
+- WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 2 (Ordenação).
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+/* Ordena v[0..n-1] por seleção direta */
+void selecao(int v[], int n) {
+  int i, j, menor, aux;
+  for (i = 0; i < n - 1; i++) {
+    /* invariante: v[0..i-1] ordenado e <= v[i..n-1] */
+    menor = i;
+    for (j = i + 1; j < n; j++)
+      if (v[j] < v[menor]) menor = j;   // escolha gulosa: o menor restante
+    aux = v[i]; v[i] = v[menor]; v[menor] = aux;
+  }
+}
+
+int main(void) {
+  int v[] = {29, 10, 14, 37, 13, 5};
+  int n = 6, i;
+  selecao(v, n);
+  for (i = 0; i < n; i++) printf("%d ", v[i]);
+  printf("\n");
+  return 0;
+}
+FIM_CODIGO_C

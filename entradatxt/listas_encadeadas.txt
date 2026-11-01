@@ -1,0 +1,219 @@
+2. Algoritmo: Inserção, busca e remoção em lista encadeada
+3. Autores: Allen Newell, Cliff Shaw, Herbert A. Simon
+4. Data: 1956
+5. Conceitos: Listas encadeadas, Ponteiros, Registros, Recursão, Alocação dinâmica
+6. Problema: Manter uma sequência de elementos que cresce e diminui durante a execução, inserindo e removendo em qualquer ponto sem deslocar os demais
+7. Titulo: Listas encadeadas
+
+## Ideia geral
+
+Um vetor guarda seus elementos em posições consecutivas da memória. Isso
+permite acesso direto a qualquer posição (v[i] custa O(1)), mas tem dois
+inconvenientes:
+- o tamanho é fixado na criação;
+- inserir ou remover no meio exige deslocar todos os elementos seguintes,
+  o que custa O(n).
+
+Uma lista encadeada resolve esses dois problemas abrindo mão do acesso
+direto. Ela é uma sequência de células (ou nós), espalhadas pela memória,
+em que cada célula sabe onde está a próxima. É como uma caça ao tesouro: cada
+pista diz onde está a pista seguinte, e a última diz "fim".
+
+## A célula
+
+Cada célula é um registro (struct) com dois campos:
+- o conteúdo (um número, uma cadeia, um registro com vários dados);
+- um ponteiro para a próxima célula, chamado prox.
+
+Em C, a declaração é autorreferente: a struct celula contém um campo do tipo
+"ponteiro para struct celula". A última célula tem prox == NULL, o que marca
+o fim da lista. A lista inteira é representada por um ponteiro para sua
+primeira célula; uma lista vazia é simplesmente o ponteiro NULL.
+
+As células são criadas uma a uma, quando necessário, com malloc, e
+devolvidas com free quando removidas. Por isso a lista cresce e diminui à
+vontade durante a execução, limitada apenas pela memória disponível.
+
+## Vetor x lista encadeada
+
+  Operação                          Vetor         Lista encadeada
+  acessar o i-ésimo elemento        O(1)          O(i)
+  buscar um valor                   O(n)          O(n)
+  inserir/remover no início         O(n)          O(1)
+  inserir/remover após um nó dado   O(n)          O(1)
+  inserir no fim                    O(1)*         O(n), ou O(1) com
+                                                  ponteiro para o último
+  memória extra por elemento        nenhuma       um ponteiro
+  tamanho                           fixo          variável
+
+(*) se houver espaço no vetor.
+
+Além disso, como as células ficam espalhadas, a lista aproveita menos a
+memória cache do processador, e por isso costuma ser mais lenta que um vetor
+para simplesmente percorrer os dados.
+
+## Operações básicas
+
+Percorrer (por exemplo, para imprimir ou contar):
+
+  p <- primeira célula
+  enquanto p != NULL:
+      processe p->conteudo
+      p <- p->prox
+
+Buscar x: percorrer até encontrar uma célula com conteúdo x (devolve um
+ponteiro para ela) ou chegar a NULL (x não está). Custo O(n).
+
+Inserir uma nova célula logo DEPOIS da célula p:
+  1) nova <- malloc(...); nova->conteudo = x
+  2) nova->prox = p->prox      (a nova aponta para quem vinha depois de p)
+  3) p->prox = nova            (p passa a apontar para a nova)
+A ordem dos passos 2 e 3 importa: invertê-los perderia o resto da lista.
+Custo O(1): nenhum elemento é deslocado.
+
+Remover a célula logo DEPOIS de p:
+  1) lixo = p->prox
+  2) p->prox = lixo->prox      ("pula" a célula removida)
+  3) free(lixo)
+Também O(1).
+
+Observe que, para inserir ou remover, precisamos de um ponteiro para a
+célula ANTERIOR. Por isso a busca usada para remover costuma devolver a
+célula anterior à que contém x.
+
+## Listas com cabeça
+
+Inserir ou remover a PRIMEIRA célula é um caso especial: não há célula
+anterior, e o próprio ponteiro que representa a lista precisa mudar. Para
+evitar esse caso, usa-se uma célula-cabeça (ou sentinela) fixa no início,
+cujo conteúdo é ignorado. A lista vazia passa a ser a cabeça com
+prox == NULL, e toda célula de verdade tem uma anterior. O código fica mais
+curto e com menos chances de erro.
+
+## Listas e recursão
+
+Uma lista encadeada é uma estrutura recursiva: ou é vazia (NULL), ou é uma
+célula seguida de uma lista (a que começa em prox). Por isso muitas
+operações têm versões recursivas naturais:
+
+  tamanho(lst): se lst == NULL devolva 0; senão devolva 1 + tamanho(lst->prox)
+  imprime(lst): se lst == NULL pare; imprima lst->conteudo; imprime(lst->prox)
+
+Trocando a ordem das duas últimas ações de imprime, obtém-se a lista impressa
+de trás para a frente, sem esforço extra. Cuidado: para listas muito longas,
+a recursão pode esgotar a pilha de execução.
+
+## Variações
+
+- Lista duplamente encadeada: cada célula tem também um ponteiro ant para a
+  anterior. Permite percorrer nos dois sentidos e remover uma célula dada
+  sem conhecer a anterior, ao custo de mais um ponteiro por célula. É a
+  estrutura por trás do std::list de C++ e de muitos editores de texto e
+  caches (LRU).
+- Lista circular: a última célula aponta de volta para a primeira. Útil para
+  percorrer ciclicamente (escalonamento "round robin", jogadores em
+  rodízio, o problema de Josefo).
+- Lista ordenada: mantida em ordem crescente; a inserção procura o lugar
+  certo. Intercalar duas listas ordenadas é fácil e não exige memória extra,
+  o que torna o Merge Sort muito adequado para listas.
+
+## Onde as listas são usadas
+
+- implementação de pilhas e filas de tamanho ilimitado;
+- listas de adjacência de grafos esparsos;
+- encadeamento de colisões em tabelas de espalhamento;
+- polinômios esparsos (só os termos não nulos) e matrizes esparsas;
+- gerenciadores de memória, que mantêm listas de blocos livres;
+- a linguagem LISP, inteiramente baseada em listas.
+
+## Erros comuns
+
+- desreferenciar NULL (por exemplo, acessar p->prox quando p já é NULL);
+- perder o resto da lista ao mudar um ponteiro antes de guardar o valor
+  antigo;
+- esquecer o free ao remover (vazamento de memória) ou usar uma célula
+  depois de liberá-la;
+- esquecer de tratar a lista vazia ou a primeira célula (a cabeça evita
+  isso).
+Desenhar as células e as setas no papel, antes e depois de cada operação, é
+a melhor forma de evitar esses erros.
+
+## Histórico
+
+As listas encadeadas foram criadas em 1955-1956 por Allen Newell, Cliff
+Shaw e Herbert A. Simon, na RAND Corporation e no Carnegie Institute of
+Technology, como estrutura básica da linguagem IPL (Information Processing
+Language). Ela foi usada no Logic Theorist, programa que provava teoremas
+dos Principia Mathematica e é considerado um dos primeiros programas de
+inteligência artificial. John McCarthy adotou as listas como estrutura
+central da linguagem LISP (1958). Newell e Simon receberam o prêmio Turing
+em 1975, em parte por essas contribuições.
+
+## Sobre o código
+
+O programa de exemplo implementa uma lista encadeada com célula-cabeça, com
+inserção após uma célula, busca da célula anterior a x, remoção e impressão
+recursiva, liberando toda a memória ao final.
+
+REFERENCIAS:
+- FEOFILOFF, P. Listas encadeadas. https://users.ime.usp.br/~pf/algoritmos/aulas/lista.html
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 4 (Listas encadeadas).
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.3 (Linked allocation) e seção 2.6 (histórico).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.2 (Listas ligadas).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 3.3 (Linked lists).
+- NEWELL, A.; SHAW, J. C. Programming the Logic Theory Machine. Proceedings of the Western Joint Computer Conference, p. 230-240, 1957.
+- Wikipedia. Linked list. https://en.wikipedia.org/wiki/Linked_list
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct celula {
+  int conteudo;
+  struct celula *prox;
+} Celula;
+
+/* insere x logo depois da célula p */
+void insere(int x, Celula *p) {
+  Celula *nova = malloc(sizeof(Celula));
+  nova->conteudo = x;
+  nova->prox = p->prox;
+  p->prox = nova;
+}
+
+/* devolve a célula ANTERIOR à que contém x (ou NULL), em lista com cabeça */
+Celula *buscaAnterior(int x, Celula *cabeca) {
+  Celula *p = cabeca;
+  while (p->prox != NULL && p->prox->conteudo != x)
+    p = p->prox;
+  return p->prox == NULL ? NULL : p;
+}
+
+/* remove a primeira célula com conteúdo x */
+void removeX(int x, Celula *cabeca) {
+  Celula *ant = buscaAnterior(x, cabeca), *lixo;
+  if (ant == NULL) return;          // x não está na lista
+  lixo = ant->prox;
+  ant->prox = lixo->prox;
+  free(lixo);
+}
+
+/* impressão recursiva: lista = célula seguida de lista */
+void imprime(Celula *lst) {
+  if (lst == NULL) { printf("\n"); return; }
+  printf("%d -> ", lst->conteudo);
+  imprime(lst->prox);
+}
+
+int main(void) {
+  Celula cabeca;                    /* cabeça: conteúdo ignorado */
+  int i;
+  cabeca.prox = NULL;
+  for (i = 5; i >= 1; i--) insere(i * 10, &cabeca);
+  imprime(cabeca.prox);
+  removeX(30, &cabeca);
+  imprime(cabeca.prox);
+  while (cabeca.prox != NULL) removeX(cabeca.prox->conteudo, &cabeca);
+  return 0;
+}
+FIM_CODIGO_C

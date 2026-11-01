@@ -1,0 +1,228 @@
+1. Tecnica: Programação dinâmica
+2. Algoritmo: Mochila binária por programação dinâmica
+3. Autores: Richard Bellman
+4. Data: 1953
+5. Conceitos: Recursão, Princípio da otimalidade, Memorização, Vetores
+6. Problema: Dados n objetos, cada um com peso e valor, e uma mochila de capacidade C, escolher objetos de peso total no máximo C que maximizem o valor total
+7. Titulo: Programação dinâmica
+
+## Ideia geral
+
+A programação dinâmica resolve um problema combinando soluções de
+subproblemas, como a divisão e conquista. A diferença está na natureza dos
+subproblemas:
+
+- na divisão e conquista, os subproblemas são independentes (as duas metades
+  do Merge Sort não têm nada em comum);
+- na programação dinâmica, os subproblemas se sobrepõem: o mesmo
+  subproblema aparece muitas e muitas vezes.
+
+Uma solução recursiva ingênua, nesses casos, recalcula os mesmos
+subproblemas repetidamente e pode gastar tempo exponencial. A programação
+dinâmica resolve cada subproblema UMA única vez e guarda o resultado em uma
+tabela; quando ele é necessário de novo, basta consultá-la. É uma troca de
+memória por tempo.
+
+Observação sobre o nome: "programação" aqui não significa escrever
+programas, e sim planejar, no sentido de "programação de produção" ou
+"planilha"; refere-se ao preenchimento de uma tabela.
+
+## Quando se aplica: o princípio da otimalidade de Bellman
+
+A técnica é aplicável a problemas de otimização que satisfazem duas
+condições:
+
+1. Subestrutura ótima (princípio da otimalidade de Bellman): uma solução
+   ótima do problema é formada por soluções ótimas de seus subproblemas.
+   Na formulação original de Bellman: uma política ótima tem a propriedade
+   de que, quaisquer que sejam o estado inicial e a decisão inicial, as
+   decisões restantes constituem uma política ótima em relação ao estado
+   resultante da primeira decisão.
+
+   Exemplo: se o caminho mais curto de São Paulo a Belo Horizonte passa por
+   Campinas, então o trecho de São Paulo a Campinas desse caminho é o
+   caminho mais curto entre essas duas cidades. Se houvesse um atalho, ele
+   encurtaria também o caminho inteiro.
+
+   Contraexemplo: o caminho SIMPLES (sem repetir vértices) mais LONGO entre
+   dois vértices não tem essa propriedade, e por isso não se resolve por
+   programação dinâmica dessa forma.
+
+2. Subproblemas sobrepostos: o número de subproblemas DIFERENTES é pequeno
+   (em geral polinomial), embora a recursão ingênua os visite muitas vezes.
+
+## Roteiro para projetar um algoritmo de programação dinâmica
+
+1. Caracterizar a estrutura de uma solução ótima.
+2. Definir os subproblemas e escrever uma recorrência que exprima o valor
+   ótimo de um subproblema em função de subproblemas menores.
+3. Calcular os valores, guardando-os em uma tabela, em uma ordem em que os
+   subproblemas menores fiquem prontos antes dos maiores.
+4. (Opcional) Reconstruir a solução ótima, e não só seu valor, guardando ou
+   recalculando qual escolha produziu cada ótimo.
+
+## Duas formas de implementar
+
+- De cima para baixo (top-down) com memorização (memoization): escreve-se a
+  recursão natural e, antes de calcular, verifica-se se o resultado já está
+  na tabela. Só são calculados os subproblemas realmente necessários.
+- De baixo para cima (bottom-up): preenche-se a tabela iterativamente, dos
+  subproblemas menores para os maiores, sem recursão. Costuma ser mais
+  rápida (sem custo de chamadas) e permite economizar memória quando só
+  as últimas linhas da tabela são necessárias.
+
+## Exemplo introdutório: Fibonacci
+
+A recursão fib(n) = fib(n-1) + fib(n-2), com fib(0) = 0 e fib(1) = 1, é
+correta mas desastrosa. Para calcular fib(5) calcula-se fib(3) duas vezes,
+fib(2) três vezes, e assim por diante. O número de chamadas cresce como a
+própria sequência, aproximadamente 1,618^n: para n = 50 seriam dezenas de
+bilhões de chamadas.
+
+Há apenas n+1 subproblemas diferentes: fib(0), ..., fib(n). Guardando-os em
+um vetor f, cada valor é calculado uma única vez:
+
+  f[0] = 0; f[1] = 1
+  para i de 2 até n: f[i] = f[i-1] + f[i-2]
+
+O tempo cai de exponencial para O(n). Como cada valor depende só dos dois
+anteriores, basta guardar duas variáveis, e a memória cai para O(1).
+
+## Exemplo principal: mochila binária (0/1)
+
+Há n objetos; o objeto i tem peso p[i] e valor v[i]. A mochila suporta
+peso total C. Cada objeto é levado inteiro ou não é levado (por isso
+"binária" ou "0/1"). Quer-se maximizar o valor total.
+
+Força bruta: testar os 2^n subconjuntos de objetos. Para n = 50 isso é
+inviável. O método guloso (escolher pela maior razão valor/peso) pode errar,
+como mostra a página do método guloso.
+
+Subproblemas: M[i][c] = maior valor possível usando apenas os objetos
+1..i e capacidade c, para 0 <= i <= n e 0 <= c <= C.
+
+Recorrência: para o objeto i há duas opções.
+- Não levá-lo: o melhor é M[i-1][c].
+- Levá-lo (só se p[i] <= c): ganha-se v[i] e sobra capacidade c - p[i] para
+  os objetos 1..i-1, cujo melhor valor é M[i-1][c - p[i]].
+
+  M[0][c] = 0                                       (sem objetos)
+  M[i][c] = M[i-1][c],                              se p[i] > c
+  M[i][c] = max(M[i-1][c], v[i] + M[i-1][c - p[i]]), se p[i] <= c
+
+A resposta é M[n][C]. O princípio da otimalidade vale: se a solução ótima
+leva o objeto i, então o restante dela é uma solução ótima para os objetos
+1..i-1 com capacidade C - p[i]; caso contrário, poderíamos melhorá-la.
+
+Exemplo com C = 7 e objetos (peso, valor) = (1, 1), (3, 4), (4, 5), (5, 7):
+
+  c:        0  1  2  3  4  5  6  7
+  i = 0:    0  0  0  0  0  0  0  0
+  i = 1:    0  1  1  1  1  1  1  1
+  i = 2:    0  1  1  4  5  5  5  5
+  i = 3:    0  1  1  4  5  6  6  9
+  i = 4:    0  1  1  4  5  7  8  9
+
+O melhor valor é M[4][7] = 9, obtido com os objetos 2 e 3 (pesos 3 + 4 = 7,
+valores 4 + 5 = 9). Para reconstruir a escolha, percorre-se a tabela de
+baixo para cima: se M[i][c] != M[i-1][c], o objeto i foi levado e c
+diminui de p[i].
+
+Complexidade: a tabela tem (n+1)(C+1) casas e cada uma é preenchida em O(1),
+portanto O(n C) de tempo e memória (a memória pode ser reduzida a O(C)
+usando uma única linha). Esse tempo é chamado pseudopolinomial: é
+polinomial no VALOR de C, mas exponencial no número de bits de C. Isso é
+coerente com o fato de a mochila binária ser um problema NP-difícil.
+
+## Outros problemas clássicos de programação dinâmica
+
+- Troco com o menor número de moedas, para quaisquer valores de moedas.
+- Maior subsequência comum (LCS) entre duas cadeias: base do comando diff e
+  da comparação de sequências de DNA.
+- Distância de edição (Levenshtein): número mínimo de inserções, remoções e
+  substituições para transformar uma palavra em outra; usada em corretores
+  ortográficos.
+- Multiplicação de uma cadeia de matrizes: a melhor ordem de parentização.
+- Caminhos mínimos: Bellman-Ford (aceita pesos negativos) e Floyd-Warshall
+  (todos os pares).
+- Maior subsequência crescente e corte de hastes (rod cutting).
+- Algoritmo de Viterbi, usado em reconhecimento de voz e em comunicações.
+
+## Programação dinâmica x outras técnicas
+
+- x divisão e conquista: ambas dividem em subproblemas; a programação
+  dinâmica compensa quando eles se repetem.
+- x método guloso: ambas exigem subestrutura ótima; o guloso faz uma escolha
+  só e não volta atrás, enquanto a programação dinâmica compara TODAS as
+  escolhas possíveis em cada passo (por isso é mais geral e mais cara).
+- x tentativa e erro: o backtracking explora a árvore de escolhas; a
+  programação dinâmica percebe que muitos nós dessa árvore representam o
+  mesmo subproblema e os resolve uma vez só.
+
+## Histórico
+
+Richard Bellman desenvolveu o método na RAND Corporation. O termo já era
+usado por ele na década de 1940 e, por volta de 1953, ganhou seu sentido
+moderno. O livro "Dynamic Programming" foi publicado em 1957. Em sua
+autobiografia, Bellman conta que escolheu a palavra "dinâmica" em parte
+porque soava impressionante e não poderia ser usada de forma pejorativa,
+o que o ajudava a proteger a pesquisa matemática de um secretário de Defesa
+que detestava a palavra "pesquisa". A equação de recorrência que expressa o
+princípio da otimalidade é hoje chamada equação de Bellman e é a base da
+teoria de controle ótimo e do aprendizado por reforço.
+
+## Sobre o código
+
+O programa de exemplo calcula Fibonacci de baixo para cima e resolve a
+mochila binária preenchendo a tabela M[i][c] com a recorrência acima, para o
+mesmo exemplo da tabela mostrada nesta página.
+
+REFERENCIAS:
+- BELLMAN, R. Dynamic Programming. Princeton: Princeton University Press, 1957.
+- BELLMAN, R. Eye of the Hurricane: an autobiography. Singapore: World Scientific, 1984.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 15 (Programação dinâmica).
+- KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Capítulo 6 (Dynamic Programming).
+- DASGUPTA, S.; PAPADIMITRIOU, C.; VAZIRANI, U. Algoritmos. Porto Alegre: McGraw-Hill/Bookman, 2009. Capítulo 6.
+- FEOFILOFF, P. Programação dinâmica. https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/dynamic-programming.html
+- BRANDÃO, L. O. Introdução à recursividade (Fibonacci recursivo e iterativo). MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html
+- Wikipedia. Dynamic programming. https://en.wikipedia.org/wiki/Dynamic_programming
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define MAXN 10
+#define MAXC 100
+
+/* Fibonacci de baixo para cima: cada valor é calculado uma vez */
+long fib(int n) {
+  long f[90];
+  int i;
+  f[0] = 0; f[1] = 1;
+  for (i = 2; i <= n; i++)
+    f[i] = f[i - 1] + f[i - 2];
+  return f[n];
+}
+
+/* Mochila 0/1: M[i][c] = melhor valor com os i primeiros objetos */
+int mochila(int n, int C, int peso[], int valor[]) {
+  static int M[MAXN + 1][MAXC + 1];
+  int i, c;
+  for (c = 0; c <= C; c++) M[0][c] = 0;
+  for (i = 1; i <= n; i++) {
+    for (c = 0; c <= C; c++) {
+      M[i][c] = M[i - 1][c];                         // não leva o objeto i
+      if (peso[i] <= c && valor[i] + M[i - 1][c - peso[i]] > M[i][c])
+        M[i][c] = valor[i] + M[i - 1][c - peso[i]];  // leva o objeto i
+    }
+  }
+  return M[n][C];
+}
+
+int main(void) {
+  /* índice 0 não é usado: objetos numerados de 1 a n */
+  int peso[]  = {0, 1, 3, 4, 5};
+  int valor[] = {0, 1, 4, 5, 7};
+  printf("fib(40) = %ld\n", fib(40));
+  printf("Melhor valor (C=7): %d\n", mochila(4, 7, peso, valor));
+  return 0;
+}
+FIM_CODIGO_C

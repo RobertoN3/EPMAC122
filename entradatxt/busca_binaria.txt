@@ -1,0 +1,187 @@
+1. Tecnica: Divisão e conquista
+2. Algoritmo: Busca binária
+3. Autores: John Mauchly
+4. Data: 1946
+5. Conceitos: Busca binária, Vetores, Ordenação, Recursão, Eficiência de algoritmos, Invariante
+6. Problema: Dado um vetor em ordem crescente e um valor x, decidir se x está no vetor e em que posição
+7. Titulo: Busca binária
+
+## Ideia geral
+
+Procurar um valor x em um vetor v[0..n-1] é uma das operações mais comuns em
+programação. Sem nenhuma informação sobre o vetor, o único jeito é a busca
+sequencial: comparar x com v[0], v[1], v[2], ..., até encontrá-lo ou chegar
+ao fim. No pior caso são n comparações: O(n).
+
+Se o vetor estiver em ordem crescente, podemos fazer muito melhor. É o que
+fazemos ao procurar uma palavra no dicionário ou um nome em uma lista
+telefônica impressa: abrimos no meio; se a palavra procurada vem antes,
+descartamos a segunda metade inteira, e vice-versa. Em poucos passos
+chegamos à página certa.
+
+A busca binária compara x com o elemento do meio do trecho, v[m]:
+- se x == v[m], encontrou;
+- se x < v[m], então x, se estiver no vetor, está em v[ini..m-1], pois todos
+  os elementos a partir de m são maiores ou iguais a v[m] > x;
+- se x > v[m], pelo mesmo argumento, x só pode estar em v[m+1..fim].
+A cada comparação, METADE do trecho é descartada.
+
+## Busca binária como divisão e conquista
+
+A busca binária divide o problema (procurar em v[ini..fim]) em dois
+subproblemas de metade do tamanho, mas, com uma única comparação, descobre
+qual deles NÃO precisa ser resolvido. Só uma das metades é conquistada, e
+não há fase de combinação. Por isso alguns autores a classificam como
+"diminuir e conquistar". Sua recorrência é T(n) = T(n/2) + c, cuja solução é
+T(n) = O(log n).
+
+## Exemplo
+
+v = (2, 5, 8, 12, 16, 23, 38, 56, 72, 91), procurando x = 23.
+
+  ini = 0, fim = 9: m = 4, v[4] = 16 < 23  -> ini = 5
+  ini = 5, fim = 9: m = 7, v[7] = 56 > 23  -> fim = 6
+  ini = 5, fim = 6: m = 5, v[5] = 23 = x   -> encontrado na posição 5
+
+Procurando x = 40:
+
+  ini = 0, fim = 9: m = 4, v[4] = 16 < 40  -> ini = 5
+  ini = 5, fim = 9: m = 7, v[7] = 56 > 40  -> fim = 6
+  ini = 5, fim = 6: m = 5, v[5] = 23 < 40  -> ini = 6
+  ini = 6, fim = 6: m = 6, v[6] = 38 < 40  -> ini = 7
+  ini = 7 > fim = 6: trecho vazio          -> 40 não está no vetor
+
+## Análise
+
+A cada passo, o tamanho do trecho cai de k para no máximo k/2. Começando com
+n, depois de t passos o trecho tem no máximo n/2^t elementos; ele fica vazio
+quando 2^t > n, isto é, depois de cerca de log2(n) + 1 passos. Assim:
+
+  n = 1 000          ->  no máximo 10 comparações
+  n = 1 000 000      ->  no máximo 20 comparações
+  n = 1 000 000 000  ->  no máximo 30 comparações
+
+Comparada à busca sequencial (até um bilhão de comparações no último caso),
+a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado:
+ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas
+no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca
+binária não funciona bem em listas encadeadas (para isso existem as árvores
+binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).
+
+## Correção: o invariante
+
+O invariante do laço da versão iterativa, com intervalo fechado [ini, fim],
+é:
+
+  se x está no vetor, então x está em v[ini..fim].
+
+- No início, ini = 0 e fim = n-1: o trecho é o vetor todo, e o invariante
+  vale.
+- Cada passo descarta apenas elementos que certamente são diferentes de x,
+  por causa da ordenação; logo o invariante continua valendo.
+- O trecho diminui pelo menos um elemento a cada passo (pois m é excluído),
+  então o laço termina.
+- Ao terminar com ini > fim, o trecho é vazio e, pelo invariante, x não está
+  no vetor.
+
+## Cuidados de implementação
+
+A busca binária é famosa por ser fácil de entender e difícil de escrever
+corretamente. Pontos que exigem atenção:
+- Decidir a convenção do intervalo, fechado [ini, fim] ou semiaberto
+  [ini, fim), e respeitá-la em todo o código: inicialização, condição do
+  laço e atualizações.
+- Atualizar com ini = m + 1 e fim = m - 1 (no intervalo fechado). Escrever
+  ini = m pode criar um laço infinito quando o trecho tem dois elementos.
+- Calcular o meio como m = ini + (fim - ini) / 2. A forma (ini + fim) / 2
+  pode estourar a capacidade de um int quando ini e fim são grandes.
+  Esse erro ficou escondido por anos em implementações de bibliotecas
+  conhecidas, inclusive na de Java, e só foi corrigido em 2006.
+- Elementos repetidos: a versão básica devolve UMA posição de x, não
+  necessariamente a primeira. Para achar a primeira ocorrência (ou a posição
+  onde x deveria ser inserido), continua-se a busca à esquerda mesmo depois
+  de encontrar x.
+
+## Versão recursiva
+
+  busca(v, ini, fim, x):
+      se ini > fim: devolva -1          (trecho vazio)
+      m <- (ini + fim) / 2
+      se v[m] == x: devolva m
+      se x < v[m]: devolva busca(v, ini, m-1, x)
+      senão:       devolva busca(v, m+1, fim, x)
+
+É uma recursão de cauda (a chamada recursiva é a última operação), que se
+traduz diretamente na versão iterativa. A profundidade da recursão é
+O(log n), então não há risco de estourar a pilha.
+
+## Generalizações
+
+A ideia de "dividir o intervalo de busca ao meio" vai muito além de vetores:
+- busca pela raiz de uma função contínua (método da bisseção);
+- busca na resposta: encontrar o menor valor que satisfaz uma condição
+  monótona, por exemplo o menor tamanho de página que cabe em um limite;
+- git bisect: encontrar, entre centenas de versões de um programa, a
+  primeira que introduziu um erro, testando O(log n) versões;
+- o jogo "adivinhe o número de 1 a 100" é resolvido em no máximo 7
+  perguntas.
+A função bsearch da biblioteca padrão do C (stdlib.h) implementa a busca
+binária para vetores de qualquer tipo, recebendo uma função de comparação.
+
+## Histórico
+
+A ideia da busca binária foi mencionada por John Mauchly, um dos criadores
+do ENIAC, em 1946, nas Moore School Lectures, a primeira série de aulas sobre
+computação eletrônica. Segundo Knuth, a primeira versão publicada que
+funcionava para todo n (e não só para n da forma 2^k - 1) é de D. H. Lehmer,
+em 1960. Jon Bentley relata que, ao pedir a programadores profissionais que
+escrevessem uma busca binária, a grande maioria cometeu erros; e, em 2006,
+Joshua Bloch mostrou que a própria implementação de Bentley, e a de Java,
+continham o erro de estouro no cálculo do meio.
+
+## Sobre o código
+
+O programa de exemplo implementa a busca binária iterativa (com o cálculo do
+meio que evita estouro) e a recursiva, e as testa com os dois exemplos desta
+página.
+
+REFERENCIAS:
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.2.1 (Searching an ordered table), com histórico.
+- FEOFILOFF, P. Busca em vetor ordenado. https://www.ime.usp.br/~pf/algoritmos/aulas/bubi.html
+- BENTLEY, J. Programming Pearls. 2. ed. Reading: Addison-Wesley, 2000. Colunas 4 e 5.
+- BLOCH, J. Extra, extra - read all about it: nearly all binary searches and mergesorts are broken. Google Research Blog, 2006. https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Exercício 2.3-5.
+- BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+/* devolve o índice de x em v[0..n-1] (crescente), ou -1 */
+int buscaBinaria(int v[], int n, int x) {
+  int ini = 0, fim = n - 1, m;
+  while (ini <= fim) {
+    m = ini + (fim - ini) / 2;     /* evita estouro de ini+fim */
+    if (v[m] == x) return m;
+    if (x < v[m]) fim = m - 1;     // descarta a metade direita
+    else          ini = m + 1;     // descarta a metade esquerda
+  }
+  return -1;
+}
+
+/* versão recursiva no intervalo fechado [ini, fim] */
+int buscaRec(int v[], int ini, int fim, int x) {
+  int m;
+  if (ini > fim) return -1;        // trecho vazio: não está
+  m = (ini + fim) / 2;
+  if (v[m] == x) return m;
+  if (x < v[m]) return buscaRec(v, ini, m - 1, x);
+  return buscaRec(v, m + 1, fim, x);
+}
+
+int main(void) {
+  int v[] = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};
+  printf("23 esta na posicao %d\n", buscaBinaria(v, 10, 23));
+  printf("40 esta na posicao %d\n", buscaRec(v, 0, 9, 40));
+  return 0;
+}
+FIM_CODIGO_C

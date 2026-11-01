@@ -1,18 +1,194 @@
-1. Técnica: Divisão e conquista
-2. Algoritmo: Quick Sort
+1. Tecnica: Divisão e conquista
+2. Algoritmo: Ordenação rápida (Quick Sort)
 3. Autores: Tony Hoare
 4. Data: 1959
 5. Conceitos: Ordenação, Vetores, Recursão, Pivô, Partição
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+7. Titulo: Ordenação rápida (Quick Sort)
 
-Resumo:
-O Quick Sort escolhe um elemento chamado pivô e particiona o vetor: os
-elementos menores que o pivô vão para a esquerda e os maiores para a direita,
-deixando o pivô na sua posição final. Em seguida, o mesmo processo é aplicado
-recursivamente às duas partes. Não há etapa de junção no final, pois a
-partição já deixa os elementos nos lugares certos. A escolha do pivô
-(primeiro, aleatório, mediana de três) influencia muito o desempenho.
+## Ideia geral
 
-Complexidade: O(n log n) no caso médio, O(n²) no pior caso (por exemplo,
-pivô ruim em vetor já ordenado). Ordena no próprio vetor, com pouca memória
-extra, e não é estável. Na prática costuma ser muito rápido.
+O Quick Sort (ordenação rápida) é, em geral, o algoritmo de ordenação por
+comparação mais rápido na prática, e por isso é a base de muitas funções de
+bibliotecas. Como o Merge Sort, usa divisão e conquista, mas de um jeito
+"invertido":
+- no Merge Sort, a divisão é trivial (cortar ao meio) e o trabalho está na
+  COMBINAÇÃO (intercalar);
+- no Quick Sort, o trabalho está na DIVISÃO (particionar), e a combinação é
+  trivial: não há nada a fazer.
+
+Para ordenar v[ini..fim]:
+1) Escolha um elemento do trecho, o pivô.
+2) Particione: rearranje o trecho de modo que fiquem à esquerda do pivô
+   apenas elementos menores ou iguais a ele, e à direita apenas elementos
+   maiores ou iguais. O pivô fica, então, na sua posição definitiva p.
+3) Ordene recursivamente v[ini..p-1] e v[p+1..fim].
+Como tudo o que está à esquerda é menor e tudo o que está à direita é maior,
+depois das chamadas recursivas o trecho inteiro está ordenado.
+
+## A partição (esquema de Lomuto)
+
+Uma forma simples de particionar, com o pivô x = v[fim]:
+
+  i <- ini - 1
+  para j de ini até fim-1:
+      se v[j] <= x:
+          i <- i + 1
+          troque v[i] e v[j]
+  troque v[i+1] e v[fim]     (coloca o pivô entre as duas partes)
+  devolva i + 1
+
+Invariante: durante o laço, v[ini..i] contém elementos <= x, v[i+1..j-1]
+contém elementos > x e v[j..fim-1] ainda não foi examinado. A partição faz
+exatamente n-1 comparações em um trecho de n elementos: O(n).
+
+Exemplo: v = (7, 2, 1, 6, 8, 5, 3, 4), pivô 4.
+  7 > 4: fica; 2 <= 4: vai para a esquerda; 1 <= 4: vai; 6, 8, 5 > 4:
+  ficam; 3 <= 4: vai.  Resultado parcial: (2, 1, 3, 6, 8, 5, 7, 4)
+  pivô vai para a posição 3: (2, 1, 3, 4, 8, 5, 7, 6)
+  Agora ordenam-se (2, 1, 3) e (8, 5, 7, 6) separadamente.
+
+## O esquema original de Hoare
+
+Na partição de Hoare, dois índices partem das pontas e caminham um em
+direção ao outro: o da esquerda avança enquanto encontra elementos menores
+que o pivô; o da direita recua enquanto encontra elementos maiores. Quando
+ambos param, os dois elementos estão do lado errado e são trocados. O
+processo continua até os índices se cruzarem. Faz, em média, três vezes
+menos trocas que o esquema de Lomuto e lida melhor com elementos repetidos,
+mas é mais sutil de programar corretamente.
+
+## Análise
+
+O desempenho depende de quão equilibradas são as partições.
+
+- Melhor caso: o pivô é sempre a mediana, e o vetor é dividido ao meio.
+  T(n) = 2T(n/2) + O(n) = O(n log n).
+- Pior caso: o pivô é sempre o menor ou o maior elemento; uma das partes
+  fica vazia e a outra com n-1 elementos. T(n) = T(n-1) + O(n) = O(n²), com
+  cerca de n²/2 comparações. Com o pivô escolhido como o último elemento,
+  isso acontece justamente quando o vetor JÁ está ordenado (ou em ordem
+  inversa), situação muito comum na prática.
+- Caso médio: com todas as ordens igualmente prováveis (ou com pivô
+  aleatório), o número esperado de comparações é cerca de
+  2n ln n ~ 1,39 n log2 n: O(n log n), apenas 39% acima do melhor caso.
+  Intuição: mesmo uma divisão desequilibrada, como 10% / 90%, gera uma
+  recursão de profundidade O(log n); só divisões extremamente ruins,
+  repetidas muitas vezes, levam ao caso quadrático.
+
+Por que é rápido na prática, se o Merge Sort tem a mesma ordem? O laço
+interno da partição é muito simples (comparar com o pivô, que fica em um
+registrador, e avançar), acessa a memória de forma sequencial (bom uso da
+cache) e o algoritmo ordena no próprio vetor, sem vetor auxiliar.
+
+Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a pilha de
+recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro
+a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a
+O(log n).
+
+Estabilidade: a partição faz trocas entre posições distantes e pode inverter
+a ordem de elementos iguais. O Quick Sort NÃO é estável.
+
+## Escolha do pivô
+
+- Primeiro ou último elemento: simples, mas quadrático para vetores já
+  ordenados.
+- Pivô aleatório: sorteia-se uma posição do trecho. Nenhuma entrada fixa é
+  ruim; o tempo esperado é O(n log n) para qualquer entrada (algoritmo
+  aleatorizado).
+- Mediana de três: usa-se a mediana entre o primeiro, o elemento do meio e
+  o último. Barato e muito eficaz contra vetores ordenados.
+- Mediana das medianas (Blum, Floyd, Pratt, Rivest e Tarjan, 1973): garante
+  O(n log n) no pior caso, mas com constantes altas; raramente usada.
+
+## Melhorias usadas na prática
+
+- Trechos pequenos (menos de 10 a 20 elementos) são ordenados com inserção
+  direta, que é mais rápida para eles.
+- Partição em três partes (menores, iguais e maiores que o pivô; problema da
+  "bandeira holandesa" de Dijkstra): vetores com muitos elementos repetidos
+  passam a ser ordenados rapidamente.
+- Dual-pivot Quick Sort (Yaroslavskiy, 2009): usa dois pivôs e três partes;
+  é o algoritmo usado pelo Java para tipos primitivos.
+- Introsort (Musser, 1997): começa como Quick Sort e, se a recursão ficar
+  profunda demais (sinal de partições ruins), troca para Heap Sort. Garante
+  O(n log n) no pior caso; é o std::sort de muitas implementações de C++.
+
+## Quick Select
+
+A partição também resolve o problema da seleção: encontrar o k-ésimo menor
+elemento (por exemplo, a mediana) sem ordenar o vetor inteiro. Depois de
+particionar, se o pivô ficou na posição k, achamos; senão, continua-se
+apenas na parte que contém a posição k. O tempo esperado é O(n). O algoritmo
+foi publicado pelo próprio Hoare, com o nome "Find".
+
+## Histórico
+
+Tony Hoare (Charles Antony Richard Hoare) inventou o Quick Sort em 1959,
+quando era estudante visitante na Universidade Estatal de Moscou. Ele
+trabalhava em um projeto de tradução automática do russo para o inglês e
+precisava ordenar as palavras de cada frase antes de procurá-las em um
+dicionário guardado em fita magnética. Ao voltar à Inglaterra, implementou
+o algoritmo em ALGOL 60, aproveitando a recursão, e o publicou em 1961
+(Algorithm 64, nas Communications of the ACM) e, com análise detalhada, em
+1962, no Computer Journal. Robert Sedgewick fez, em sua tese de 1975, a
+análise mais completa do algoritmo e de suas variações. Hoare recebeu o
+prêmio Turing em 1980 e é também conhecido pela lógica de Hoare, para provar
+programas corretos, e pela linguagem CSP, para programação concorrente.
+
+## Sobre o código
+
+O programa de exemplo implementa o Quick Sort com a partição de Lomuto,
+usando como pivô o elemento do meio do trecho (trocado para o fim antes da
+partição), o que evita o pior caso com vetores já ordenados.
+
+REFERENCIAS:
+- HOARE, C. A. R. Algorithm 64: Quicksort. Communications of the ACM, v. 4, n. 7, p. 321, 1961.
+- HOARE, C. A. R. Quicksort. The Computer Journal, v. 5, n. 1, p. 10-16, 1962.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 7 (Quicksort) e capítulo 9 (Medianas e estatísticas de ordem).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 7 (Quicksort).
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.2 (Quicksort).
+- FEOFILOFF, P. Quicksort. https://www.ime.usp.br/~pf/algoritmos/aulas/quick.html
+- BENTLEY, J. L.; McILROY, M. D. Engineering a sort function. Software: Practice and Experience, v. 23, n. 11, p. 1249-1265, 1993.
+- MUSSER, D. R. Introspective sorting and selection algorithms. Software: Practice and Experience, v. 27, n. 8, p. 983-993, 1997.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+void troca(int v[], int a, int b) {
+  int aux = v[a]; v[a] = v[b]; v[b] = aux;
+}
+
+/* Partição de Lomuto: o pivô (elemento do meio) é levado para v[fim].
+   Devolve p tal que v[ini..p-1] <= v[p] < v[p+1..fim]. */
+int particiona(int v[], int ini, int fim) {
+  int x, i = ini - 1, j;
+  troca(v, (ini + fim) / 2, fim);    /* pivô do meio: evita O(n²) em vetor ordenado */
+  x = v[fim];
+  for (j = ini; j < fim; j++) {
+    if (v[j] <= x) {
+      i++;
+      troca(v, i, j);
+    }
+  }
+  troca(v, i + 1, fim);              // pivô na posição definitiva
+  return i + 1;
+}
+
+void quicksort(int v[], int ini, int fim) {
+  int p;
+  if (ini >= fim) return;            // 0 ou 1 elemento
+  p = particiona(v, ini, fim);       // dividir (todo o trabalho está aqui)
+  quicksort(v, ini, p - 1);
+  quicksort(v, p + 1, fim);          // combinar: nada a fazer
+}
+
+int main(void) {
+  int v[] = {7, 2, 1, 6, 8, 5, 3, 4};
+  int n = 8, i;
+  quicksort(v, 0, n - 1);
+  for (i = 0; i < n; i++) printf("%d ", v[i]);
+  printf("\n");
+  return 0;
+}
+FIM_CODIGO_C

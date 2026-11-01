@@ -1,0 +1,198 @@
+5. Conceitos: Eficiência de algoritmos, Notação O, Vetores
+6. Problema: Comparar algoritmos que resolvem o mesmo problema quanto à precisão da resposta e ao tempo e memória que consomem em função do tamanho da entrada
+7. Titulo: Eficiência de algoritmos
+
+## Ideia geral
+
+Saber que um algoritmo está correto não basta: é preciso que ele seja
+eficiente. A eficiência de um algoritmo tem dois aspectos principais.
+
+- Precisão: a resposta precisa estar suficientemente próxima da solução
+  verdadeira. Se resolvemos um sistema linear Ax = b e obtemos um x para o
+  qual Ax está longe de b, a "solução" é inútil, por mais rápida que tenha
+  sido.
+- Velocidade: a resposta precisa ser obtida em tempo factível, isto é, a
+  tempo de ser útil. Calcular a escala de voos de um aeroporto para amanhã
+  em uma semana não serve para nada. Junto com o tempo, analisa-se também a
+  memória consumida.
+
+## Precisão: os números no computador
+
+Os números reais são representados em ponto flutuante: uma quantidade fixa
+de dígitos significativos (mantissa) e um expoente. No tipo double (padrão
+IEEE 754) são cerca de 15 a 16 dígitos decimais significativos. Daí:
+
+- números como 1/3, 0,1 e sqrt(2) são guardados de forma aproximada (0,1 não
+  tem representação binária finita, e 0,1 + 0,2 != 0,3 em double);
+- somar um número muito pequeno a um muito grande pode não ter efeito;
+- subtrair números quase iguais destrói dígitos significativos
+  (cancelamento catastrófico);
+- valores que crescem muito rápido, como potências e fatoriais, estouram a
+  faixa representável: 13! já não cabe em um int de 32 bits, e 21! não
+  cabe nem em um inteiro de 64 bits.
+
+Como consequência, dois algoritmos matematicamente equivalentes podem dar
+respostas numericamente muito diferentes.
+
+## Exemplo: calcular cos(x) pela série de Taylor
+
+Funções como o cosseno são transcendentes: não podem ser escritas com um
+número finito de somas e multiplicações. Calculadoras e bibliotecas as
+aproximam por séries truncadas, como a série de Taylor (de MacLaurin) em
+torno de 0:
+
+  cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ...
+
+Três maneiras de implementá-la:
+
+1) Muito ineficiente: em cada termo, chamar uma função de potência para x^k e
+   uma de fatorial para k!. Refaz-se todo o trabalho dos termos anteriores:
+   o termo k custa O(k), e n termos custam O(n²). Além disso, x^k e k!
+   crescem rapidamente e geram erro numérico (e até estouro).
+2) Ineficiente: reaproveitar a potência e o fatorial do termo anterior, mas
+   guardá-los separadamente. O tempo vira O(n), mas os números enormes
+   continuam prejudicando a precisão.
+3) Eficiente: notar que cada termo é o anterior multiplicado por
+   -x² / ((k+1)(k+2)). Calcula-se diretamente o termo, sempre um número
+   pequeno, em O(1) por termo. É mais rápida E mais precisa: coincide com a
+   função cos da biblioteca math.h em todos os dígitos impressos.
+
+A lição: pensar sobre o algoritmo, e não apenas traduzir a fórmula, melhora
+os dois aspectos da eficiência ao mesmo tempo.
+
+## Velocidade: como medir o tempo de um algoritmo
+
+Medir segundos com um cronômetro (em C, a função clock()) é útil, mas o
+resultado depende do computador, do compilador e da carga da máquina. Para
+comparar ALGORITMOS, usa-se um modelo abstrato:
+
+- conta-se o número de operações básicas executadas (comparações,
+  atribuições, operações aritméticas, acessos a vetor), supondo que cada uma
+  custa tempo constante;
+- expressa-se essa contagem como função do tamanho n da entrada (o número
+  de elementos do vetor, de vértices do grafo, de dígitos do número...).
+
+Como entradas do mesmo tamanho podem exigir esforços diferentes, analisam-se
+três casos:
+- pior caso: o maior tempo entre todas as entradas de tamanho n. É a
+  garantia mais útil e a análise mais comum;
+- melhor caso: o menor tempo (por exemplo, vetor já ordenado);
+- caso médio: a média sobre uma distribuição das entradas (em geral,
+  supondo todas igualmente prováveis). É mais realista, porém mais difícil
+  de calcular.
+
+Exemplo: busca sequencial de x em um vetor de n elementos. Pior caso: n
+comparações (x não está ou está no fim). Melhor caso: 1 comparação. Caso
+médio (x presente, em posição aleatória): cerca de n/2.
+
+## Notação assintótica
+
+Na contagem exata, como 3n² + 5n + 2, o que importa para n grande é o termo
+dominante, e as constantes dependem de detalhes da máquina. A notação
+assintótica descreve só a ordem de crescimento.
+
+- O (ó grande, limite superior): f(n) = O(g(n)) se existem constantes c > 0
+  e n0 tais que f(n) <= c · g(n) para todo n >= n0. Exemplo:
+  3n² + 5n + 2 = O(n²), pois 3n² + 5n + 2 <= 4n² para n >= 6.
+- Omega (limite inferior): f(n) = Omega(g(n)) se f(n) >= c · g(n) para n
+  grande.
+- Theta (ordem exata): f(n) = Theta(g(n)) se f é O(g) e Omega(g) ao mesmo
+  tempo.
+
+Ordens de crescimento comuns, da mais rápida para a mais lenta:
+
+  O(1)        constante     acesso a v[i], empilhar
+  O(log n)    logarítmica   busca binária
+  O(n)        linear        busca sequencial, maior elemento
+  O(n log n)  "n log n"     Merge Sort, Heap Sort
+  O(n²)       quadrática    bolha, seleção, inserção
+  O(n³)       cúbica        multiplicação ingênua de matrizes
+  O(2^n)      exponencial   subconjuntos, Fibonacci recursivo ingênuo
+  O(n!)       fatorial      todas as permutações
+
+Para sentir a diferença, suponha um computador que faça 10^9 operações por
+segundo e uma entrada com n = 10^6 elementos:
+- n log n ~ 2 · 10^7 operações: 0,02 segundo;
+- n² = 10^12 operações: cerca de 17 minutos;
+- 2^n: mais do que a idade do universo, mesmo para n = 100.
+
+Por isso, um algoritmo melhor costuma valer muito mais do que um computador
+mais rápido: multiplicar a velocidade da máquina por 1000 permite a um
+algoritmo O(2^n) resolver entradas só cerca de 10 unidades maiores.
+
+## Regras práticas de análise
+
+- Laços em sequência: somam-se os custos (o maior domina).
+- Laços aninhados: multiplicam-se. Dois laços de 1 a n dão O(n²).
+- Laço em que a variável é dividida por 2 a cada passo: O(log n).
+- Algoritmos recursivos: escreve-se uma recorrência, como T(n) = 2T(n/2) +
+  n, e resolve-se (árvore de recursão, substituição ou teorema mestre).
+
+## Memória
+
+A mesma análise vale para o espaço. Um algoritmo é "in place" se usa memória
+extra O(1) (bolha, seleção, inserção, Heap Sort). O Merge Sort usa O(n)
+extra; algoritmos recursivos usam memória de pilha proporcional à
+profundidade da recursão. Muitas vezes é possível trocar memória por tempo,
+como na programação dinâmica e nas tabelas de espalhamento.
+
+## Limites do que é possível
+
+- Problemas intratáveis: para alguns problemas, todos os algoritmos
+  conhecidos são exponenciais. O exemplo central é a satisfatibilidade
+  (SAT): dada uma expressão booleana, como b1 E (b2 OU NÃO b3), existe uma
+  atribuição de valores que a torne verdadeira? Para 3 variáveis basta
+  testar 8 combinações; para 300, seriam 2^300. SAT é NP-completo, e
+  decidir se existe algoritmo polinomial para ele é o famoso problema
+  "P = NP?", em aberto desde 1971.
+- Problemas indecidíveis: não existe NENHUM algoritmo que os resolva. O
+  exemplo clássico é o problema da parada (Turing, 1936): decidir, para um
+  programa e uma entrada quaisquer, se o programa termina.
+
+## Histórico
+
+A notação O foi introduzida pelo matemático Paul Bachmann em 1894 e
+popularizada por Edmund Landau em 1909 (por isso "símbolos de Landau").
+Donald Knuth propôs em 1976 o uso sistemático de O, Omega e Theta em
+análise de algoritmos e é considerado o pai dessa área, com a série "The
+Art of Computer Programming". O conceito de tempo polinomial como
+"eficiente" vem de Alan Cobham e Jack Edmonds (1965), e a teoria da
+NP-completude, de Stephen Cook (1971) e Richard Karp (1972).
+
+## Sobre o código
+
+O programa de exemplo implementa a versão eficiente do cosseno pela série de
+Taylor e compara o resultado com a função cos da biblioteca math.h.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Introdução à eficiência de algoritmos. MAC122, IME-USP. http://users.ime.usp.br/~leo/mac/mac122/introducao_eficiencia_algoritmos.html
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulos 2 e 3 (Crescimento de funções) e 34 (NP-completude).
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 1.2.11 (notação O). Seção 4.2 do v. 2 trata de aritmética de ponto flutuante.
+- KNUTH, D. E. Big Omicron and big Omega and big Theta. ACM SIGACT News, v. 8, n. 2, p. 18-24, 1976.
+- FEOFILOFF, P. Análise de algoritmos. https://www.ime.usp.br/~pf/analise_de_algoritmos/
+- GOLDBERG, D. What every computer scientist should know about floating-point arithmetic. ACM Computing Surveys, v. 23, n. 1, p. 5-48, 1991.
+- GAREY, M. R.; JOHNSON, D. S. Computers and Intractability: a guide to the theory of NP-completeness. San Francisco: W. H. Freeman, 1979.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <math.h>
+
+/* Cosseno pela série de Taylor, versão eficiente:
+   cada termo é obtido do anterior, sem calcular potência e fatorial */
+double cosseno(double x) {
+  double termo = 1.0, soma = 1.0;
+  int i;
+  for (i = 0; i < 40; i += 2) {
+    termo = -termo * x * x / ((i + 1) * (i + 2));
+    soma += termo;
+  }
+  return soma;
+}
+
+int main(void) {
+  double x = 0.1;
+  printf("cosseno(%.2f) = %.15f\n", x, cosseno(x));
+  printf("cos(%.2f)     = %.15f  (math.h)\n", x, cos(x));
+  return 0;
+}
+FIM_CODIGO_C

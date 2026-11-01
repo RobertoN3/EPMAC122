@@ -1,0 +1,170 @@
+5. Conceitos: Registros, Ponteiros, Vetores, Ordenação, Algoritmo estável
+6. Problema: Agrupar dados de tipos diferentes que descrevem uma mesma entidade (por exemplo, nome, número USP e nota de um aluno) em uma única variável
+7. Titulo: Registros (structs)
+
+## Ideia geral
+
+Um vetor agrupa vários dados do MESMO tipo, identificados por um índice.
+Muitas vezes, porém, precisamos agrupar dados de tipos DIFERENTES que
+descrevem uma mesma coisa: um aluno tem nome (cadeia de caracteres), número
+USP (inteiro) e nota (real); um ponto do plano tem duas coordenadas; uma data
+tem dia, mês e ano; uma aresta de um grafo tem duas pontas e um peso.
+
+Um registro (em C, struct, de "structure") é um pacote de variáveis,
+possivelmente de tipos diferentes, tratado como uma unidade. Cada
+componente é um campo (ou membro) e é identificado por um nome, e não por um
+índice. É o equivalente, em programação, a uma ficha de cadastro ou a uma
+linha de uma tabela.
+
+## Declaração
+
+Declara-se primeiro o tipo do registro, descrevendo seus campos:
+
+  struct aluno {
+      char nome[50];
+      int nusp;
+      float nota;
+  };
+
+Isso cria um novo tipo, struct aluno, mas nenhuma variável. Depois,
+declaram-se variáveis desse tipo: struct aluno a, b;
+
+Com typedef pode-se dar um nome mais curto ao tipo:
+
+  typedef struct aluno Aluno;     // agora basta escrever Aluno a;
+
+É comum fazer as duas coisas de uma vez: typedef struct { ... } Aluno;.
+
+Inicialização na declaração: Aluno a = {"Ana", 1111, 7.5};
+
+## Acesso aos campos
+
+- Com uma variável do tipo registro, usa-se o ponto: a.nota = 8.0;
+  a.nusp; a.nome.
+- Com um ponteiro p para um registro, usa-se a seta: p->nota, que é
+  abreviação de (*p).nota.
+
+Campos podem ser de qualquer tipo, inclusive vetores, outros registros e
+ponteiros: uma struct aluno pode ter um campo do tipo struct data para a data
+de nascimento, e então se escreve a.nascimento.ano.
+
+## Operações com registros
+
+- Atribuição: b = a; copia TODOS os campos de a para b (inclusive vetores que
+  estejam dentro do registro), diferentemente de vetores, que não podem ser
+  atribuídos diretamente.
+- Comparação: não existe a == b para registros; é preciso comparar campo a
+  campo (ou só a chave que interessa).
+- Funções: registros podem ser passados como parâmetros e devolvidos como
+  resultado. Como a passagem é por valor, a função recebe uma CÓPIA. Para
+  registros grandes (cópia cara) ou quando a função precisa alterar o
+  original, passa-se um ponteiro: void corrige(Aluno *p, float nova).
+- Tamanho: sizeof(Aluno) dá o número de bytes do registro; ele pode ser maior
+  do que a soma dos campos, porque o compilador insere bytes de
+  preenchimento (padding) para alinhar os campos na memória.
+
+## Vetores de registros: tabelas
+
+Um vetor de registros, como Aluno turma[60];, é uma tabela: cada elemento é
+uma linha, e cada campo é uma coluna. turma[i].nota é a nota do i-ésimo
+aluno. Essa é a forma natural de guardar dados de um cadastro na memória.
+
+Uma tarefa típica é ordenar a tabela por um dos campos, a chave de
+ordenação: alunos por número USP, por nome ou por nota. Os algoritmos de
+ordenação são os mesmos usados para números; muda apenas a comparação
+(t[j].nota < x.nota) e o fato de que se movem registros inteiros.
+
+É aqui que a estabilidade de um algoritmo de ordenação se torna importante.
+Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota
+com um método estável, alunos com a mesma nota continuarão em ordem
+alfabética entre si: obtemos a ordenação por (nota, nome) "de graça". Com um
+método instável, essa ordem secundária poderia se perder.
+
+Quando os registros são grandes, mover cada um custa caro; uma alternativa é
+ordenar um vetor de ponteiros (ou de índices) para os registros, mexendo
+apenas nos ponteiros.
+
+## Registros autorreferentes
+
+Um campo de um registro pode ser um ponteiro para outro registro do mesmo
+tipo. É assim que se constroem as estruturas encadeadas:
+
+- lista encadeada: struct celula { int conteudo; struct celula *prox; };
+- árvore binária: struct no { int chave; struct no *esq, *dir; };
+
+Um registro não pode conter a si mesmo como campo (teria tamanho infinito),
+mas pode conter um PONTEIRO para outro registro do mesmo tipo.
+
+## Registros em outras linguagens
+
+A ideia aparece com nomes diferentes em outras linguagens: record em Pascal,
+tupla nomeada (namedtuple) ou dataclass em Python, e, nas linguagens
+orientadas a objetos, as classes, que acrescentam aos campos as funções
+(métodos) que operam sobre eles. Em bancos de dados, cada linha de uma
+tabela é um registro.
+
+## Histórico
+
+Os registros vêm do processamento de dados comerciais: arquivos em cartões
+perfurados e fitas já eram organizados em registros com campos. A linguagem
+COBOL (1959) foi uma das primeiras a ter registros hierárquicos como tipo
+de dado.
+C. A. R. Hoare propôs em 1965-1966 os registros com referências entre si
+("record handling"), que influenciaram ALGOL W, Pascal e C. As structs de C
+existem desde as primeiras versões da linguagem, por volta de 1973.
+
+## Sobre o código
+
+O programa de exemplo define o registro Aluno, altera a nota de um aluno
+passando um ponteiro para o registro e ordena a turma por nota (em ordem
+decrescente) com inserção direta, que é estável.
+
+REFERENCIAS:
+- FEOFILOFF, P. Registros e structs. https://users.ime.usp.br/~pf/algoritmos/aulas/stru.html
+- KERNIGHAN, B. W.; RITCHIE, D. M. C: a linguagem de programação padrão ANSI. Rio de Janeiro: Campus, 1989. Capítulo 6 (Estruturas).
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Apêndice sobre registros.
+- KING, K. N. C Programming: a modern approach. 2. ed. New York: W. W. Norton, 2008. Capítulo 16 (Structures, Unions, and Enumerations).
+- HOARE, C. A. R. Record handling. ALGOL Bulletin, n. 21, p. 39-69, 1965.
+- BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <string.h>
+
+typedef struct {
+  char nome[50];
+  int nusp;
+  float nota;
+} Aluno;
+
+/* recebe ponteiro: altera o registro original */
+void corrige(Aluno *p, float novaNota) {
+  p->nota = novaNota;            /* o mesmo que (*p).nota */
+}
+
+/* inserção direta pela nota, decrescente e estável */
+void ordenaPorNota(Aluno t[], int n) {
+  int i, j;
+  Aluno x;
+  for (i = 1; i < n; i++) {
+    x = t[i];                    // copia o registro inteiro
+    for (j = i - 1; j >= 0 && t[j].nota < x.nota; j--)
+      t[j + 1] = t[j];
+    t[j + 1] = x;
+  }
+}
+
+int main(void) {
+  Aluno turma[3] = {
+    {"Ana", 1111, 7.5f},
+    {"Bruno", 2222, 9.0f},
+    {"Carla", 3333, 7.5f}
+  };
+  int i;
+  corrige(&turma[0], 8.0f);
+  ordenaPorNota(turma, 3);
+  for (i = 0; i < 3; i++)
+    printf("%-6s %d %.1f\n", turma[i].nome, turma[i].nusp, turma[i].nota);
+  return 0;
+}
+FIM_CODIGO_C

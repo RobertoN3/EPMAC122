@@ -1,0 +1,218 @@
+2. Algoritmo: Tabela de espalhamento com encadeamento
+3. Autores: Hans Peter Luhn
+4. Data: 1953
+5. Conceitos: Hash, Vetores, Listas encadeadas, Ponteiros, Eficiência de algoritmos
+6. Problema: Armazenar um conjunto de chaves de modo que inserir, buscar e remover custem, em média, tempo constante
+7. Titulo: Hash e espalhamento
+
+## Ideia geral
+
+Muitos programas precisam de uma tabela de símbolos (ou dicionário): um
+conjunto de pares (chave, valor) em que se pode inserir, buscar e remover
+pela chave. Exemplos: um compilador guarda os nomes das variáveis e seus
+tipos; um corretor ortográfico guarda as palavras válidas; um navegador
+guarda páginas visitadas recentemente.
+
+Opções já conhecidas e seus custos para n chaves:
+- vetor não ordenado: inserção O(1), busca O(n);
+- vetor ordenado: busca O(log n) (busca binária), inserção O(n);
+- árvore binária de busca balanceada: tudo O(log n).
+
+O espalhamento (hashing) faz melhor em média: O(1) por operação. A ideia é
+evitar comparações: em vez de PROCURAR a chave, CALCULA-SE onde ela deveria
+estar.
+
+Caso ideal: se as chaves fossem inteiros entre 0 e 999, bastaria um vetor de
+1000 posições, com a chave k guardada em t[k] (endereçamento direto). Mas
+quando o universo de chaves é enorme (todos os nomes possíveis, todos os
+CPFs) e só uma pequena parte é usada, isso desperdiça memória
+absurdamente.
+
+## Função de espalhamento
+
+Uma função de espalhamento (função hash) h transforma uma chave em um
+índice de 0 a M-1 de um vetor de tamanho M, a tabela de espalhamento. A
+chave k é guardada (ou procurada) na posição h(k).
+
+O nome vem do inglês "hash", picar, misturar: uma boa função "pica" a chave
+e mistura seus pedaços. Em português usa-se "espalhamento" porque ela
+espalha as chaves pela tabela.
+
+Propriedades desejadas:
+- determinismo: a mesma chave produz sempre o mesmo índice;
+- rapidez: calcular h(k) deve custar pouco (em geral, O(tamanho da chave));
+- uniformidade: as chaves devem se distribuir de modo equilibrado pelas M
+  posições, mesmo quando são muito parecidas entre si (como "x1", "x2",
+  "x3"); cada posição deve receber aproximadamente n/M chaves;
+- efeito avalanche: uma pequena mudança na chave deve mudar bastante o
+  índice.
+
+Exemplos:
+- Método da divisão, para inteiros: h(k) = k mod M. Escolhe-se M primo e
+  longe de potências de 2; com M = 100, por exemplo, só os dois últimos
+  dígitos importariam, e chaves com o mesmo final colidiriam sempre.
+- Método da multiplicação: h(k) = parte inteira de M · frac(k · A), com
+  0 < A < 1 (Knuth sugere A = (sqrt(5) - 1)/2 ~ 0,618).
+- Para cadeias de caracteres: tratar a cadeia como um número em uma base B,
+  h(s) = (s[0] · B^(t-1) + s[1] · B^(t-2) + ... + s[t-1]) mod M, calculado
+  pelo método de Horner, tomando o resto a cada passo para evitar estouro:
+  h = (h · B + s[i]) mod M. A base 31 é uma escolha clássica (usada pelo
+  hashCode das Strings de Java). Somar simplesmente os códigos das letras é
+  uma péssima função: "amor" e "roma" colidiriam.
+
+## Colisões
+
+Como há muito mais chaves possíveis do que posições, é inevitável que duas
+chaves diferentes tenham o mesmo índice: uma colisão. Pelo "paradoxo do
+aniversário", as colisões aparecem muito antes do que a intuição sugere:
+em uma sala com apenas 23 pessoas, a chance de duas fazerem aniversário no
+mesmo dia já passa de 50%. Em uma tabela de tamanho M, espera-se a primeira
+colisão após cerca de sqrt(M) inserções. Portanto, todo esquema de
+espalhamento precisa tratar colisões.
+
+1) Encadeamento (separate chaining): cada posição t[i] da tabela guarda o
+   início de uma lista encadeada com todas as chaves que tiveram h(k) = i.
+   - inserir: calcular h(k) e inserir no início da lista, O(1) (se for
+     permitido repetir; senão, buscar antes);
+   - buscar: calcular h(k) e percorrer a lista t[h(k)];
+   - remover: buscar e remover da lista.
+   É simples e robusto, e a tabela pode ter mais chaves do que posições.
+
+2) Endereçamento aberto (open addressing): todas as chaves ficam no próprio
+   vetor. Em caso de colisão, procura-se outra posição segundo uma
+   sequência de sondagem:
+   - sondagem linear: h(k), h(k)+1, h(k)+2, ... (módulo M). Simples e
+     amigável à memória cache, mas sofre de agrupamento primário: blocos
+     ocupados contíguos tendem a crescer;
+   - sondagem quadrática: h(k), h(k)+1, h(k)+4, h(k)+9, ...;
+   - espalhamento duplo: h(k), h(k)+h2(k), h(k)+2h2(k), ..., com uma segunda
+     função h2; é a que mais se aproxima do ideal.
+   A remoção é delicada: não se pode simplesmente esvaziar a posição, pois
+   isso interromperia as sequências de sondagem de outras chaves; usa-se uma
+   marca de "removido".
+
+## Fator de carga e desempenho
+
+O fator de carga é alfa = n / M (número de chaves sobre o tamanho da
+tabela). Supondo espalhamento uniforme:
+
+- Encadeamento: o comprimento médio das listas é alfa. Uma busca sem sucesso
+  custa em média 1 + alfa; uma busca com sucesso, cerca de 1 + alfa/2.
+- Sondagem linear: uma busca sem sucesso custa em média cerca de
+  (1 + 1/(1-alfa)²)/2 sondagens, e uma com sucesso, (1 + 1/(1-alfa))/2.
+  Com alfa = 0,5 isso dá 2,5 e 1,5; com alfa = 0,9, já são 50,5 e 5,5. Por
+  isso mantém-se alfa abaixo de 0,5 a 0,7.
+
+Se alfa é mantido limitado por uma constante, todas as operações custam O(1)
+em média. Para isso, quando alfa passa de um limite, a tabela é redimensionada
+(por exemplo, dobrada) e todas as chaves são reinseridas (rehashing). Esse
+custo, distribuído entre as inserções, continua O(1) amortizado.
+
+O pior caso, porém, é O(n): se todas as chaves caírem na mesma posição, a
+tabela vira uma lista. Isso pode ser explorado por um atacante que escolha
+chaves de propósito (ataques de negação de serviço por colisões). A defesa
+é o espalhamento universal (Carter e Wegman, 1979): sortear a função de
+espalhamento de uma família, no início da execução, de modo que nenhuma
+entrada fixa seja ruim com alta probabilidade.
+
+O que o espalhamento NÃO faz bem: as chaves ficam fora de ordem, então
+operações como "listar em ordem", "mínimo" ou "todas as chaves entre a e b"
+são caras. Para isso, prefere-se uma árvore de busca balanceada.
+
+## Aplicações
+
+- dicionários e conjuntos das linguagens: dict e set de Python, HashMap de
+  Java, unordered_map de C++, objetos de JavaScript;
+- tabelas de símbolos de compiladores e interpretadores;
+- caches (de páginas, de resultados de funções: memorização na programação
+  dinâmica) e índices de bancos de dados;
+- detecção de duplicatas e contagem de frequência de palavras;
+- busca de padrões em textos (algoritmo de Rabin-Karp, 1987);
+- filtros de Bloom: testar pertinência gastando pouquíssima memória.
+
+Funções de espalhamento criptográficas (MD5, SHA-1, SHA-256) são uma família
+à parte. Além de espalhar bem, devem tornar computacionalmente inviável
+encontrar duas entradas com a mesma saída ou recuperar a entrada a partir da
+saída. São usadas para verificar integridade de arquivos, guardar senhas
+(com cuidados adicionais), em assinaturas digitais e em blockchains. São
+lentas demais para tabelas de espalhamento comuns.
+
+## Histórico
+
+Hans Peter Luhn, pesquisador da IBM, descreveu em um memorando interno de
+1953 a ideia de espalhar as chaves em "baldes" e encadear as colisões. Na
+mesma época, Gene Amdahl, Elaine McGraw e Arthur Samuel usaram endereçamento
+aberto com sondagem linear em um montador do IBM 701. A primeira descrição
+publicada é de Arnold Dumey (1956), e o termo "hashing" se popularizou na
+década de 1960, consolidado pelo artigo de Robert Morris (1968). A análise da
+sondagem linear feita por Donald Knuth em 1962-1963 é considerada um dos
+marcos iniciais da análise de algoritmos.
+
+## Sobre o código
+
+O programa de exemplo implementa uma tabela de espalhamento com encadeamento
+para chaves do tipo cadeia de caracteres, usando o método de Horner com base
+31 e uma tabela de tamanho primo (13).
+
+REFERENCIAS:
+- Wikipedia. Hash function. https://en.wikipedia.org/wiki/Hash_function
+- Wikipedia. Hash table. https://en.wikipedia.org/wiki/Hash_table
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.4 (Hashing), com histórico.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 11 (Tabelas de espalhamento).
+- FEOFILOFF, P. Tabelas de símbolos: hashing. https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 14 (Hashing).
+- MORRIS, R. Scatter storage techniques. Communications of the ACM, v. 11, n. 1, p. 38-44, 1968.
+- CARTER, J. L.; WEGMAN, M. N. Universal classes of hash functions. Journal of Computer and System Sciences, v. 18, n. 2, p. 143-154, 1979.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define M 13   /* tamanho da tabela: um número primo */
+
+typedef struct celula {
+  char *chave;
+  int valor;
+  struct celula *prox;
+} Celula;
+
+Celula *tabela[M];   /* cada posição aponta para uma lista encadeada */
+
+/* espalhamento de cadeias pelo método de Horner, base 31 */
+unsigned hash(const char *s) {
+  unsigned h = 0;
+  while (*s) h = (h * 31 + (unsigned char)*s++) % M;
+  return h;
+}
+
+Celula *busca(const char *chave) {
+  Celula *p;
+  for (p = tabela[hash(chave)]; p != NULL; p = p->prox)
+    if (strcmp(p->chave, chave) == 0) return p;
+  return NULL;
+}
+
+void insere(const char *chave, int valor) {
+  Celula *p = busca(chave);
+  unsigned h;
+  if (p != NULL) { p->valor = valor; return; }   // já existe: atualiza
+  h = hash(chave);
+  p = malloc(sizeof(Celula));
+  p->chave = malloc(strlen(chave) + 1);
+  strcpy(p->chave, chave);
+  p->valor = valor;
+  p->prox = tabela[h];                           // insere no início da lista
+  tabela[h] = p;
+}
+
+int main(void) {
+  Celula *p;
+  insere("Kruskal", 1956);
+  insere("Dijkstra", 1956);
+  insere("Hoare", 1959);
+  p = busca("Hoare");
+  printf("Hoare -> %d (posicao %u)\n", p ? p->valor : -1, hash("Hoare"));
+  printf("Euler %s na tabela\n", busca("Euler") ? "esta" : "nao esta");
+  return 0;
+}
+FIM_CODIGO_C

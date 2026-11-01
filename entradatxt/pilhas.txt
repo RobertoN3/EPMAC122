@@ -1,0 +1,190 @@
+2. Algoritmo: Verificação de parênteses balanceados com pilha
+3. Autores: Friedrich L. Bauer, Klaus Samelson
+4. Data: 1957
+5. Conceitos: Pilhas, Vetores, Listas encadeadas, Recursão
+6. Problema: Dada uma cadeia com parênteses, colchetes e chaves, decidir se ela está bem formada (cada símbolo de abertura fechado pelo símbolo correspondente, na ordem correta)
+7. Titulo: Pilhas
+
+## Ideia geral
+
+Uma pilha é uma sequência de elementos em que todas as inserções e remoções
+são feitas na mesma extremidade, chamada topo. O último elemento inserido é
+sempre o primeiro a ser removido: a política é LIFO (last in, first out,
+"último a entrar, primeiro a sair").
+
+A imagem usual é uma pilha de pratos: coloca-se um prato novo em cima e
+retira-se sempre o de cima; para pegar o prato de baixo, é preciso tirar
+antes todos os que estão sobre ele. Outros exemplos do dia a dia: o botão
+"voltar" do navegador, o "desfazer" (Ctrl+Z) de um editor, uma pilha de
+provas para corrigir.
+
+A pilha é um tipo abstrato de dados: o que a define são as operações e seu
+comportamento, não a forma como é guardada na memória.
+
+## Operações
+
+- empilha(x) (push): coloca x no topo;
+- desempilha() (pop): remove o elemento do topo e o devolve;
+- topo() (top ou peek): devolve o elemento do topo sem removê-lo;
+- vazia(): diz se a pilha não tem elementos;
+- cheia(): em implementações de tamanho fixo, diz se não cabe mais nada.
+
+Todas custam O(1). Desempilhar de uma pilha vazia é um erro (underflow), e
+empilhar em uma pilha cheia também (overflow); um programa correto testa
+essas situações antes.
+
+## Implementação em vetor
+
+Usa-se um vetor p[0..MAX-1] e um inteiro t, o número de elementos.
+- A pilha está vazia quando t == 0 e cheia quando t == MAX.
+- O topo é p[t-1].
+- empilha(x): p[t] = x; t = t + 1;   (em C: p[t++] = x;)
+- desempilha(): t = t - 1; devolve p[t];   (em C: return p[--t];)
+
+É simples e muito rápida. A limitação é o tamanho fixo; pode-se contorná-la
+alocando o vetor com malloc e, quando ele encher, realocá-lo com o dobro do
+tamanho (realloc). Como as duplicações são cada vez mais raras, o custo
+médio por operação continua O(1) (custo amortizado).
+
+## Implementação em lista encadeada
+
+O topo é a primeira célula da lista.
+- empilha(x): cria uma célula com x, que passa a apontar para o antigo topo
+  e se torna o novo topo;
+- desempilha(): guarda o conteúdo da primeira célula, faz o topo apontar
+  para a segunda e libera a primeira com free.
+Não há limite de tamanho além da memória disponível, mas cada elemento gasta
+memória extra com o ponteiro.
+
+## Aplicação 1: parênteses balanceados
+
+Uma cadeia como "{a[i] = (x + y) * 2;}" está bem formada se cada símbolo de
+abertura ( [ { é fechado pelo símbolo correspondente ) ] }, e se os pares se
+aninham corretamente: "( [ ) ]" está errado, embora tenha o mesmo número de
+aberturas e fechamentos de cada tipo.
+
+Algoritmo: percorre-se a cadeia da esquerda para a direita.
+- ao ler um símbolo de abertura, empilha-o;
+- ao ler um símbolo de fechamento, desempilha; se a pilha estava vazia
+  (fechou sem ter aberto) ou se o símbolo desempilhado não é o par
+  correspondente, a cadeia está mal formada;
+- os demais caracteres são ignorados;
+- ao final, a cadeia está bem formada se e somente se a pilha estiver vazia
+  (senão, algum símbolo foi aberto e não fechado).
+
+A pilha é a estrutura certa porque o último símbolo aberto é o primeiro que
+precisa ser fechado. Custo: O(n) para uma cadeia de n caracteres. É
+exatamente o que um compilador faz para apontar erros como "esperava ')'".
+
+## Aplicação 2: expressões em notação posfixa
+
+Na notação posfixa (ou polonesa reversa), o operador vem depois dos
+operandos: (2 + 3) * 4 é escrita "2 3 + 4 *". Ela não precisa de parênteses
+nem de regras de precedência, e é avaliada com uma pilha:
+- ao ler um número, empilha-o;
+- ao ler um operador, desempilha os dois operandos, aplica o operador e
+  empilha o resultado;
+- no fim, o resultado é o único elemento da pilha.
+
+  lê 2:  pilha 2
+  lê 3:  pilha 2 3
+  lê +:  desempilha 3 e 2, empilha 5    -> pilha 5
+  lê 4:  pilha 5 4
+  lê *:  desempilha 4 e 5, empilha 20   -> pilha 20
+
+A conversão de uma expressão infixa (a notação usual) para posfixa também
+usa uma pilha, de operadores (algoritmo "shunting-yard" de Dijkstra, 1961).
+Calculadoras HP clássicas e a linguagem PostScript funcionam em notação
+posfixa, e muitos compiladores geram código para máquinas de pilha (como a
+máquina virtual Java).
+
+## Aplicação 3: a pilha de execução e a recursão
+
+Quando uma função é chamada, o computador empilha um registro de ativação
+com os parâmetros, as variáveis locais e o endereço para onde voltar; quando
+ela termina, o registro é desempilhado. Essa pilha de execução (call stack)
+é o que torna a recursão possível: cada chamada recursiva tem seu próprio
+contexto, guardado sobre o contexto da chamada anterior.
+
+Consequências:
+- recursão profunda demais esgota essa pilha (stack overflow);
+- qualquer algoritmo recursivo pode ser reescrito de forma iterativa com uma
+  pilha explícita, que guarda o que a recursão guardaria.
+
+## Outras aplicações
+
+- desfazer (undo) e refazer em editores;
+- voltar páginas no navegador;
+- busca em profundidade em grafos e backtracking (a pilha guarda o caminho
+  percorrido, para poder voltar);
+- verificar se uma página HTML ou XML tem as marcas bem aninhadas;
+- inverter uma sequência: empilhar tudo e desempilhar.
+
+## Histórico
+
+Alan Turing já descrevia, em 1946, um mecanismo de pilha para chamar
+sub-rotinas e voltar delas (com instruções que chamou de "BURY" e
+"UNBURY"). Em 1954-1955, Charles Hamblin propôs a notação polonesa reversa
+para computadores, inspirada na notação prefixa de Jan Łukasiewicz (1924).
+Friedrich L. Bauer e Klaus Samelson, na Alemanha, formularam o "princípio
+da pilha" (Kellerprinzip, de Keller, "porão") para traduzir e avaliar
+expressões e o patentearam em 1957; a ideia foi fundamental no projeto da
+linguagem ALGOL 60. Bauer recebeu em 1988 o prêmio IEEE Computer Pioneer pela
+invenção.
+
+## Sobre o código
+
+O programa de exemplo implementa uma pilha de caracteres em vetor e a usa
+para verificar se três cadeias têm parênteses, colchetes e chaves
+balanceados.
+
+REFERENCIAS:
+- FEOFILOFF, P. Pilhas. https://www.ime.usp.br/~pf/algoritmos/aulas/pilha.html
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 6 (Pilhas).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.1 (Pilhas e filas).
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.1 (Stacks, queues, and deques).
+- SAMELSON, K.; BAUER, F. L. Sequential formula translation. Communications of the ACM, v. 3, n. 2, p. 76-83, 1960.
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 4 (Abstract Data Types).
+- Wikipedia. Stack (abstract data type). https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <string.h>
+#define MAX 100
+
+char pilha[MAX];
+int t = 0;                     /* número de elementos na pilha */
+
+void empilha(char c) { pilha[t++] = c; }
+char desempilha(void) { return pilha[--t]; }
+int  vazia(void)      { return t == 0; }
+
+/* devolve 1 se os símbolos ()[]{} de s estão balanceados */
+int balanceada(const char *s) {
+  int i;
+  char c;
+  t = 0;
+  for (i = 0; s[i] != '\0'; i++) {
+    c = s[i];
+    if (c == '(' || c == '[' || c == '{') {
+      if (t == MAX) return 0;            // pilha cheia
+      empilha(c);
+    } else if (c == ')' || c == ']' || c == '}') {
+      if (vazia()) return 0;             /* fecha sem ter aberto */
+      char a = desempilha();
+      if ((c == ')' && a != '(') || (c == ']' && a != '[') ||
+          (c == '}' && a != '{')) return 0;
+    }
+  }
+  return vazia();                        // sobrou algo aberto?
+}
+
+int main(void) {
+  const char *testes[] = {"{a[i] = (x + y) * 2;}", "(a + b]", "((a)"};
+  int i;
+  for (i = 0; i < 3; i++)
+    printf("\"%s\" -> %s\n", testes[i],
+           balanceada(testes[i]) ? "bem formada" : "mal formada");
+  return 0;
+}
+FIM_CODIGO_C

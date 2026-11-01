@@ -1,19 +1,199 @@
-1. Técnica: Ordenação por distribuição
-2. Algoritmo: Radix Sort
+1. Tecnica: Ordenação por distribuição
+2. Algoritmo: Ordenação digital (Radix Sort)
 3. Autores: Herman Hollerith
 4. Data: 1887
-5. Conceitos: Ordenação, Vetores, Dígitos, Counting Sort, Algoritmo estável
+5. Conceitos: Ordenação, Vetores, Algoritmo estável, Counting Sort, Dígitos
 6. Problema: Dado um vetor de números inteiros, reorganizá-lo em ordem crescente sem comparar os elementos entre si
+7. Titulo: Ordenação digital (Radix Sort)
 
-Resumo:
-O Radix Sort não compara elementos diretamente. Ele ordena os números
-dígito por dígito, começando pelo menos significativo (unidades), depois as
-dezenas, centenas e assim por diante. Em cada etapa, os números são
-distribuídos em "baldes" de 0 a 9 conforme o dígito atual, usando uma
-ordenação estável (normalmente o Counting Sort). Depois do último dígito,
-o vetor está completamente ordenado.
+## Ideia geral
 
-Complexidade: O(d · (n + b)), em que d é o número de dígitos e b é a base
-(10, por exemplo). Pode ser mais rápido que os métodos por comparação quando
-d é pequeno, mas precisa de memória extra e funciona melhor com inteiros ou
-dados que possam ser decompostos em dígitos.
+Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge
+Sort, Quick Sort, Heap Sort) obtêm informação apenas COMPARANDO pares de
+elementos. Para eles vale um limite inferior: no pior caso precisam de pelo
+menos da ordem de n log n comparações.
+
+O Radix Sort (ordenação digital, ou ordenação pela base) escapa desse
+limite porque nunca compara dois elementos. Ele olha para a ESTRUTURA das
+chaves: cada número é visto como uma sequência de dígitos em uma base b
+(radix, em latim, "raiz", é o nome da base de um sistema de numeração). Os
+números são distribuídos em b "baldes" de acordo com um dígito, depois com
+outro, e assim por diante.
+
+Funciona para inteiros, para cadeias de caracteres (cada caractere é um
+"dígito" na base 256) e para qualquer chave que possa ser decomposta em
+partes de tamanho limitado, como datas (ano, mês, dia).
+
+## Radix Sort LSD (do dígito menos significativo)
+
+A versão mais usada processa os dígitos da DIREITA para a ESQUERDA:
+
+  para cada posição de dígito, das unidades até a mais significativa:
+      ordene o vetor, de forma ESTÁVEL, apenas por esse dígito
+
+Exemplo com v = (170, 45, 75, 90, 802, 24, 2, 66), base 10, três dígitos:
+
+  pelas unidades:   (170, 90, 802, 2, 24, 45, 75, 66)
+  pelas dezenas:    (802, 2, 24, 45, 66, 170, 75, 90)
+  pelas centenas:   (2, 24, 45, 66, 75, 90, 170, 802)
+
+Note, na passada das dezenas, que 802 e 2 têm o mesmo dígito (0) e 802 vem
+antes porque já vinha antes; na passada das centenas, 2, 24, ..., 90 têm todos
+centena 0 e ficam na ordem deixada pela passada anterior, que já os havia
+ordenado pelos dois últimos dígitos.
+
+## Por que funciona: o papel da estabilidade
+
+Invariante: depois de processar os k dígitos menos significativos, o vetor
+está ordenado pelo número formado por esses k dígitos.
+
+Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES
+ficam na ordem certa, pois a passada os ordena por esse dígito. Dois
+números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos
+anteriores; isso só é garantido se a passada for ESTÁVEL, preservando a
+ordem que eles já tinham. Sem estabilidade, o trabalho das passadas
+anteriores seria perdido.
+
+É a mesma técnica de ordenar por várias chaves (ordena-se primeiro pela
+chave menos importante e depois, de forma estável, pela mais importante), e
+um ótimo exemplo de por que a estabilidade de um algoritmo de ordenação
+importa.
+
+## A ordenação de cada passada: Counting Sort
+
+Para ordenar por um único dígito, que só assume b valores (0 a b-1), usa-se
+a ordenação por contagem (counting sort), que é estável e linear:
+
+1) Contar: cont[d] = quantos números têm o dígito d.
+2) Acumular: transformar as contagens em posições iniciais. Depois de
+   cont[d] += cont[d-1] para d = 1, ..., b-1, cont[d] é o número de
+   elementos com dígito <= d, ou seja, a posição logo após o último lugar
+   reservado para o dígito d.
+3) Distribuir: percorrer o vetor de TRÁS para a FRENTE e colocar cada número
+   na posição cont[d] - 1 de um vetor auxiliar, decrementando cont[d].
+   Percorrer de trás para a frente é o que garante a estabilidade.
+4) Copiar o vetor auxiliar de volta.
+
+Custo: O(n + b) por passada.
+
+## Análise
+
+Com n números de d dígitos na base b:
+- tempo: d passadas de O(n + b), total O(d (n + b));
+- memória extra: O(n + b) (vetor auxiliar e contadores);
+- estável.
+
+Se d é constante e b = O(n), o Radix Sort é LINEAR, O(n), mais rápido que
+qualquer ordenação por comparação. Por exemplo, para ordenar um milhão de
+inteiros de 32 bits pode-se usar base b = 256 (um byte por "dígito"): bastam
+d = 4 passadas, cada uma linear.
+
+Escolha da base: uma base maior diminui o número de passadas (d), mas
+aumenta o vetor de contadores (b). Em computadores, usa-se uma potência de 2
+(2^8 ou 2^16), porque extrair um "dígito" é só deslocar bits e aplicar uma
+máscara, muito mais rápido que dividir por 10.
+
+Limitações:
+- só se aplica a chaves que se decompõem em dígitos; para ordenar por uma
+  função de comparação arbitrária, não serve;
+- se as chaves forem muito longas (d grande), o custo cresce;
+- precisa de memória extra e, para números negativos ou reais, exige
+  adaptações (por exemplo, inverter o bit de sinal);
+- em vetores pequenos, o custo fixo dos contadores não compensa.
+
+## Radix Sort MSD (do dígito mais significativo)
+
+A outra variante começa pelo dígito MAIS significativo, à esquerda: distribui
+os números em b baldes pelo primeiro dígito e depois ordena cada balde
+recursivamente pelo dígito seguinte. É como ordenar fichas de uma biblioteca
+primeiro pela letra inicial, depois cada monte pela segunda letra, e assim
+por diante. Vantagens: não precisa examinar todos os dígitos (pode parar
+quando o balde tem um elemento só) e funciona naturalmente com cadeias de
+tamanhos diferentes, em ordem alfabética. É a base de algoritmos muito
+rápidos para ordenar cadeias de caracteres.
+
+## Métodos de ordenação por distribuição
+
+- Counting Sort: para inteiros em uma faixa pequena [0, k), O(n + k).
+- Bucket Sort: para números reais distribuídos uniformemente em [0, 1);
+  distribui em n baldes, ordena cada balde (por inserção) e concatena. Tempo
+  esperado O(n).
+- Radix Sort: aplica o Counting Sort dígito a dígito, permitindo chaves de
+  faixa muito maior.
+
+## Histórico
+
+Herman Hollerith desenvolveu na década de 1880 um sistema de cartões
+perfurados para processar estatísticas: foi testado em 1887 nas estatísticas
+de mortalidade de Baltimore e usado no censo dos Estados Unidos de 1890. O
+sistema separava os cartões em compartimentos de acordo com o valor
+perfurado em uma coluna, e as classificadoras automáticas que vieram depois
+(a partir de 1901) faziam o mesmo mecanicamente. Ordenar por um número de
+vários dígitos era feito passando o maço pela máquina uma vez por coluna, da
+menos significativa para a mais significativa, empilhando os compartimentos
+em ordem a cada vez: exatamente o Radix Sort LSD. A empresa de Hollerith deu
+origem à IBM (nome adotado em 1924), e classificadoras de cartões desse tipo
+foram usadas até a década de 1970.
+Em computadores, o método foi programado por Harold H. Seward em 1954, no
+MIT, que também descreveu o Counting Sort.
+
+## Sobre o código
+
+O programa de exemplo implementa o Radix Sort LSD em base 10, usando
+Counting Sort estável em cada passada, para o vetor do exemplo desta página,
+imprimindo o vetor depois de cada dígito.
+
+REFERENCIAS:
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.5 (Sorting by distribution), com histórico.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 8 (Ordenação em tempo linear: limites inferiores, counting sort, radix sort, bucket sort).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 10 (Radix Sorting).
+- FEOFILOFF, P. Ordenação digital (radix sort). https://www.ime.usp.br/~pf/algoritmos/aulas/radix.html
+- SEWARD, H. H. Information sorting in the application of electronic digital computers to business operations. Dissertação de mestrado, MIT, Report R-232, 1954.
+- Wikipedia. Radix sort. https://en.wikipedia.org/wiki/Radix_sort
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+#define BASE 10
+
+void imprime(const char *rotulo, int v[], int n) {
+  int i;
+  printf("%-12s", rotulo);
+  for (i = 0; i < n; i++) printf("%d ", v[i]);
+  printf("\n");
+}
+
+/* Counting Sort estável pelo dígito de peso 'exp' (1, 10, 100, ...) */
+void contagem(int v[], int aux[], int n, int exp) {
+  int cont[BASE] = {0}, i, d;
+  for (i = 0; i < n; i++) cont[(v[i] / exp) % BASE]++;     /* contar */
+  for (d = 1; d < BASE; d++) cont[d] += cont[d - 1];       /* acumular */
+  for (i = n - 1; i >= 0; i--) {         // de trás para a frente: estável
+    d = (v[i] / exp) % BASE;
+    aux[--cont[d]] = v[i];
+  }
+  for (i = 0; i < n; i++) v[i] = aux[i];
+}
+
+/* Radix Sort LSD para inteiros não negativos */
+void radixsort(int v[], int n) {
+  int maior = v[0], exp, i;
+  int *aux = malloc(n * sizeof(int));
+  if (aux == NULL) return;
+  for (i = 1; i < n; i++) if (v[i] > maior) maior = v[i];
+  for (exp = 1; maior / exp > 0; exp *= BASE) {
+    contagem(v, aux, n, exp);
+    printf("exp = %-6d", exp);
+    imprime("", v, n);
+  }
+  free(aux);
+}
+
+int main(void) {
+  int v[] = {170, 45, 75, 90, 802, 24, 2, 66};
+  int n = 8;
+  imprime("original:", v, n);
+  radixsort(v, n);
+  return 0;
+}
+FIM_CODIGO_C

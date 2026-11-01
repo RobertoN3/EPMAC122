@@ -1,0 +1,213 @@
+1. Tecnica: Método guloso
+2. Algoritmo: Kruskal para árvore espalhada mínima
+3. Autores: Joseph Kruskal
+4. Data: 1956
+5. Conceitos: Grafos, Árvores, Árvore espalhada mínima, Union-find, Ordenação
+6. Problema: Dado um grafo não dirigido e conexo com pesos nas arestas, determinar sua árvore espalhada mínima
+7. Titulo: Algoritmo de Kruskal
+
+## O problema da árvore espalhada mínima
+
+Imagine que uma companhia elétrica precisa ligar várias cidades em uma
+rede, e que se conhece o custo de construir uma linha entre cada par de
+cidades vizinhas. Quais linhas construir para que todas as cidades fiquem
+ligadas (direta ou indiretamente) com o menor custo total?
+
+Modelando como grafo: as cidades são vértices, as linhas possíveis são
+arestas e o custo de cada linha é o peso da aresta. Observações:
+- a solução não deve ter ciclos: se houvesse um ciclo, poderíamos remover a
+  aresta mais cara dele e as cidades continuariam ligadas, com custo menor
+  (supondo pesos positivos);
+- a solução deve ligar todos os vértices, isto é, ser conexa.
+Um subgrafo conexo, sem ciclos e que contém todos os vértices é uma árvore
+espalhada (ou árvore geradora) do grafo. Ela tem exatamente n-1 arestas.
+O problema pede a árvore espalhada de menor peso total: a árvore espalhada
+mínima (AEM; em inglês, minimum spanning tree, MST).
+
+Um grafo pode ter um número enorme de árvores espalhadas: o grafo completo
+com n vértices tem n^(n-2) delas (fórmula de Cayley). Testar todas é
+inviável; é preciso um algoritmo inteligente.
+
+Aplicações: projeto de redes elétricas, de telecomunicações, de
+computadores, de tubulações e de estradas; agrupamento de dados
+(clustering: remover as k-1 arestas mais pesadas da AEM separa os dados em k
+grupos); aproximação para o problema do caixeiro-viajante; segmentação de
+imagens.
+
+## O algoritmo de Kruskal
+
+É um algoritmo guloso de enunciado muito simples:
+
+1) Ordene as arestas em ordem crescente de peso.
+2) Comece com uma floresta F em que cada vértice é uma árvore isolada
+   (n componentes, nenhuma aresta).
+3) Percorra as arestas em ordem crescente. Para cada aresta u-v:
+   - se u e v estão em árvores DIFERENTES de F, inclua a aresta em F; as
+     duas árvores se fundem em uma só;
+   - se u e v já estão na MESMA árvore, descarte a aresta: ela formaria um
+     ciclo.
+4) Pare quando F tiver n-1 arestas (uma única árvore).
+
+A função critério é "a aresta mais leve ainda não examinada", e cada escolha
+é definitiva. Em palavras: vá juntando as arestas mais baratas que não
+fecham ciclos.
+
+## Exemplo
+
+Grafo com vértices 0 a 5 e arestas (u-v: peso):
+0-1: 4, 0-2: 3, 1-2: 1, 1-3: 2, 2-3: 4, 3-4: 2, 4-5: 6, 3-5: 7.
+
+Arestas em ordem crescente e decisões:
+  1-2 (1)  aceita    componentes: {0} {1,2} {3} {4} {5}
+  1-3 (2)  aceita    componentes: {0} {1,2,3} {4} {5}
+  3-4 (2)  aceita    componentes: {0} {1,2,3,4} {5}
+  0-2 (3)  aceita    componentes: {0,1,2,3,4} {5}
+  0-1 (4)  descarta  0 e 1 já estão na mesma componente (formaria ciclo)
+  2-3 (4)  descarta  mesma componente
+  4-5 (6)  aceita    componentes: {0,1,2,3,4,5}  -> 5 arestas, fim
+  3-5 (7)  nem é examinada
+
+Peso total: 1 + 2 + 2 + 3 + 6 = 14.
+
+## Por que o algoritmo está correto
+
+A prova se apoia na propriedade do corte. Um corte é uma divisão dos
+vértices em dois grupos, S e V - S; uma aresta cruza o corte se tem uma ponta
+em cada grupo.
+
+Propriedade do corte: para qualquer corte, a aresta mais leve que o cruza
+pertence a alguma árvore espalhada mínima.
+
+Ideia da prova (argumento de troca): seja T uma AEM que não contém a aresta
+mais leve e que cruza o corte. Acrescentando e a T forma-se um ciclo, e esse
+ciclo precisa cruzar o corte uma segunda vez, por uma aresta e'. Como e é a
+mais leve do corte, peso(e) <= peso(e'). Trocando e' por e obtém-se outra
+árvore espalhada, de peso menor ou igual, ou seja, outra AEM, agora
+contendo e.
+
+No Kruskal, quando a aresta u-v é aceita, considere o corte que separa a
+componente de u de todo o resto. Nenhuma aresta mais leve cruza esse corte
+(se cruzasse, já teria sido examinada e aceita, pois liga componentes
+diferentes). Logo u-v é a mais leve do corte e, pela propriedade, pode fazer
+parte de uma AEM. Por indução, todas as escolhas são seguras.
+
+Uma propriedade "espelho" justifica os descartes: a aresta mais pesada de
+um ciclo não é necessária em nenhuma AEM (supondo pesos distintos).
+
+## A estrutura union-find
+
+O ponto delicado da implementação é decidir, rapidamente, se u e v estão na
+mesma componente. Usa-se a estrutura de conjuntos disjuntos, ou union-find,
+que mantém uma partição dos vértices com duas operações:
+- find(x): devolve o representante (a "raiz") do conjunto de x. Dois
+  vértices estão na mesma componente se e somente se têm o mesmo
+  representante;
+- union(x, y): une os conjuntos de x e de y.
+
+Implementação com floresta: cada conjunto é uma árvore representada por um
+vetor pai[]; a raiz é o vértice com pai[x] == x. find sobe pelos pais até a
+raiz; union faz a raiz de um conjunto apontar para a raiz do outro.
+
+Duas melhorias tornam a estrutura extremamente eficiente:
+- união por tamanho (ou por posto): a árvore menor é pendurada na maior, o
+  que garante altura O(log n);
+- compressão de caminhos: durante o find, todos os vértices do caminho
+  passam a apontar diretamente para a raiz.
+Com as duas, uma sequência de m operações custa O(m · alfa(n)), em que
+alfa é a inversa da função de Ackermann, que não passa de 4 para qualquer n
+imaginável (Tarjan, 1975). Na prática, cada operação custa tempo constante.
+
+## Complexidade
+
+- Ordenar as m arestas: O(m log m), que é O(m log n), pois m < n².
+- Laço sobre as arestas: m operações find e n-1 operações union, quase
+  O(m).
+Total: O(m log n), dominado pela ordenação. Se as arestas já vierem
+ordenadas ou os pesos forem inteiros pequenos (permitindo Radix Sort), o
+algoritmo é quase linear.
+
+## Kruskal x Prim
+
+O algoritmo de Prim (1957; descoberto antes por Vojtěch Jarník em 1930)
+também é guloso, mas faz crescer UMA única árvore a partir de um vértice
+inicial: a cada passo, acrescenta a aresta mais leve que liga a árvore a um
+vértice ainda fora dela. Usando uma fila de prioridade (heap), custa
+O(m log n); com matriz de adjacência, O(n²), o que é melhor para grafos
+densos. Sua estrutura é praticamente a mesma do algoritmo de Dijkstra.
+
+Ambos são casos particulares da propriedade do corte: Prim usa o corte
+"árvore x resto"; Kruskal, o corte "componente de u x resto".
+
+## Histórico
+
+O primeiro algoritmo para o problema foi publicado pelo matemático tcheco
+Otakar Borůvka em 1926, para projetar uma rede elétrica eficiente na
+Morávia. Joseph B. Kruskal Jr. publicou seu algoritmo em 1956, em um artigo de
+poucas páginas nos Proceedings of the American Mathematical Society. Robert
+Prim (1957) e Edsger
+Dijkstra (1959) redescobriram o algoritmo de Jarník. A estrutura union-find
+foi proposta por Galler e Fischer (1964), e sua análise definitiva é de
+Robert Tarjan (1975). Kruskal também é conhecido por trabalhos em
+escalonamento multidimensional, na estatística.
+
+## Sobre o código
+
+O programa de exemplo implementa o algoritmo de Kruskal com ordenação das
+arestas pela função qsort e union-find com compressão de caminhos, para o
+grafo do exemplo desta página, imprimindo as arestas escolhidas e o peso
+total (14).
+
+REFERENCIAS:
+- KRUSKAL, J. B. On the shortest spanning subtree of a graph and the traveling salesman problem. Proceedings of the American Mathematical Society, v. 7, n. 1, p. 48-50, 1956.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulos 21 (Estruturas de dados para conjuntos disjuntos) e 23 (Árvores geradoras mínimas).
+- SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 20 (Minimum Spanning Trees).
+- KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Seção 4.5.
+- FEOFILOFF, P. Algoritmo de Kruskal. https://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/kruskal.html
+- TARJAN, R. E. Efficiency of a good but not linear set union algorithm. Journal of the ACM, v. 22, n. 2, p. 215-225, 1975.
+- GRAHAM, R. L.; HELL, P. On the history of the minimum spanning tree problem. Annals of the History of Computing, v. 7, n. 1, p. 43-57, 1985.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+#define MAXV 10
+
+typedef struct {
+  int u, v, peso;
+} Aresta;
+
+int pai[MAXV];
+
+/* union-find com compressão de caminhos */
+int find(int x) {
+  if (pai[x] != x) pai[x] = find(pai[x]);
+  return pai[x];
+}
+
+int compara(const void *a, const void *b) {
+  return ((Aresta *)a)->peso - ((Aresta *)b)->peso;
+}
+
+/* devolve o peso total da árvore espalhada mínima */
+int kruskal(int nv, Aresta e[], int na) {
+  int i, escolhidas = 0, total = 0;
+  for (i = 0; i < nv; i++) pai[i] = i;       /* cada vértice isolado */
+  qsort(e, na, sizeof(Aresta), compara);     /* ordena por peso */
+  for (i = 0; i < na && escolhidas < nv - 1; i++) {
+    int ru = find(e[i].u), rv = find(e[i].v);
+    if (ru != rv) {                          // não forma ciclo
+      pai[ru] = rv;                          // union
+      total += e[i].peso;
+      escolhidas++;
+      printf("aresta %d-%d (peso %d)\n", e[i].u, e[i].v, e[i].peso);
+    }
+  }
+  return total;
+}
+
+int main(void) {
+  Aresta e[] = {{0,1,4}, {0,2,3}, {1,2,1}, {1,3,2}, {2,3,4}, {3,4,2}, {4,5,6}, {3,5,7}};
+  int na = sizeof(e) / sizeof(e[0]);
+  printf("Peso total: %d\n", kruskal(6, e, na));
+  return 0;
+}
+FIM_CODIGO_C

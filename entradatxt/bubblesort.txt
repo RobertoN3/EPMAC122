@@ -1,18 +1,193 @@
-1. Técnica: Força bruta
-2. Algoritmo: Bubble Sort
-3. Autores: Desconhecido
-4. Data: Desconhecida
-5. Conceitos: Ordenação, Vetores, Comparação, Algoritmo estável
+1. Tecnica: Método guloso
+2. Algoritmo: Ordenação bolha (Bubble Sort)
+3. Autores: Edward H. Friend
+4. Data: 1956
+5. Conceitos: Ordenação, Vetores, Algoritmo estável, Invariante
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+7. Titulo: Ordenação bolha (Bubble Sort)
 
-Resumo:
-O Bubble Sort percorre o vetor várias vezes comparando pares de elementos
-vizinhos. Se dois vizinhos estão fora de ordem, eles trocam de lugar. A cada
-passada completa, o maior elemento restante "flutua" como uma bolha até o
-final do vetor, onde fica na posição definitiva. O processo se repete,
-ignorando a parte final já ordenada, até que uma passada ocorra sem nenhuma
-troca.
+## Ideia geral
 
-Complexidade: O(n²) no pior caso e no caso médio, O(n) no melhor caso (com a
-verificação de "nenhuma troca"). Usa memória extra constante e é estável.
-É mais útil para ensino do que para uso prático.
+A ordenação bolha (bubble sort) é o método de ordenação mais simples de
+descrever: percorre-se o vetor da esquerda para a direita comparando cada
+par de elementos vizinhos, v[i] e v[i+1]; se estiverem fora de ordem
+(v[i] > v[i+1]), eles trocam de lugar. Uma passagem completa pelo vetor é
+chamada passada.
+
+O efeito de uma passada é levar o MAIOR elemento até o fim do vetor: assim
+que a varredura encontra o maior elemento, ele vence todas as comparações
+seguintes e vai sendo trocado, posição a posição, até a última. É como uma
+bolha de ar que sobe até a superfície da água, e daí vem o nome. Depois da
+primeira passada, v[n-1] já contém o maior elemento, na sua posição
+definitiva; a segunda passada leva o segundo maior para v[n-2]; e assim por
+diante. Cada passada pode ignorar a parte final, já ordenada.
+
+## O algoritmo
+
+  para fim de n-1 até 1:
+      trocou <- falso
+      para i de 0 até fim-1:
+          se v[i] > v[i+1]:
+              troque v[i] e v[i+1]
+              trocou <- verdadeiro
+      se não trocou: pare        (o vetor já está ordenado)
+
+A variável trocou é uma melhoria importante: se uma passada inteira não faz
+nenhuma troca, todos os vizinhos estão em ordem e, portanto, o vetor todo
+está ordenado; não há por que continuar.
+
+## Exemplo
+
+v = (5, 1, 4, 2, 8)
+
+1a passada (fim = 4):
+  (5 1) troca -> (1, 5, 4, 2, 8)
+  (5 4) troca -> (1, 4, 5, 2, 8)
+  (5 2) troca -> (1, 4, 2, 5, 8)
+  (5 8) ok    -> (1, 4, 2, 5, 8)    o 8 está no lugar definitivo
+2a passada (fim = 3):
+  (1 4) ok; (4 2) troca -> (1, 2, 4, 5, 8); (4 5) ok
+3a passada (fim = 2):
+  (1 2) ok; (2 4) ok                nenhuma troca: fim
+
+Observe que o vetor ficou ordenado já durante a 2a passada, mas o algoritmo
+só tem certeza disso depois de uma passada sem trocas.
+
+## A bolha como método guloso
+
+Lida com os "óculos" do método guloso, a ordenação bolha:
+- tem como candidatos os elementos ainda não posicionados, v[0..fim];
+- usa como função critério "o maior elemento ainda não posicionado";
+- toma uma decisão definitiva: esse elemento é levado a v[fim] e aquela
+  posição nunca mais muda.
+Por isso ela é apresentada, nesta disciplina, como exemplo do método guloso.
+É o "espelho" da seleção direta, que fixa o MENOR elemento no INÍCIO; a
+diferença é que a seleção localiza o elemento e faz uma troca só, enquanto a
+bolha o arrasta com várias trocas entre vizinhos. (Alguns textos classificam
+a bolha como força bruta, por fazer muitas comparações sem nenhuma esperteza;
+as duas visões são compatíveis.)
+
+## Correção: o invariante
+
+No início de cada passada (para cada valor de fim):
+  v[fim+1..n-1] contém os maiores elementos do vetor, em ordem crescente,
+  e cada um deles é maior ou igual a todo elemento de v[0..fim].
+
+- No início, fim = n-1 e o trecho v[n..n-1] é vazio: vale.
+- A passada leva o maior elemento de v[0..fim] até v[fim]; ele é menor ou
+  igual aos elementos já fixados (pelo invariante) e maior ou igual aos que
+  ficam à esquerda. Logo o invariante vale para fim-1.
+- Quando o laço termina, o vetor inteiro está ordenado. Se o laço for
+  interrompido por uma passada sem trocas, v[0..fim] está ordenado (todos os
+  vizinhos em ordem) e, junto com o invariante, o vetor inteiro também.
+
+## Análise
+
+Uma inversão é um par de posições i < j com v[i] > v[j], isto é, um par fora
+de ordem. Cada troca de vizinhos fora de ordem desfaz EXATAMENTE uma
+inversão. Logo:
+- o número de trocas da bolha é igual ao número de inversões do vetor;
+- pior caso (vetor em ordem decrescente): n(n-1)/2 inversões, logo
+  n(n-1)/2 trocas e n(n-1)/2 comparações: O(n²);
+- caso médio (todas as ordens igualmente prováveis): n(n-1)/4 inversões em
+  média, ou seja, O(n²) trocas, e o número de comparações também é O(n²);
+- melhor caso (vetor já ordenado), graças à variável trocou: uma única
+  passada, n-1 comparações e nenhuma troca: O(n).
+
+Memória extra: O(1) (ordena no próprio vetor).
+
+Estabilidade: a troca só acontece quando v[i] > v[i+1], estritamente. Dois
+elementos iguais nunca são trocados entre si, então mantêm sua ordem
+relativa: a bolha é estável.
+
+## Tartarugas e coelhos
+
+A bolha tem uma assimetria curiosa. Um elemento grande no início do vetor
+("coelho") chega ao fim em uma única passada. Já um elemento pequeno no fim
+do vetor ("tartaruga") anda apenas UMA posição para a esquerda por passada.
+O vetor (2, 3, 4, 5, 6, 1) precisa de cinco passadas, só por causa do 1.
+
+Variações que atacam esse problema:
+- Coquetel (cocktail shaker sort, ou bolha bidirecional): alterna passadas
+  da esquerda para a direita e da direita para a esquerda; as tartarugas
+  passam a andar rápido nas passadas de volta.
+- Comb sort (Dobosiewicz, 1980; Lacey e Box, 1991): compara elementos a uma
+  distância grande, que diminui a cada passada, até chegar a 1 (a bolha
+  comum). Remove as tartarugas cedo e fica muito mais rápido. É a mesma ideia
+  do Shell sort em relação à inserção direta.
+- Ordenação par-ímpar (odd-even transposition sort): compara os pares
+  (0,1), (2,3), ... e depois (1,2), (3,4), ... alternadamente; as
+  comparações de cada fase são independentes e podem ser feitas em paralelo.
+
+## Na prática
+
+Apesar de ser O(n²), como a inserção direta e a seleção direta, a bolha é
+em geral a mais lenta das três, porque faz muitas trocas (cada troca são três
+atribuições), enquanto a inserção apenas desloca elementos. Knuth comenta
+que a bolha parece não ter nada a recomendá-la, exceto um nome atraente. Seu
+valor é didático: é fácil de entender, de provar correta e de analisar, e
+mostra muito bem a relação entre trocas e inversões. Uma situação em que ela
+é razoável é detectar se um vetor está ordenado e corrigir vetores que estão
+"quase" ordenados, com pouquíssimas inversões.
+
+## Histórico
+
+A ordenação por trocas de vizinhos foi analisada por Edward H. Friend em um
+artigo de 1956 sobre ordenação em computadores eletrônicos, com o nome de
+"sorting by exchange". O método também foi chamado de "exchange sorting" e
+"sorting by repeated comparison". O nome "bubble sort" aparece no início da
+década de 1960, e Owen Astrachan (2003) reconstituiu essa história,
+mostrando como o algoritmo se tornou um clássico do ensino apesar do seu mau
+desempenho.
+
+## Sobre o código
+
+O programa de exemplo implementa a ordenação bolha com parada antecipada e
+conta o número de trocas realizadas, que é igual ao número de inversões do
+vetor original.
+
+REFERENCIAS:
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.2 (Sorting by exchanging).
+- ASTRACHAN, O. Bubble sort: an archaeological algorithmic analysis. ACM SIGCSE Bulletin, v. 35, n. 1, p. 1-5, 2003.
+- FRIEND, E. H. Sorting on electronic computer systems. Journal of the ACM, v. 3, n. 3, p. 134-168, 1956.
+- FEOFILOFF, P. Ordenação: algoritmos elementares. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 6.4 (Bubble sort).
+- WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 2 (Ordenação por troca direta).
+- BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+/* Ordenação bolha com parada antecipada.
+   Devolve o número de trocas (= número de inversões do vetor). */
+int bolha(int v[], int n) {
+  int fim, i, aux, trocou, trocas = 0;
+  for (fim = n - 1; fim > 0; fim--) {
+    trocou = 0;
+    for (i = 0; i < fim; i++) {
+      if (v[i] > v[i + 1]) {      /* par de vizinhos fora de ordem */
+        aux = v[i]; v[i] = v[i + 1]; v[i + 1] = aux;
+        trocou = 1;
+        trocas++;
+      }
+    }
+    if (!trocou) break;           // passada sem trocas: está ordenado
+  }
+  return trocas;
+}
+
+void imprime(int v[], int n) {
+  int i;
+  for (i = 0; i < n; i++) printf("%d ", v[i]);
+  printf("\n");
+}
+
+int main(void) {
+  int v[] = {5, 1, 4, 2, 8};
+  int n = 5, t;
+  t = bolha(v, n);
+  imprime(v, n);
+  printf("Trocas (inversoes): %d\n", t);
+  return 0;
+}
+FIM_CODIGO_C

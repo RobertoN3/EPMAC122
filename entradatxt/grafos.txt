@@ -1,0 +1,221 @@
+3. Autores: Leonhard Euler
+4. Data: 1736
+5. Conceitos: Grafos, Filas, Pilhas, Matriz de adjacência, Listas encadeadas, Recursão
+6. Problema: Dado um grafo e um vértice de origem, determinar quais vértices são alcançáveis a partir dela e a distância (em número de arestas) até cada um
+7. Titulo: Grafos
+
+## Ideia geral
+
+Um grafo é uma estrutura matemática que representa objetos e as ligações
+entre eles. Formalmente, um grafo G = (V, A) é formado por:
+- um conjunto V de vértices (ou nós);
+- um conjunto A de arestas; cada aresta liga um par de vértices.
+
+Costuma-se escrever n = |V| para o número de vértices e m = |A| para o número
+de arestas.
+
+Grafos estão em toda parte:
+- mapas: cidades são vértices e estradas são arestas (com o comprimento
+  como peso);
+- redes de computadores e a própria Internet;
+- a Web: páginas são vértices e links são arcos;
+- redes sociais: pessoas e amizades;
+- dependências entre tarefas, disciplinas com pré-requisitos, módulos de um
+  programa;
+- moléculas (átomos e ligações), circuitos elétricos, redes de metrô.
+
+Modelar um problema como grafo permite usar algoritmos gerais, já estudados
+e provados corretos, em vez de inventar uma solução específica.
+
+## Terminologia básica
+
+- Grafo não dirigido: a aresta u-v não tem sentido; vale nos dois.
+- Grafo dirigido (digrafo): cada arco u->v tem sentido, de u para v. Uma
+  rua de mão única ou um link de uma página para outra são arcos.
+- Grafo com pesos (ou custos): cada aresta tem um número associado
+  (distância, tempo, preço, capacidade).
+- Vizinhos (adjacentes): dois vértices ligados por uma aresta.
+- Grau de um vértice: número de arestas que incidem nele. Em todo grafo, a
+  soma dos graus é 2m, pois cada aresta contribui para o grau de dois
+  vértices. Em digrafos distinguem-se grau de entrada e grau de saída.
+- Caminho: sequência de vértices v0, v1, ..., vk em que cada par
+  consecutivo é adjacente. O comprimento é o número de arestas (k), ou a
+  soma dos pesos, se houver pesos. Um caminho é simples se não repete
+  vértices.
+- Ciclo: caminho com pelo menos uma aresta que começa e termina no mesmo
+  vértice, sem repetir arestas.
+- Grafo conexo: existe caminho entre quaisquer dois vértices. As
+  componentes conexas são os "pedaços" conexos maximais de um grafo.
+- Subgrafo: grafo formado por parte dos vértices e arestas de G.
+- Grafo completo: todos os pares de vértices são adjacentes; tem
+  n(n-1)/2 arestas.
+- Grafo esparso: m é da ordem de n (como em mapas de estradas). Grafo
+  denso: m é da ordem de n².
+- Grafo bipartido: os vértices se dividem em dois grupos e toda aresta liga
+  um grupo ao outro (por exemplo, alunos e disciplinas).
+- Árvore: grafo conexo e sem ciclos. Tem exatamente n-1 arestas. Uma
+  floresta é um grafo sem ciclos (cada componente é uma árvore).
+- Árvore espalhada (geradora) de G: subgrafo de G que é árvore e contém
+  todos os vértices. Se há pesos, a de menor peso total é a árvore
+  espalhada mínima.
+
+## Representações no computador
+
+1) Matriz de adjacência: uma matriz n x n em que adj[u][v] = 1 (ou o peso da
+   aresta) se existe a aresta u-v, e 0 caso contrário. Para grafos não
+   dirigidos a matriz é simétrica.
+   - testar se u-v é aresta: O(1);
+   - percorrer os vizinhos de u: O(n), mesmo que u tenha poucos vizinhos;
+   - memória: O(n²). Boa para grafos densos ou pequenos.
+
+2) Listas de adjacência: um vetor de n listas encadeadas; a lista do vértice
+   u contém seus vizinhos (e os pesos, se houver).
+   - testar se u-v é aresta: O(grau(u));
+   - percorrer os vizinhos de u: O(grau(u));
+   - memória: O(n + m). Boa para grafos esparsos, que são a maioria dos
+     grafos grandes na prática (um mapa com milhões de cruzamentos tem
+     poucas ruas por cruzamento).
+
+3) Lista de arestas: um vetor com os m pares (u, v, peso). Simples e útil
+   quando o algoritmo processa as arestas em ordem, como o de Kruskal.
+
+## Percorrendo um grafo: busca em largura (BFS)
+
+A busca em largura (breadth-first search) visita os vértices em "ondas" a
+partir de uma origem s: primeiro s, depois todos os vizinhos de s (distância
+1), depois os vizinhos desses (distância 2), e assim por diante.
+
+Ela usa uma FILA:
+
+  marque todos os vértices como não visitados; dist[s] = 0
+  insira s na fila
+  enquanto a fila não estiver vazia:
+      u <- remova o primeiro da fila
+      para cada vizinho v de u:
+          se v não foi visitado:
+              dist[v] = dist[u] + 1; pai[v] = u
+              insira v no fim da fila
+
+Como a fila é FIFO, os vértices saem em ordem de distância. Por isso a BFS
+calcula, em grafos sem pesos, o caminho com o menor NÚMERO de arestas de s a
+cada vértice; o vetor pai descreve esses caminhos (é uma árvore enraizada em
+s, a árvore de busca em largura). Vértices que terminam sem distância não são
+alcançáveis a partir de s.
+
+Custo: cada vértice entra na fila no máximo uma vez e cada lista de
+adjacência é percorrida uma vez: O(n + m) com listas de adjacência e O(n²)
+com matriz.
+
+Aplicações: menor número de conexões entre duas pessoas em uma rede social,
+menor número de movimentos em um quebra-cabeça, roteamento, verificar se um
+grafo é bipartido, "inundar" uma região em um programa de desenho.
+
+## Busca em profundidade (DFS)
+
+A busca em profundidade (depth-first search) segue um caminho o mais longe
+possível; quando chega a um vértice sem vizinhos novos, volta (como no
+backtracking) e tenta outro ramo.
+
+  dfs(u):
+      marque u como visitado
+      para cada vizinho v de u:
+          se v não foi visitado: dfs(v)
+
+É naturalmente recursiva; a versão iterativa troca a fila da BFS por uma
+PILHA. Também custa O(n + m). Aplicações: encontrar componentes conexas,
+detectar ciclos, ordenação topológica (ordem para executar tarefas com
+dependências), encontrar pontes e pontos de articulação, resolver
+labirintos.
+
+## Problemas clássicos em grafos
+
+- Árvore espalhada mínima: ligar todos os vértices com o menor custo
+  (algoritmos de Kruskal e de Prim; método guloso).
+- Caminhos mínimos com pesos: algoritmo de Dijkstra (pesos não negativos,
+  guloso), Bellman-Ford e Floyd-Warshall (programação dinâmica).
+- Ordenação topológica de um grafo dirigido sem ciclos.
+- Coloração: atribuir cores aos vértices de modo que vizinhos tenham cores
+  diferentes (alocação de horários, de registradores, de frequências). O
+  Teorema das Quatro Cores (1976) garante que todo mapa plano pode ser
+  colorido com 4 cores.
+- Caminho euleriano (passar uma vez por cada ARESTA): fácil, decide-se pelos
+  graus. Caminho hamiltoniano (passar uma vez por cada VÉRTICE) e o
+  problema do caixeiro-viajante: NP-difíceis.
+- Fluxo máximo e emparelhamentos.
+
+## Histórico: as pontes de Königsberg
+
+A teoria dos grafos nasceu de um quebra-cabeça. A cidade de Königsberg
+(hoje Kaliningrado, na Rússia) era cortada pelo rio Pregel, com duas ilhas
+ligadas às margens e entre si por sete pontes. Os moradores perguntavam se
+seria possível passear pela cidade atravessando cada ponte exatamente uma
+vez.
+
+Em 1736, Leonhard Euler resolveu o problema abstraindo os detalhes: cada
+porção de terra virou um ponto (vértice) e cada ponte, uma linha (aresta).
+Ele observou que, em um passeio desse tipo, toda vez que se chega a uma
+região por uma ponte, sai-se por outra; assim, exceto pelo início e pelo
+fim, toda região precisa ter um número PAR de pontes. Em Königsberg, as
+quatro regiões tinham número ímpar de pontes, e o passeio era impossível.
+O artigo foi publicado em 1741.
+
+A palavra "graph" foi usada nesse sentido por J. J. Sylvester em 1878, e o
+primeiro livro sobre o assunto foi escrito por Dénes König em 1936. A busca
+em largura foi descrita por Edward F. Moore (1959), para encontrar a saída
+de labirintos, e por C. Y. Lee (1961), para rotear fios em circuitos; a
+busca em profundidade foi estudada já no século XIX por Charles Trémaux, como
+método para explorar labirintos, e sistematizada por Hopcroft e Tarjan
+(1973).
+
+## Sobre o código
+
+O programa de exemplo representa um grafo não dirigido por matriz de
+adjacência e executa a busca em largura a partir do vértice 0, imprimindo a
+distância até cada vértice (-1 para o vértice isolado, que não é alcançável).
+
+REFERENCIAS:
+- FEOFILOFF, P. Algoritmos para Grafos em C via Sedgewick. https://www.ime.usp.br/~pf/algoritmos_para_grafos/
+- SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 22 (Algoritmos elementares em grafos).
+- BONDY, J. A.; MURTY, U. S. R. Graph Theory. London: Springer, 2008.
+- FEOFILOFF, P.; KOHAYAKAWA, Y.; WAKABAYASHI, Y. Uma introdução sucinta à teoria dos grafos. São Paulo: IME-USP, 2011. https://www.ime.usp.br/~pf/teoriadosgrafos/
+- EULER, L. Solutio problematis ad geometriam situs pertinentis. Commentarii academiae scientiarum Petropolitanae, v. 8, p. 128-140, 1741.
+- Material de MAC122 (e-Disciplinas): Introdução a grafos.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define MAXV 8
+
+int adj[MAXV][MAXV];   /* matriz de adjacência */
+int nv = 6;            /* número de vértices */
+
+void aresta(int u, int v) {
+  adj[u][v] = adj[v][u] = 1;   /* grafo não dirigido */
+}
+
+/* Busca em largura a partir de s: dist[v] = -1 se v não é alcançável */
+void bfs(int s, int dist[]) {
+  int fila[MAXV], ini = 0, fim = 0, u, v;
+  for (v = 0; v < nv; v++) dist[v] = -1;
+  dist[s] = 0;
+  fila[fim++] = s;                       // insere a origem
+  while (ini < fim) {
+    u = fila[ini++];                     // remove o primeiro da fila
+    for (v = 0; v < nv; v++)
+      if (adj[u][v] && dist[v] == -1) {  // vizinho ainda não visitado
+        dist[v] = dist[u] + 1;
+        fila[fim++] = v;
+      }
+  }
+}
+
+int main(void) {
+  int dist[MAXV], v;
+  aresta(0, 1); aresta(0, 2); aresta(1, 3);
+  aresta(2, 3); aresta(3, 4);           /* vértice 5 fica isolado */
+  bfs(0, dist);
+  for (v = 0; v < nv; v++)
+    printf("distancia de 0 ate %d: %d\n", v, dist[v]);
+  return 0;
+}
+FIM_CODIGO_C

@@ -1,0 +1,174 @@
+2. Algoritmo: Fila circular em vetor
+5. Conceitos: Filas, Vetores, Listas encadeadas, Grafos
+6. Problema: Manter uma sequência de elementos em que o primeiro a entrar é o primeiro a sair, com inserção e remoção em tempo constante
+7. Titulo: Filas
+
+## Ideia geral
+
+Uma fila é uma sequência de elementos em que as inserções são feitas em uma
+extremidade (o fim) e as remoções na outra (o início). O primeiro elemento
+inserido é o primeiro a ser removido: a política é FIFO (first in, first
+out, "primeiro a entrar, primeiro a sair").
+
+É exatamente o comportamento de uma fila de banco ou de supermercado: quem
+chega vai para o fim, e é atendido quem está no começo. Enquanto a pilha
+"inverte" a ordem de chegada, a fila a preserva. Por isso filas aparecem
+sempre que é preciso atender pedidos de forma justa, na ordem em que
+chegaram.
+
+## Operações
+
+- insere(x) (enqueue): coloca x no fim da fila;
+- remove() (dequeue): retira o elemento do início e o devolve;
+- primeiro() (front): consulta o início sem remover;
+- vazia() e cheia().
+
+Todas devem custar O(1).
+
+## Implementação em vetor: a primeira tentativa
+
+Usa-se um vetor f[0..N-1] e dois índices:
+- ini: posição do primeiro elemento da fila;
+- fim: primeira posição livre depois do último elemento.
+A fila ocupa f[ini..fim-1] e está vazia quando ini == fim.
+- insere(x): f[fim] = x; fim = fim + 1;
+- remove(): x = f[ini]; ini = ini + 1; devolve x.
+
+Problema: os dois índices só aumentam. A fila "anda" para a direita dentro
+do vetor, e depois de N inserções fim chega a N, mesmo que quase todos os
+elementos já tenham sido removidos e o início do vetor esteja livre.
+Deslocar todos os elementos para o começo a cada remoção resolveria, mas
+custaria O(n) por operação.
+
+## Fila circular
+
+A solução é tratar o vetor como se fosse circular: depois da última posição,
+N-1, vem de novo a posição 0. Os índices avançam "módulo N":
+
+  fim = (fim + 1) % N
+  ini = (ini + 1) % N
+
+Assim o espaço liberado no começo do vetor é reaproveitado, e todas as
+operações continuam O(1).
+
+Detalhe sutil: com essa convenção, ini == fim acontece tanto com a fila
+vazia quanto com a fila cheia. Há duas soluções usuais:
+- guardar também o número de elementos (tam): vazia se tam == 0, cheia se
+  tam == N;
+- deixar sempre uma posição vazia: a fila é considerada cheia quando
+  (fim + 1) % N == ini, e comporta no máximo N-1 elementos.
+
+Exemplo com N = 5 (os índices dão a volta):
+
+  insere 10, 20, 30, 40     f = [10 20 30 40 _ ]   ini=0 fim=4 tam=4
+  remove -> 10, remove -> 20 f = [_  _  30 40 _ ]   ini=2 fim=4 tam=2
+  insere 50, 60, 70          f = [60 70 30 40 50]   ini=2 fim=2 tam=5
+  insere 80                  recusado: fila cheia
+  remove tudo                30 40 50 60 70, na ordem de chegada
+
+Essa estrutura também é chamada buffer circular (ring buffer) e é usada em
+drivers de dispositivos, placas de som e rede e na comunicação entre
+processos: um lado (produtor) insere no fim, o outro (consumidor) remove do
+início, sem que nada precise ser deslocado.
+
+## Implementação em lista encadeada
+
+Mantêm-se dois ponteiros: um para a primeira célula (de onde se remove) e
+outro para a última (onde se insere).
+- insere(x): cria uma célula com x e prox = NULL; se a fila está vazia, ela
+  vira a primeira e a última; senão, ultima->prox = nova e a última passa a
+  ser a nova;
+- remove(): guarda o conteúdo da primeira célula, avança o ponteiro do
+  início e libera a célula; se a fila ficou vazia, a última também vira
+  NULL.
+Não há limite fixo de tamanho. Uma variação elegante usa uma lista circular
+com um único ponteiro para a última célula (cuja prox é a primeira).
+
+## Aplicações
+
+- Busca em largura em grafos: a fila garante que os vértices sejam
+  visitados em ordem de distância à origem, e por isso a BFS calcula
+  menores caminhos em número de arestas. Também é usada no percurso por
+  níveis de árvores.
+- Sistemas operacionais: fila de processos prontos para usar a CPU (o
+  escalonamento "round robin" atende cada processo por um tempo e o devolve
+  ao fim da fila), filas de impressão, filas de requisições de disco.
+- Redes: pacotes aguardando transmissão em roteadores.
+- Servidores e sistemas distribuídos: filas de mensagens entre serviços.
+- Simulação de sistemas de atendimento (bancos, pedágios, centrais
+  telefônicas), estudados pela teoria das filas.
+
+## Variações
+
+- Deque (double-ended queue): permite inserir e remover nas duas
+  extremidades; generaliza a pilha e a fila.
+- Fila de prioridade: cada elemento tem uma prioridade e sai primeiro o de
+  maior (ou menor) prioridade, independentemente da ordem de chegada. É
+  implementada eficientemente com um heap, com inserção e remoção em
+  O(log n), e é usada nos algoritmos de Dijkstra, de Prim, no Heap Sort e no
+  código de Huffman.
+
+## Histórico
+
+A teoria das filas (teoria matemática dos sistemas de espera) começou com o
+engenheiro dinamarquês Agner Krarup Erlang, que em 1909 estudou o número de
+linhas necessárias em uma central telefônica. Em computação, filas aparecem
+desde os primeiros sistemas operacionais e são tratadas, junto com pilhas e
+deques, na seção 2.2.1 de "The Art of Computer Programming" de Knuth.
+
+## Sobre o código
+
+O programa de exemplo implementa uma fila circular de tamanho 5 em um vetor,
+guardando o número de elementos para distinguir fila cheia de vazia, e
+mostra os índices dando a volta no vetor.
+
+REFERENCIAS:
+- FEOFILOFF, P. Filas. https://www.ime.usp.br/~pf/algoritmos/aulas/fila.html
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 5 (Filas).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.1 (Pilhas e filas) e capítulo 6 (Heapsort e filas de prioridade).
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.1 (Stacks, queues, and deques).
+- TANENBAUM, A. S.; BOS, H. Sistemas Operacionais Modernos. 4. ed. São Paulo: Pearson, 2016. Capítulo 2 (escalonamento).
+- Wikipedia. Circular buffer. https://en.wikipedia.org/wiki/Circular_buffer
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define N 5
+
+typedef struct {
+  int v[N];
+  int ini, fim, tam;   /* tam = número de elementos */
+} Fila;
+
+void cria(Fila *f) { f->ini = f->fim = f->tam = 0; }
+int vazia(Fila *f) { return f->tam == 0; }
+int cheia(Fila *f) { return f->tam == N; }
+
+int insere(Fila *f, int x) {
+  if (cheia(f)) return 0;
+  f->v[f->fim] = x;
+  f->fim = (f->fim + 1) % N;     /* avança circularmente */
+  f->tam++;
+  return 1;
+}
+
+int removeFila(Fila *f) {        // supõe fila não vazia
+  int x = f->v[f->ini];
+  f->ini = (f->ini + 1) % N;
+  f->tam--;
+  return x;
+}
+
+int main(void) {
+  Fila f;
+  int i;
+  cria(&f);
+  for (i = 1; i <= 4; i++) insere(&f, i * 10);
+  printf("saiu %d\n", removeFila(&f));
+  printf("saiu %d\n", removeFila(&f));
+  insere(&f, 50); insere(&f, 60); insere(&f, 70);   /* dá a volta no vetor */
+  printf("insere 80 com fila cheia: %s\n", insere(&f, 80) ? "ok" : "recusado");
+  while (!vazia(&f)) printf("%d ", removeFila(&f));
+  printf("\n");
+  return 0;
+}
+FIM_CODIGO_C

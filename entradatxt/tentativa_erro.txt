@@ -1,0 +1,204 @@
+1. Tecnica: Tentativa e erro
+2. Algoritmo: Backtracking para o problema das N rainhas
+3. Autores: Derrick H. Lehmer
+4. Data: 1950
+5. Conceitos: Recursão, Backtracking, Árvore de busca, Pilhas
+6. Problema: Dado um inteiro N, posicionar N rainhas em um tabuleiro N x N de modo que nenhuma ataque outra (mesma linha, coluna ou diagonal)
+7. Titulo: Tentativa e erro (backtracking)
+
+## Ideia geral
+
+Muitos problemas pedem uma configuração que satisfaça um conjunto de
+restrições: preencher um Sudoku, achar a saída de um labirinto, escolher
+números que somem um valor dado, posicionar peças em um tabuleiro. Em geral
+não se conhece uma fórmula ou uma regra gulosa que leve diretamente à
+resposta. A saída é experimentar.
+
+Na técnica de tentativa e erro (em inglês, backtracking, "voltar atrás")
+a solução é construída passo a passo, uma decisão de cada vez. Em cada passo
+o algoritmo tenta, uma a uma, todas as possibilidades para a próxima
+decisão:
+
+- se uma possibilidade é compatível com as decisões já tomadas, o algoritmo
+  a adota provisoriamente e avança para o passo seguinte;
+- se, em algum passo, nenhuma possibilidade serve, o algoritmo volta
+  (retrocede) ao passo anterior, desfaz a decisão tomada ali e tenta a
+  próxima alternativa.
+
+O processo termina quando uma tentativa produz uma solução completa, ou,
+se o objetivo é listar ou contar todas as soluções, quando todas as
+possibilidades se esgotam.
+
+É exatamente o que fazemos ao percorrer um labirinto marcando o caminho
+com giz: seguimos por um corredor até um beco sem saída, voltamos até a
+última bifurcação e tentamos o próximo corredor.
+
+## Esquema geral
+
+  tenta(solucao parcial s):
+      se s é uma solução completa:
+          registre/imprima s; (e pare, se basta uma)
+          retorne
+      para cada candidato c para o próximo passo:
+          se c é compatível com s:
+              acrescente c a s
+              tenta(s)
+              remova c de s      <- "voltar atrás"
+
+A forma recursiva é a mais natural. A pilha de execução guarda,
+automaticamente, as decisões de cada nível e o ponto em que cada laço
+parou; "desfazer" uma escolha é simplesmente retornar da chamada.
+
+## A árvore de busca
+
+As escolhas possíveis formam uma árvore, chamada árvore de busca (ou
+árvore de estados):
+
+- a raiz é a solução vazia, sem nenhuma decisão tomada;
+- cada nó é uma solução parcial;
+- os filhos de um nó são as maneiras de estender a solução com mais uma
+  decisão;
+- as folhas de profundidade máxima são as soluções completas candidatas.
+
+O backtracking percorre essa árvore em profundidade (como a busca em
+profundidade em grafos). Sua força está na PODA: assim que uma solução
+parcial viola alguma restrição, toda a subárvore abaixo dela é descartada
+sem ser visitada. É isso que diferencia o backtracking da força bruta, que
+geraria todas as configurações completas para só depois testá-las.
+
+## Exemplo principal: o problema das N rainhas
+
+Uma rainha do xadrez ataca qualquer peça na mesma linha, na mesma coluna ou
+em uma das duas diagonais. O problema pede para colocar N rainhas em um
+tabuleiro N x N sem que nenhuma ataque outra.
+
+Força bruta ingênua: escolher N casas entre as N² casas do tabuleiro. Para
+N = 8 são C(64, 8) = 4 426 165 368 configurações, a maioria absurda.
+
+Primeira redução: como duas rainhas não podem estar na mesma linha, haverá
+exatamente uma rainha por linha. Basta decidir, para cada linha, a coluna da
+sua rainha: 8^8 = 16 777 216 configurações. Exigindo colunas distintas,
+sobram as permutações: 8! = 40 320.
+
+Backtracking: coloca-se uma rainha por linha, de cima para baixo. Na linha
+lin tenta-se cada coluna c = 0, 1, ..., N-1. A rainha só é colocada em
+(lin, c) se nenhuma rainha das linhas anteriores estiver:
+- na mesma coluna: col[i] == c;
+- na mesma diagonal: |col[i] - c| == lin - i (a distância entre as colunas é
+  igual à distância entre as linhas).
+Se houver lugar, chama-se recursivamente a linha lin+1. Se nenhuma coluna
+servir, a chamada retorna e a linha anterior passa a tentar sua próxima
+coluna. Para N = 8 o algoritmo visita apenas cerca de dois mil nós da árvore
+de busca e encontra as 92 soluções (12 essencialmente diferentes, a menos
+de rotações e reflexões).
+
+Exemplo de retrocesso com N = 4 (colunas numeradas de 0 a 3):
+- linha 0, coluna 0;
+- linha 1: colunas 0 e 1 são atacadas; coluna 2 serve;
+- linha 2: todas as colunas são atacadas -> volta à linha 1;
+- linha 1, coluna 3;
+- linha 2, coluna 1;
+- linha 3: todas atacadas -> volta à linha 2, que não tem mais opções ->
+  volta à linha 1, que também não -> volta à linha 0;
+- linha 0, coluna 1; linha 1, coluna 3; linha 2, coluna 0; linha 3,
+  coluna 2: solução (1, 3, 0, 2).
+
+## Complexidade
+
+No pior caso o backtracking é exponencial, pois o número de nós da árvore de
+busca pode crescer exponencialmente com o tamanho da entrada. Muitos dos
+problemas atacados com essa técnica são NP-completos (como a soma de
+subconjuntos, a coloração de grafos e a satisfatibilidade), e para eles não
+se conhece algoritmo polinomial.
+
+Na prática, o desempenho depende muito da qualidade da poda. Técnicas para
+podar mais cedo:
+- ordenar os candidatos, tentando primeiro os mais promissores;
+- escolher primeiro a variável mais restrita (no Sudoku, a casa com menos
+  opções);
+- propagar restrições, eliminando opções que já se sabe impossíveis;
+- branch and bound (ramificar e limitar), em problemas de otimização:
+  descartar um ramo quando um limite mostra que ele não pode superar a
+  melhor solução já encontrada.
+
+## Outras aplicações
+
+- Sudoku e quebra-cabeças lógicos;
+- labirintos e caminhos em grafos;
+- gerar todas as permutações, combinações e subconjuntos de um conjunto;
+- soma de subconjuntos: escolher números de um conjunto cuja soma seja S;
+- coloração de mapas e grafos com k cores;
+- passeio do cavalo no tabuleiro de xadrez;
+- análise sintática de expressões regulares e a linguagem Prolog, cujo
+  mecanismo de execução é baseado em backtracking.
+
+## Histórico
+
+O problema das oito rainhas foi proposto pelo enxadrista Max Bezzel em 1848;
+Franz Nauck publicou as 92 soluções em 1850, e Gauss se interessou pelo
+problema na mesma época. O termo "backtrack" é atribuído ao matemático
+D. H. Lehmer, na década de 1950. R. J. Walker descreveu o método de forma
+algorítmica em 1960, e S. Golomb e L. Baumert o sistematizaram em 1965.
+Edsger Dijkstra usou as oito rainhas como exemplo em suas "Notes on
+Structured Programming" (1970), e Niklaus Wirth, em 1971, para ilustrar o
+"desenvolvimento por refinamentos sucessivos".
+
+## Sobre o código
+
+O programa de exemplo resolve as N rainhas com backtracking recursivo:
+imprime a primeira solução encontrada e conta todas as soluções para N = 8.
+
+REFERENCIAS:
+- WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 3 (Algoritmos recursivos: retrocesso, oito rainhas).
+- WIRTH, N. Program development by stepwise refinement. Communications of the ACM, v. 14, n. 4, p. 221-227, 1971.
+- GOLOMB, S. W.; BAUMERT, L. D. Backtrack programming. Journal of the ACM, v. 12, n. 4, p. 516-524, 1965.
+- KNUTH, D. E. The Art of Computer Programming, v. 4B: Combinatorial Algorithms, Part 2. Boston: Addison-Wesley, 2022. Seção 7.2.2 (Backtrack programming).
+- SKIENA, S. S. The Algorithm Design Manual. 2. ed. London: Springer, 2008. Capítulo 7 (Combinatorial Search and Heuristic Methods).
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.
+- Wikipedia. Backtracking. https://en.wikipedia.org/wiki/Backtracking
+- Wikipedia. Eight queens puzzle. https://en.wikipedia.org/wiki/Eight_queens_puzzle
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+#define MAXN 20
+
+int col[MAXN];   /* col[lin] = coluna da rainha da linha lin */
+int total = 0;
+
+/* devolve 1 se a rainha em (lin, c) não é atacada pelas anteriores */
+int pode(int lin, int c) {
+  int i;
+  for (i = 0; i < lin; i++) {
+    if (col[i] == c) return 0;                 /* mesma coluna */
+    if (abs(col[i] - c) == lin - i) return 0;  /* mesma diagonal */
+  }
+  return 1;
+}
+
+/* tentativa e erro: tenta todas as colunas da linha lin */
+void rainhas(int lin, int n) {
+  int c, i;
+  if (lin == n) {                // solução completa encontrada
+    total++;
+    if (total == 1) {
+      printf("Primeira solucao:\n");
+      for (i = 0; i < n; i++) printf("linha %d -> coluna %d\n", i, col[i]);
+    }
+    return;
+  }
+  for (c = 0; c < n; c++) {
+    if (pode(lin, c)) {
+      col[lin] = c;              // tenta
+      rainhas(lin + 1, n);       // avança; ao retornar, volta atrás
+    }
+  }
+}
+
+int main(void) {
+  int n = 8;
+  rainhas(0, n);
+  printf("Total de solucoes para N=%d: %d\n", n, total);
+  return 0;
+}
+FIM_CODIGO_C

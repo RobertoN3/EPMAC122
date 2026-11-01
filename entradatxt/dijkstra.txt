@@ -1,0 +1,191 @@
+1. Tecnica: Método guloso
+2. Algoritmo: Dijkstra para caminho mínimo
+3. Autores: Edsger W. Dijkstra
+4. Data: 1956
+5. Conceitos: Grafos, Caminho mínimo, Árvores, Matriz de adjacência, Filas
+6. Problema: Dado um grafo com pesos não negativos nas arestas e um vértice de origem, determinar a distância mínima da origem a cada um dos demais vértices
+7. Titulo: Algoritmo de Dijkstra
+
+## O problema do caminho mínimo
+
+Em um grafo com pesos (distâncias, tempos, custos) nas arestas, o
+comprimento de um caminho é a soma dos pesos de suas arestas. O problema dos
+caminhos mínimos a partir de uma origem s pede, para cada vértice v:
+- a distância dist[v]: o menor comprimento de um caminho de s até v
+  (infinito, se v não é alcançável);
+- um caminho que realize essa distância.
+
+É o problema resolvido por aplicativos de navegação (GPS), por protocolos de
+roteamento na Internet (como o OSPF, que usa exatamente o algoritmo de
+Dijkstra) e por jogos (movimentação de personagens).
+
+Se todas as arestas têm o mesmo peso, basta a busca em largura, que conta
+arestas. Com pesos diferentes, o caminho com menos arestas pode não ser o
+mais curto, e é preciso um algoritmo que leve os pesos em conta.
+
+## Ideia do algoritmo
+
+O algoritmo de Dijkstra funciona como uma "onda" que se espalha a partir da
+origem, alcançando os vértices em ordem crescente de distância. Ele mantém:
+- um conjunto de vértices fixados (ou definitivos), cuja distância
+  verdadeira já é conhecida;
+- para os demais vértices, uma estimativa dist[v]: o comprimento do melhor
+  caminho de s até v encontrado até agora, passando apenas por vértices
+  fixados;
+- um vetor pai[v], o vértice anterior a v nesse melhor caminho.
+
+Inicialização: dist[s] = 0; dist[v] = infinito para v != s; nenhum vértice
+fixado.
+
+Repita enquanto houver vértices não fixados com estimativa finita:
+1) escolha o vértice u não fixado com a MENOR estimativa dist[u]
+   (esta é a escolha gulosa);
+2) fixe u: a partir de agora dist[u] é definitiva;
+3) relaxe as arestas que saem de u: para cada vizinho v de u,
+   se dist[u] + peso(u, v) < dist[v], então
+       dist[v] = dist[u] + peso(u, v) e pai[v] = u.
+
+"Relaxar" uma aresta significa verificar se ela oferece um atalho: chegar a
+v passando por u é melhor do que o que se conhecia?
+
+Ao final, o vetor pai descreve uma árvore enraizada em s, a árvore de
+caminhos mínimos: o caminho mínimo até v é obtido seguindo pai[v],
+pai[pai[v]], ..., até s, e invertendo a sequência.
+
+## Exemplo
+
+Grafo não dirigido com vértices 0 a 4 e arestas (u-v: peso):
+0-1: 10, 0-2: 3, 1-2: 1, 1-3: 2, 2-3: 8, 2-4: 2, 3-4: 7. Origem s = 0.
+
+  início:        dist = [0, inf, inf, inf, inf]
+  fixa 0 (0):    relaxa 0-1 e 0-2   -> dist = [0, 10, 3, inf, inf]
+  fixa 2 (3):    relaxa 2-1: 3+1=4 < 10; 2-3: 3+8=11; 2-4: 3+2=5
+                                    -> dist = [0, 4, 3, 11, 5]
+  fixa 1 (4):    relaxa 1-3: 4+2=6 < 11 -> dist = [0, 4, 3, 6, 5]
+  fixa 4 (5):    relaxa 4-3: 5+7=12, não melhora
+  fixa 3 (6):    fim
+
+Distâncias finais: [0, 4, 3, 6, 5]. Pais: pai[1] = 2, pai[2] = 0, pai[3] = 1,
+pai[4] = 2. O caminho mínimo até 3 é 0 -> 2 -> 1 -> 3, de comprimento
+3 + 1 + 2 = 6, embora o caminho 0 -> 1 -> 3 tenha menos arestas
+(comprimento 12).
+
+## Por que funciona (e por que exige pesos não negativos)
+
+Invariante: quando um vértice u é fixado, dist[u] é a distância verdadeira
+de s a u.
+
+Ideia da prova: suponha que existisse um caminho de s até u mais curto do
+que dist[u]. Esse caminho começa em s (fixado) e termina em u (ainda não
+fixado), então em algum ponto ele sai pela primeira vez do conjunto dos
+fixados, chegando a um vértice y não fixado. A estimativa de y já leva em
+conta esse trecho, então dist[y] <= comprimento do trecho até y. Como os
+pesos são NÃO NEGATIVOS, o resto do caminho, de y até u, não diminui o
+comprimento; logo dist[y] <= comprimento do caminho < dist[u]. Mas então o
+algoritmo teria escolhido y, e não u, como o não fixado de menor estimativa:
+contradição.
+
+O argumento quebra se houver pesos negativos: o trecho de y até u poderia
+"descontar" comprimento, e um vértice fixado cedo demais ficaria com uma
+distância errada. Para grafos com pesos negativos (mas sem ciclos negativos)
+usa-se o algoritmo de Bellman-Ford, de programação dinâmica, que custa
+O(n m).
+
+## Complexidade
+
+Depende de como se encontra o vértice de menor estimativa:
+- Busca linear em um vetor (como no código de exemplo): n escolhas de custo
+  O(n), mais o relaxamento de todas as arestas. Total O(n²), ótimo para
+  grafos densos e para matriz de adjacência.
+- Fila de prioridade com heap binário e listas de adjacência: cada escolha e
+  cada redução de estimativa custam O(log n). Total O((n + m) log n), muito
+  melhor para grafos esparsos como mapas de estradas.
+- Heap de Fibonacci (Fredman e Tarjan, 1984): O(m + n log n).
+
+Em aplicações reais com milhões de vértices (mapas), usam-se variações:
+a busca A* (Hart, Nilsson e Raphael, 1968), que acrescenta uma estimativa da
+distância restante até o destino para guiar a onda na direção certa, e
+técnicas de pré-processamento que permitem responder consultas em
+milissegundos.
+
+## Dijkstra como algoritmo guloso
+
+Em cada passo, o algoritmo toma uma decisão definitiva (fixar um vértice)
+com base em uma função critério (a menor estimativa), sem jamais
+reconsiderá-la: é o método guloso. A prova de correção acima é exatamente a
+prova de que a escolha gulosa é segura. Sua estrutura é quase idêntica à do
+algoritmo de Prim para a árvore espalhada mínima: a única diferença é o
+critério (Prim usa o peso da aresta que liga o vértice à árvore; Dijkstra,
+a distância total desde a origem).
+
+## Histórico
+
+Edsger Wybe Dijkstra (1930-2002), cientista da computação holandês, concebeu
+o algoritmo em 1956, no Centro de Matemática de Amsterdã, para demonstrar a
+capacidade do novo computador ARMAC: o programa calculava a rota mais curta
+entre cidades holandesas. Ele contou, em entrevista, que projetou o
+algoritmo em cerca de vinte minutos, sem lápis e papel, enquanto tomava café
+com a noiva em um terraço de Amsterdã. O artigo, de três páginas, só foi
+publicado em 1959, na revista Numerische Mathematik, e trazia também uma
+versão do algoritmo de árvore espalhada mínima. Dijkstra recebeu o prêmio
+Turing em 1972 e é também conhecido pela programação estruturada, pelo
+semáforo em programação concorrente e pelo algoritmo "shunting-yard".
+
+## Sobre o código
+
+O programa de exemplo implementa o algoritmo de Dijkstra com matriz de
+adjacência e busca linear do vértice de menor estimativa (versão O(n²)), para
+o grafo do exemplo desta página, imprimindo as distâncias e os pais.
+
+REFERENCIAS:
+- DIJKSTRA, E. W. A note on two problems in connexion with graphs. Numerische Mathematik, v. 1, p. 269-271, 1959.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 24 (Caminhos mínimos de fonte única).
+- SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 21 (Shortest Paths).
+- KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Seção 4.4.
+- FEOFILOFF, P. Algoritmo de Dijkstra. https://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dijkstra.html
+- MISA, T. J.; FRANA, P. L. An interview with Edsger W. Dijkstra. Communications of the ACM, v. 53, n. 8, p. 41-47, 2010.
+- FREDMAN, M. L.; TARJAN, R. E. Fibonacci heaps and their uses in improved network optimization algorithms. Journal of the ACM, v. 34, n. 3, p. 596-615, 1987.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <limits.h>
+#define NV 5
+#define INF INT_MAX
+
+/* peso[u][v] = 0 indica que não existe aresta u-v */
+void dijkstra(int peso[NV][NV], int s, int dist[], int pai[]) {
+  int fixado[NV], i, k, u, v;
+  for (v = 0; v < NV; v++) {
+    dist[v] = INF; pai[v] = -1; fixado[v] = 0;
+  }
+  dist[s] = 0;
+  for (k = 0; k < NV; k++) {
+    u = -1;                                    /* escolha gulosa */
+    for (i = 0; i < NV; i++)
+      if (!fixado[i] && dist[i] != INF && (u == -1 || dist[i] < dist[u]))
+        u = i;
+    if (u == -1) break;                        // restantes inalcançáveis
+    fixado[u] = 1;
+    for (v = 0; v < NV; v++)                   // relaxa arestas de u
+      if (peso[u][v] && !fixado[v] && dist[u] + peso[u][v] < dist[v]) {
+        dist[v] = dist[u] + peso[u][v];
+        pai[v] = u;
+      }
+  }
+}
+
+int main(void) {
+  int peso[NV][NV] = {
+    {0, 10, 3, 0, 0},
+    {10, 0, 1, 2, 0},
+    {3, 1, 0, 8, 2},
+    {0, 2, 8, 0, 7},
+    {0, 0, 2, 7, 0}
+  };
+  int dist[NV], pai[NV], v;
+  dijkstra(peso, 0, dist, pai);
+  for (v = 0; v < NV; v++)
+    printf("dist(0, %d) = %d   pai = %d\n", v, dist[v], pai[v]);
+  return 0;
+}
+FIM_CODIGO_C

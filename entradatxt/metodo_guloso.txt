@@ -1,0 +1,230 @@
+1. Tecnica: Método guloso
+5. Conceitos: Ordenação, Vetores, Função critério, Algoritmo estável
+6. Problema: Construir uma solução passo a passo, escolhendo em cada passo a opção que parece melhor segundo uma função critério, sem nunca desfazer escolhas já feitas
+7. Titulo: Método guloso
+
+## Ideia geral
+
+O método guloso (em inglês, greedy) é uma das técnicas mais simples e mais
+usadas para projetar algoritmos. A solução é construída em etapas. Em cada
+etapa o algoritmo olha as opções disponíveis, avalia cada uma com uma função
+critério e escolhe a mais "saborosa", isto é, a que parece melhor naquele
+momento. A escolha é definitiva: o algoritmo nunca volta atrás para
+reconsiderar uma decisão já tomada.
+
+O nome vem justamente desse comportamento "guloso": é como uma pessoa com
+fome diante de um bufê que pega sempre o prato mais apetitoso que vê, sem
+planejar a refeição inteira. Às vezes isso leva à melhor refeição possível;
+às vezes não.
+
+A grande vantagem da técnica é a eficiência: como cada decisão é tomada uma
+única vez e nunca desfeita, o algoritmo não precisa explorar combinações de
+escolhas, ao contrário da tentativa e erro. A grande dificuldade é a
+correção: é preciso provar que as escolhas locais levam à solução ótima
+global, e isso nem sempre é verdade.
+
+## Elementos de um algoritmo guloso
+
+Quase todo algoritmo guloso pode ser descrito pelos mesmos componentes:
+
+- conjunto de candidatos: os elementos que podem fazer parte da solução
+  (elementos de um vetor, arestas de um grafo, moedas, tarefas, ...);
+- função critério (ou função de seleção): diz qual é o melhor candidato
+  ainda disponível. É o "coração" do algoritmo, e escolher a função certa é
+  o que distingue um guloso correto de um incorreto;
+- teste de viabilidade: verifica se o candidato escolhido pode ser
+  acrescentado à solução parcial sem violar as restrições do problema;
+- teste de solução: verifica se a solução parcial já está completa;
+- função objetivo: o valor que se quer maximizar ou minimizar (custo total,
+  número de moedas, ...).
+
+Esquema geral, em pseudocódigo:
+
+  solucao <- vazia
+  enquanto solucao não está completa e há candidatos:
+      x <- melhor candidato segundo a função critério
+      remova x dos candidatos
+      se solucao + x é viável:
+          solucao <- solucao + x
+  devolva solucao
+
+## Exemplo principal: a ordenação "bolha" como método guloso
+
+A ordenação bolha (bubble sort) percorre o vetor várias vezes. Em cada
+passada compara pares de elementos vizinhos, v[i] e v[i+1], e troca os dois
+quando estão fora de ordem. O efeito de uma passada completa sobre o trecho
+v[0..fim] é levar o MAIOR elemento desse trecho até a posição v[fim], como
+uma bolha de ar que sobe até a superfície da água. Daí o nome.
+
+Lendo o algoritmo com os "óculos" do método guloso:
+
+- os candidatos são os elementos ainda não posicionados, isto é, o trecho
+  v[0..fim];
+- a função critério é "o maior elemento ainda não posicionado";
+- a decisão é colocar esse elemento na última posição livre, v[fim];
+- a decisão é definitiva: depois que o maior elemento chega a v[fim],
+  aquela posição nunca mais é alterada e o trecho considerado diminui uma
+  unidade (fim passa a ser fim-1).
+
+Depois de n-1 passadas, todas as posições de v[1] a v[n-1] foram fixadas
+com os elementos corretos, e v[0] fica, automaticamente, com o menor.
+
+Exemplo com v = (5, 2, 9, 1, 7):
+
+  1a passada: (2, 5, 1, 7, 9)   o 9 subiu até o fim e ficou fixo
+  2a passada: (2, 1, 5, 7, 9)   o 7 está fixo
+  3a passada: (1, 2, 5, 7, 9)   o 5 está fixo
+  4a passada: nenhuma troca     o vetor já está ordenado
+
+Uma melhoria simples é guardar se houve alguma troca durante a passada. Se
+não houve nenhuma, o vetor já está em ordem e o algoritmo pode parar. Com
+isso, um vetor já ordenado é reconhecido em uma única passada.
+
+Invariante da passada externa: no início de cada passada, os elementos de
+v[fim+1..n-1] são os maiores do vetor e já estão em ordem crescente, nas
+suas posições definitivas. Esse invariante é exatamente a afirmação de que
+as escolhas gulosas feitas até ali estão corretas.
+
+## Análise da ordenação bolha
+
+- Comparações: a passada que trata o trecho v[0..fim] faz fim comparações.
+  No total, (n-1) + (n-2) + ... + 1 = n(n-1)/2, ou seja, O(n²).
+- Trocas: cada troca corrige exatamente uma inversão (um par fora de ordem).
+  Um vetor em ordem decrescente tem n(n-1)/2 inversões, então o pior caso
+  também faz O(n²) trocas. Em média, um vetor aleatório tem n(n-1)/4
+  inversões.
+- Melhor caso: com a verificação de "nenhuma troca", um vetor já ordenado
+  custa uma única passada, O(n).
+- Memória extra: constante (algoritmo "in place").
+- Estabilidade: a troca só acontece quando v[i] > v[i+1] (estritamente),
+  então elementos iguais nunca trocam de lugar entre si: o método é estável.
+
+Por fazer muitas trocas, a bolha costuma ser mais lenta na prática do que a
+inserção direta, que tem a mesma complexidade assintótica. Seu valor é
+principalmente didático.
+
+## Outros exemplos gulosos vistos na disciplina
+
+- Seleção direta: a cada passo escolhe o MENOR elemento restante e o coloca
+  na próxima posição livre do início do vetor. É o "espelho" da bolha.
+- Algoritmo de Kruskal (árvore espalhada mínima): a cada passo escolhe a
+  aresta mais leve que não forma ciclo com as já escolhidas.
+- Algoritmo de Prim (árvore espalhada mínima): a cada passo escolhe a aresta
+  mais leve que liga a árvore em construção a um vértice novo.
+- Algoritmo de Dijkstra (caminho mínimo): a cada passo fixa o vértice ainda
+  não fixado mais próximo da origem.
+- Código de Huffman (compressão de dados, 1952): a cada passo junta as duas
+  árvores de menor frequência.
+- Seleção de atividades (agendamento): dentre as atividades compatíveis com
+  as já escolhidas, escolhe a que termina mais cedo.
+- Mochila fracionária: escolhe os itens em ordem decrescente de valor por
+  unidade de peso, podendo levar uma fração do último.
+
+## Quando o método guloso NÃO funciona
+
+A escolha que parece melhor agora pode impedir uma solução melhor depois.
+
+Exemplo 1: troco com moedas. Com as moedas do real (1, 5, 10, 25, 50 e 100
+centavos), a regra "use sempre a maior moeda que cabe" dá o troco com o
+menor número de moedas. Mas, com moedas de 1, 3 e 4, para dar troco de 6 o
+guloso escolhe 4 + 1 + 1 (três moedas), enquanto o ótimo é 3 + 3 (duas
+moedas). Nesse caso é preciso usar programação dinâmica.
+
+Exemplo 2: mochila binária (0/1). Com capacidade 50 e objetos de (peso,
+valor) = (10, 60), (20, 100), (30, 120), escolher pela maior razão
+valor/peso leva os dois primeiros (valor 160), mas o ótimo é levar os dois
+últimos (valor 220). Na mochila binária não se pode levar fração de objeto,
+e a escolha gulosa falha; a mochila fracionária, por outro lado, é resolvida
+corretamente pelo guloso.
+
+Exemplo 3: caminhos com pesos negativos. O algoritmo de Dijkstra pode errar
+se houver arestas de peso negativo.
+
+## Como provar que um algoritmo guloso está correto
+
+Em geral mostram-se duas propriedades:
+
+1. Propriedade da escolha gulosa: existe uma solução ótima que contém a
+   primeira escolha feita pelo algoritmo. A prova típica é por troca
+   (exchange argument): toma-se uma solução ótima qualquer que NÃO contém a
+   escolha gulosa e mostra-se que é possível trocar um de seus elementos
+   pela escolha gulosa sem piorar a solução.
+
+2. Subestrutura ótima: depois de feita a escolha, o que resta é um
+   subproblema do mesmo tipo, e a solução ótima do problema original é a
+   escolha gulosa mais uma solução ótima do subproblema.
+
+Juntando as duas, por indução no número de escolhas, conclui-se que o
+algoritmo produz uma solução ótima.
+
+A subestrutura ótima também é exigida pela programação dinâmica. A diferença
+é que o guloso faz UMA escolha e resolve UM subproblema, enquanto a
+programação dinâmica considera todas as escolhas possíveis e compara os
+resultados dos vários subproblemas.
+
+Existe uma teoria geral, a dos matroides, que caracteriza uma ampla família
+de problemas em que o guloso é sempre ótimo; a árvore espalhada mínima é o
+exemplo mais famoso.
+
+## Histórico
+
+A estratégia gulosa é muito antiga e aparece em vários algoritmos clássicos
+da década de 1950, como o código de Huffman (1952), o algoritmo de Kruskal
+(1956) e o de Dijkstra (1956). A ordenação por trocas de vizinhos foi
+analisada em 1956 por Edward Friend sob o nome de "sorting by exchange"; o
+nome "bubble sort" passou a ser usado no início da década de 1960, e a
+história do nome foi reconstituída por Owen Astrachan (2003). A teoria dos
+matroides, que explica por que o guloso funciona em certos problemas, foi
+desenvolvida por Hassler Whitney (1935) e ligada aos algoritmos gulosos por
+Jack Edmonds (1971).
+
+## Sobre o código
+
+O programa de exemplo implementa a ordenação bolha com a parada antecipada
+quando nenhuma troca acontece, destacando nos comentários onde ocorre a
+escolha gulosa (o maior elemento restante chegando a v[fim]).
+
+REFERENCIAS:
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 16 (Algoritmos gulosos).
+- KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Capítulo 4 (Greedy Algorithms).
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.2 (ordenação por trocas).
+- ASTRACHAN, O. Bubble sort: an archaeological algorithmic analysis. ACM SIGCSE Bulletin, v. 35, n. 1, p. 1-5, 2003.
+- ZIVIANI, N. Projeto de Algoritmos com implementações em Pascal e C. 3. ed. São Paulo: Cengage Learning, 2011.
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.
+- EDMONDS, J. Matroids and the greedy algorithm. Mathematical Programming, v. 1, p. 127-136, 1971.
+- Wikipedia. Greedy algorithm. https://en.wikipedia.org/wiki/Greedy_algorithm
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define N 8
+
+/* Ordenação bolha como método guloso:
+   a cada passada, o maior elemento restante "sobe" até v[fim]
+   e essa posição nunca mais é alterada (escolha definitiva). */
+void bolha(int v[], int n) {
+  int fim, i, aux, trocou;
+  for (fim = n - 1; fim > 0; fim--) {
+    trocou = 0;
+    for (i = 0; i < fim; i++) {
+      if (v[i] > v[i + 1]) {   /* vizinhos fora de ordem */
+        aux = v[i];
+        v[i] = v[i + 1];
+        v[i + 1] = aux;
+        trocou = 1;
+      }
+    }
+    if (!trocou) break;        // nenhuma troca: já está ordenado
+  }
+}
+
+int main(void) {
+  int v[N] = {5, 2, 9, 1, 7, 3, 8, 4};
+  int i;
+  bolha(v, N);
+  printf("Vetor ordenado: ");
+  for (i = 0; i < N; i++)
+    printf("%d ", v[i]);
+  printf("\n");
+  return 0;
+}
+FIM_CODIGO_C
