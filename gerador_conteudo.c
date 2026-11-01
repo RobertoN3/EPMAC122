@@ -124,7 +124,7 @@ static void fechar(FILE *o, Estado *e) {
     fechar_listas(o, e, 0);
 }
 
-static void corpo(FILE *o, FILE *f, const char *nome) {
+static void corpo(FILE *o, FILE *f, const char *nome, const char *base) {
     Estado e = {0};
     char *linha;
     while ((linha = ler_linha(f))) {
@@ -195,8 +195,8 @@ static void corpo(FILE *o, FILE *f, const char *nome) {
         fprintf(stderr, "%s: bloco sem marcador de fechamento\n", nome); erros++;
     }
     if (e.blocos)
-        fprintf(o, "<p class=\"codigo\">Exemplos em C: %d bloco(s). "
-                "A página de código será produzida pelo gerador de código.</p>\n", e.blocos);
+        fprintf(o, "<p class=\"codigo\"><a href=\"%s_codigo.html\">"
+                "Ver código em C</a></p>\n", base);
 }
 
 static int gerar(const char *base) {
@@ -240,7 +240,7 @@ static int gerar(const char *base) {
           "a{color:#2b6cb0}</style></head><body>\n"
           "<nav><a href=\"index.html\">&larr; Início</a></nav>\n<main><h1>", o);
     escapar(o, titulo, strlen(titulo)); fputs("</h1>\n", o);
-    corpo(o, f, in);
+    corpo(o, f, in, base);
     fputs("</main></body></html>\n", o);
     falha = ferror(f) || ferror(o);
     if (fclose(o)) falha = 1;
