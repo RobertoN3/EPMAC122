@@ -58,7 +58,10 @@ ordena dígito a dígito, do menos para o mais significativo, e depende de cada
 passada ser estável.
 
 Qualquer algoritmo pode ser tornado estável acrescentando a posição original
-como critério de desempate, ao custo de memória extra.
+como critério de desempate, ao custo de memória extra. A página
+[[estabilidade|estabilidade em algoritmos de ordenação]] traz um exemplo
+lado a lado (estável x instável), a lista dos métodos estáveis e essa
+técnica em detalhe.
 
 ## Os principais métodos
 

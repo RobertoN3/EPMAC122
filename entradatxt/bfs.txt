@@ -133,7 +133,7 @@ REFERENCIAS:
 - SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Seção 18.7 (Breadth-first search).
 - KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Seção 3.2.
 - FEOFILOFF, P. Algoritmos para Grafos em C via Sedgewick. https://www.ime.usp.br/~pf/algoritmos_para_grafos/
-- Material de MAC122 (e-Disciplinas): Introdução a grafos. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
+- BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
 
 INICIO_CODIGO_C
 #include <stdio.h>

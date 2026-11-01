@@ -45,7 +45,9 @@ Em estruturas de dados escolhe-se um vértice especial, a raiz, e
 Uma árvore é uma estrutura [[recursao|RECURSIVA]]: ou é vazia, ou é uma raiz ligada a
 uma sequência de subárvores, que também são árvores. Por isso quase todos os
 algoritmos sobre árvores são recursivos e podem ser provados corretos por
-indução na altura.
+indução na altura. A página [[algoritmos_arvores|algoritmos recursivos em
+árvores]] mostra três exemplos (contar nós, contar folhas e calcular a
+altura), com os casos base escritos explicitamente.
 
 ## Árvores binárias
 
@@ -62,7 +64,56 @@ Fatos importantes:
   log2(n+1) - 1, ou seja, no mínimo da ordem de log n. Essa altura mínima é
   atingida pelas árvores "cheias" ou "quase completas";
 - no outro extremo, a altura pode chegar a n-1 (árvore degenerada, que
-  parece uma lista).
+  parece uma lista). Em resumo, para uma árvore binária não vazia com n nós
+  e altura h: h + 1 <= n <= 2^(h+1) - 1.
+
+O material da disciplina chama uma árvore binária de completamente
+balanceada quando, em todo nó, as subárvores esquerda e direita têm a mesma
+quantidade de nós. É uma condição mais forte do que ter alturas próximas, e
+implica que todos os níveis estão cheios. Com altura h, uma árvore assim tem
+2^k nós no nível k, 2^h folhas e n = 1 + 2 + ... + 2^h = 2^(h+1) - 1 nós no
+total. (O heap do [[heapsort|Heap Sort]] usa uma condição mais fraca, a de
+árvore completa: todos os níveis cheios, exceto talvez o último, preenchido
+da esquerda para a direita.)
+
+Outra relação do material: em qualquer árvore binária, n0 = n2 + 1, em que
+n0 é o número de folhas (nós sem filhos) e n2 o número de nós com dois
+filhos. Prova: sejam n1 os nós com um filho. Contando as arestas pelos
+filhos, há n1 + 2·n2 arestas; contando de outro modo, uma árvore com
+n = n0 + n1 + n2 nós tem n - 1 arestas. Igualando,
+n1 + 2·n2 = n0 + n1 + n2 - 1, ou seja, n0 = n2 + 1. (Aqui o "grau" de um nó
+é o número de FILHOS, e não o número de arestas que tocam o nó, como em
+grafos.)
+
+## Representações
+
+1) Com [[ponteiros]]: cada nó é um registro com o valor e dois ponteiros,
+   esq e dir; NULL indica filho ausente. Usa memória proporcional ao número
+   de nós, qualquer que seja a forma da árvore. É a representação usada na
+   maioria dos algoritmos.
+
+2) Em vetor: seguindo a convenção do material, a raiz fica no índice 0, e os
+   filhos do nó de índice i ficam em 2i + 1 (esquerdo) e 2i + 2 (direito);
+   para i > 0, o pai fica em (i - 1) / 2, com divisão inteira. Achar pai e
+   filhos custa O(1) e não é preciso guardar ponteiros. A desvantagem é o
+   desperdício em árvores esparsas: as posições dos filhos ausentes ficam
+   vazias (e é preciso marcá-las como vazias de algum modo), e uma cadeia de
+   filhos direitos até a profundidade h já chega ao índice 2^(h+1) - 2. Para
+   árvores completas, como o heap, a representação é perfeita: não há
+   buracos.
+
+3) Listas generalizadas: a hierarquia é escrita com parênteses aninhados,
+   cada nó seguido de suas subárvores. A árvore com raiz 1, filhos 2 e 3, o
+   nó 2 com o filho 4 e o nó 3 com os filhos 5 e 6 fica
+   (1 (2 (4)) (3 (5) (6))). Para árvores binárias é preciso ainda indicar as
+   posições vazias, pois "(2 (4))" sozinho não diz se 4 é filho esquerdo ou
+   direito.
+
+4) Filho-irmão: cada nó guarda um ponteiro para o PRIMEIRO filho e outro para
+   o PRÓXIMO IRMÃO. Com apenas dois ponteiros por nó, representa árvores com
+   qualquer número de filhos (como a árvore de pastas de um disco). Os
+   ponteiros têm significado diferente dos ponteiros esq e dir de uma
+   árvore binária, e não devem ser confundidos.
 
 ## Percursos (varreduras)
 
@@ -133,6 +184,7 @@ número de nós e o valor da expressão (um percurso em pós-ordem), e libera a
 memória.
 
 REFERENCIAS:
+- BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Páginas 3 a 8 (definições, árvore completamente balanceada, n0 = n2 + 1 e representações). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
 - FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html
 - FEOFILOFF, P. Árvores binárias de busca. https://www.ime.usp.br/~pf/algoritmos/aulas/binst.html
 - CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulos 10.4, 12 (Árvores binárias de busca) e 13 (Árvores vermelho-preto).

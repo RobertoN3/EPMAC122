@@ -1,7 +1,7 @@
 1. Tecnica: Programação dinâmica
 2. Algoritmo: Mochila binária por programação dinâmica
 3. Autores: Richard Bellman
-4. Data: 1953
+4. Data: 1952
 5. Conceitos: Recursão, Subestrutura ótima, Memorização, Vetores
 6. Problema: Dados n objetos, cada um com peso e valor, e uma mochila de capacidade C, escolher objetos de peso total no máximo C que maximizem o valor total
 7. Titulo: Programação dinâmica
@@ -165,9 +165,13 @@ coerente com o fato de a mochila binária ser um problema NP-difícil.
 
 ## Histórico
 
-Richard Bellman desenvolveu o método na RAND Corporation. O termo já era
-usado por ele na década de 1940 e, por volta de 1953, ganhou seu sentido
-moderno. O livro "Dynamic Programming" foi publicado em 1957. Em sua
+Richard Bellman desenvolveu o método na RAND Corporation, no início da
+década de 1950. Seu artigo "On the Theory of Dynamic Programming", publicado
+em 1952 nos Proceedings of the National Academy of Sciences, registra o uso
+do termo nesse ano; é essa a data usada no campo Data desta página (ela não
+data a criação da mochila binária, nem afirma que o termo surgiu
+exatamente ali). Por volta de 1953 o termo ganhou seu sentido moderno, e o
+livro "Dynamic Programming" foi publicado em 1957. Em sua
 autobiografia, Bellman conta que escolheu a palavra "dinâmica" em parte
 porque soava impressionante e não poderia ser usada de forma pejorativa,
 o que o ajudava a proteger a pesquisa matemática de um secretário de Defesa
@@ -182,6 +186,7 @@ mochila binária preenchendo a tabela M[i][c] com a recorrência acima, para o
 mesmo exemplo da tabela mostrada nesta página.
 
 REFERENCIAS:
+- BELLMAN, R. On the theory of dynamic programming. Proceedings of the National Academy of Sciences, v. 38, n. 8, p. 716-719, 1952.
 - BELLMAN, R. Dynamic Programming. Princeton: Princeton University Press, 1957.
 - BELLMAN, R. Eye of the Hurricane: an autobiography. Singapore: World Scientific, 1984.
 - CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 15 (Programação dinâmica).

@@ -24,6 +24,18 @@ espalhada (ou árvore geradora) do grafo. Ela tem exatamente n-1 arestas.
 O problema pede a árvore espalhada de menor peso total: a árvore espalhada
 mínima (AEM; em inglês, minimum spanning tree, MST).
 
+Três observações sobre o enunciado:
+- só existe árvore espalhada se o grafo for conexo. Se não for, o mesmo
+  algoritmo produz uma floresta espalhada mínima, com uma árvore por
+  componente;
+- pesos negativos são permitidos. Minimizar a soma dos pesos de uma árvore é
+  um problema diferente de calcular caminhos mínimos (em que pesos negativos
+  atrapalham o [[dijkstra|algoritmo de Dijkstra]]); somar uma constante a
+  todos os pesos não muda qual árvore é a mínima, pois toda árvore
+  espalhada tem as mesmas n-1 arestas;
+- se houver pesos repetidos, pode haver mais de uma árvore espalhada mínima,
+  todas com o mesmo peso total.
+
 Um grafo pode ter um número enorme de árvores espalhadas: o grafo completo
 com n vértices tem n^(n-2) delas (fórmula de Cayley). Testar todas é
 inviável; é preciso um algoritmo inteligente.

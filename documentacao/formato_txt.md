@@ -1,6 +1,6 @@
 # Formato dos arquivos TXT
 
-Regras que os 28 TXT de `entradatxt/` seguem e que o gerador deve implementar.
+Regras que os 31 TXT de `entradatxt/` seguem e que o gerador deve implementar.
 
 ## Estrutura do arquivo
 
@@ -51,7 +51,7 @@ Só estes nomes, escritos exatamente assim. A coluna da direita é a página que
 | Caminho mínimo | dijkstra | Memorização | programacao_dinamica |
 | Conjuntos disjuntos | kruskal | Ordenação | ordenacao |
 | Eficiência de algoritmos | eficiencia | Pilhas | pilhas |
-| Estabilidade | ordenacao | Ponteiros | ponteiros |
+| Estabilidade | estabilidade | Ponteiros | ponteiros |
 | Filas | filas | Registros | registros |
 | Fila de prioridade | heapsort | Recursão | recursao |
 | Grafos | grafos | Subestrutura ótima | programacao_dinamica |
@@ -81,9 +81,9 @@ O texto vem quebrado em linhas de ~75 colunas, então o gerador **não** pode tr
 - O código C fica entre as linhas `INICIO_CODIGO_C` e `FIM_CODIGO_C`, depois das referências. Ele vai para uma página HTML separada e colorida. Um TXT pode ter mais de um bloco.
 - Todo código compila sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e roda.
 
-## Páginas (28)
+## Páginas (31)
 
 - **Técnicas:** metodo_guloso, divisao_conquista, tentativa_erro, programacao_dinamica
-- **Fundamentos e estruturas:** eficiencia, recursao, ponteiros, registros, listas_encadeadas, pilhas, filas, hash, arvores, abb, grafos
-- **Ordenação:** ordenacao, bubblesort, selecao_direta, insertionsort, mergesort, quicksort, heapsort, radixsort
-- **Busca e grafos:** busca_binaria, bfs, dijkstra, kruskal, prim
+- **Fundamentos e estruturas:** eficiencia, recursao, ponteiros, registros, listas_encadeadas, pilhas, filas, hash, arvores, algoritmos_arvores, abb, grafos
+- **Ordenação:** ordenacao, estabilidade, bubblesort, selecao_direta, insertionsort, mergesort, quicksort, heapsort, radixsort
+- **Busca e grafos:** busca_binaria, bfs, ordenacao_topologica, dijkstra, kruskal, prim
