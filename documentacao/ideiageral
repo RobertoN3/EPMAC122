@@ -17,11 +17,17 @@ O desenvolvimento será feito por etapas, discutindo as decisões antes de imple
 - O código C é opcional e fica depois do conteúdo e das referências, como última parte do TXT. Ele será apresentado em uma página HTML separada, ligada à página de conteúdo.
 - Proposta de delimitação do código para permitir expansão futura: linhas isoladas `INICIO_CODIGO_C` e `FIM_CODIGO_C`. Não depender de `#include <stdio.h>`: o código pode começar com comentários, outro include ou não usar stdio.h. Os marcadores não aparecem no HTML. Esta proposta está apenas anotada; não foi implementada.
 
-# Ajustes futuros em gerador.c
+# Ajustes em gerador.c (feitos)
 
-- Ler Titulo e usá-lo como rótulo dos links, inclusive para conteúdos que não têm Algoritmo. Definir o comportamento quando não houver título antes da implementação.
-- Respeitar o separador `, ` em Conceitos. Atualmente o programa separa em qualquer vírgula.
-- O programa atual gera cinco categorias e ignora Problema, conforme os prompts anteriores. O enunciado pede seis categorias, incluindo Problema; falta alinhar essa alteração antes de implementar.
+As regras de formato valem como estão em `documentacao/formato_txt.md`. O gerador:
+
+- Lê `7. Titulo:` e o usa como rótulo dos links. Sem título, usa o campo 2 (Algoritmo); sem os dois, o nome do arquivo. Titulo não vira categoria.
+- Separa Técnica, Autores, Data e Conceitos na vírgula, removendo os espaços das pontas.
+- Gera as seis categorias do enunciado, incluindo Problema (página `problema.html`). Arquivos com o mesmo texto de Problema ficam agrupados, e os `[[alvo|texto]]` do Problema viram links.
+- Nos índices de Autores e Data, o link mostra o Algoritmo (sem Algoritmo, o Titulo).
+- No índice de Conceitos, cada conceito traz um link para a sua página explicativa, conforme a tabela do vocabulário fechado.
+- Avisa no terminal sobre conceitos fora do vocabulário e sobre `[[alvo]]` sem `alvo.txt`.
+- Linhas do cabeçalho podem ter até 4095 caracteres.
 
 # Arquivo auxiliar: sugestão ainda não adotada
 
