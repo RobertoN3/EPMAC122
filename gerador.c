@@ -6,17 +6,40 @@
 
 #define PASTA_ENTRADA "entradatxt"
 #define PASTA_SAIDA   "saida"
-#define MAX_LINHA     1024
-#define NUM_CAT       5
+#define MAX_LINHA     4096
+#define NUM_CAT       6
+#define CAMPO_TITULO  7      /* "7. Titulo:" nomeia a página; não é categoria */
 
-/* 1 = o rótulo do link final é o nome do arquivo (kruskal)
-   0 = o rótulo é o campo 2 (Kruskal para árvore espalhada mínima) */
+/* Regras do formato: documentacao/formato_txt.md */
+
+/* 1 = o rótulo do link final é sempre o nome do arquivo (kruskal)
+   0 = o rótulo é o campo 7 (Titulo); sem título, o campo 2 (Algoritmo);
+       sem os dois, o nome do arquivo */
 #define ROTULO_PELO_ARQUIVO 0
 
-static const char *CAT_ROTULO[NUM_CAT] = {"Tecnica", "Algoritmo", "Autores", "Data", "Conceitos"};
-static const char *CAT_SLUG[NUM_CAT]   = {"tecnica", "algoritmo", "autores", "data", "conceitos"};
-/* campos que aceitam vários valores separados por vírgula */
-static const int   CAT_MULTI[NUM_CAT]  = {1, 0, 1, 0, 1};
+enum { C_TECNICA, C_ALGORITMO, C_AUTORES, C_DATA, C_CONCEITOS, C_PROBLEMA };
+
+static const char *CAT_ROTULO[NUM_CAT] = {"Técnica", "Algoritmo", "Autores", "Data", "Conceitos", "Problema"};
+static const char *CAT_SLUG[NUM_CAT]   = {"tecnica", "algoritmo", "autores", "data", "conceitos", "problema"};
+/* campos que aceitam vários valores, separados por vírgula */
+static const int   CAT_MULTI[NUM_CAT]  = {1, 0, 1, 1, 1, 0};
+
+/* Vocabulário fechado de Conceitos e a página que explica cada um
+   (NULL = sem página explicativa). Mantido igual à tabela do formato_txt.md. */
+static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
+    {"Árvores", "arvores"},                 {"Hash", "hash"},
+    {"Árvore espalhada mínima", "kruskal"}, {"Invariante", NULL},
+    {"Busca binária", "busca_binaria"},     {"Listas encadeadas", "listas_encadeadas"},
+    {"Caminho mínimo", "dijkstra"},         {"Memorização", "programacao_dinamica"},
+    {"Conjuntos disjuntos", "kruskal"},     {"Ordenação", "ordenacao"},
+    {"Eficiência de algoritmos", "eficiencia"}, {"Pilhas", "pilhas"},
+    {"Estabilidade", "ordenacao"},          {"Ponteiros", "ponteiros"},
+    {"Filas", "filas"},                     {"Registros", "registros"},
+    {"Fila de prioridade", "heapsort"},     {"Recursão", "recursao"},
+    {"Grafos", "grafos"},                   {"Subestrutura ótima", "programacao_dinamica"},
+    {"Vetores", NULL},
+};
+#define N_VOCAB ((int)(sizeof VOCABULARIO / sizeof VOCABULARIO[0]))
 
 static const char *CSS =
     "body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}"
@@ -26,14 +49,16 @@ static const char *CSS =
     ".botao:hover{background:#1e4e8c}"
     "details{margin:8px 0;border:1px solid #ccc;border-radius:8px;padding:8px 14px}"
     "summary{cursor:pointer;font-weight:600;font-size:1.05rem}"
-    "ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}";
+    "ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}"
+    ".exp{margin:8px 0 0;font-size:.95rem;color:#555}";
 
 /* ---------- estruturas ---------- */
 
 typedef struct {
     char base[256];                    /* nome do arquivo sem .txt */
     char rotulo[MAX_LINHA];            /* texto exibido no link final */
-    char campo[NUM_CAT][MAX_LINHA];    /* campos 1..5 */
+    char campo[NUM_CAT][MAX_LINHA];    /* campos 1..6 */
+    char titulo[MAX_LINHA];            /* campo 7 (pode ficar vazio) */
 } Arquivo;
 
 typedef struct {
@@ -96,6 +121,51 @@ static void href(FILE *o, const char *s) {
     }
 }
 
+/* escreve texto escapado, transformando [[alvo]] e [[alvo|texto]]
+   em <a href="alvo.html">...</a> (usado no campo Problema) */
+static void esc_links(FILE *o, const char *s) {
+    char buf[MAX_LINHA];
+    while (*s) {
+        const char *ab = strstr(s, "[[");
+        const char *fe = ab ? strstr(ab + 2, "]]") : NULL;
+        if (!ab || !fe) { esc(o, s); return; }      /* sem link: resto literal */
+
+        size_t n = (size_t)(ab - s);                 /* texto antes do link */
+        memcpy(buf, s, n); buf[n] = '\0';
+        esc(o, buf);
+
+        n = (size_t)(fe - (ab + 2));                 /* conteúdo entre [[ e ]] */
+        memcpy(buf, ab + 2, n); buf[n] = '\0';
+        char *barra = strchr(buf, '|');
+        char *texto = buf;
+        if (barra) { *barra = '\0'; texto = barra + 1; }
+
+        fputs("<a href=\"", o);
+        href(o, trim(buf));
+        fputs(".html\">", o);
+        esc(o, trim(texto));
+        fputs("</a>", o);
+        s = fe + 2;
+    }
+}
+
+static int existe_arquivo(const char *base);
+
+/* avisa sobre [[alvo]] cujo alvo.txt não existe */
+static void checar_links(const char *s, const char *nome) {
+    char alvo[256];
+    while ((s = strstr(s, "[["))) {
+        const char *fe = strstr(s + 2, "]]");
+        if (!fe) return;
+        size_t n = strcspn(s + 2, "|]");
+        if (n >= sizeof alvo) n = sizeof alvo - 1;
+        memcpy(alvo, s + 2, n); alvo[n] = '\0';
+        if (!existe_arquivo(alvo))
+            printf("[aviso] %s: link [[%s]] sem %s.txt\n", nome, alvo, alvo);
+        s = fe + 2;
+    }
+}
+
 static int reservado(const char *base) {
     if (strcmp(base, "index") == 0) return 1;
     for (int c = 0; c < NUM_CAT; c++)
@@ -145,10 +215,12 @@ static void ler_arquivo(const char *caminho, const char *nome) {
         char *dp = strchr(fim, ':');
         if (!dp) break;
 
-        if (n >= 1 && n <= NUM_CAT) {           /* 6 (Problema) e outros são ignorados */
+        if (n >= 1 && n <= NUM_CAT) {           /* campos 1..6: categorias */
             strncpy(a->campo[n - 1], trim(dp + 1), MAX_LINHA - 1);
             achou = 1;
-        }
+        } else if (n == CAMPO_TITULO) {         /* campo 7: título da página */
+            strncpy(a->titulo, trim(dp + 1), MAX_LINHA - 1);
+        }                                       /* outros números são ignorados */
     }
     fclose(f);
 
@@ -157,8 +229,10 @@ static void ler_arquivo(const char *caminho, const char *nome) {
         return;
     }
 
-    if (!ROTULO_PELO_ARQUIVO && a->campo[1][0]) strcpy(a->rotulo, a->campo[1]);
-    else                                        strcpy(a->rotulo, a->base);
+    if      (ROTULO_PELO_ARQUIVO) strcpy(a->rotulo, a->base);
+    else if (a->titulo[0])        strcpy(a->rotulo, a->titulo);
+    else if (a->campo[1][0])      strcpy(a->rotulo, a->campo[1]);
+    else                          strcpy(a->rotulo, a->base);
     n_arq++;
 }
 
@@ -191,17 +265,38 @@ static void adicionar(int c, const char *texto, int ia) {
     val->idx[val->n++] = ia;
 }
 
+static int existe_arquivo(const char *base) {
+    for (int i = 0; i < n_arq; i++)
+        if (strcmp(arq[i].base, base) == 0) return 1;
+    return 0;
+}
+
+/* posição do conceito no vocabulário, ou -1 */
+static int no_vocabulario(const char *conceito) {
+    for (int k = 0; k < N_VOCAB; k++)
+        if (strcmp(VOCABULARIO[k].conceito, conceito) == 0) return k;
+    return -1;
+}
+
 static void montar_categorias(void) {
     for (int i = 0; i < n_arq; i++) {
+        char nome[300];
+        snprintf(nome, sizeof nome, "%s.txt", arq[i].base);
+        checar_links(arq[i].campo[C_PROBLEMA], nome);
+
         for (int c = 0; c < NUM_CAT; c++) {
             if (!arq[i].campo[c][0]) continue;
 
             if (CAT_MULTI[c]) {
+                /* separa na vírgula e remove os espaços das pontas */
                 char copia[MAX_LINHA];
                 strcpy(copia, arq[i].campo[c]);
                 for (char *tok = strtok(copia, ","); tok; tok = strtok(NULL, ",")) {
                     char *t = trim(tok);
-                    if (*t) adicionar(c, t, i);
+                    if (!*t) continue;
+                    if (c == C_CONCEITOS && no_vocabulario(t) < 0)
+                        printf("[aviso] %s: conceito fora do vocabulário: %s\n", nome, t);
+                    adicionar(c, t, i);
                 }
             } else {
                 adicionar(c, arq[i].campo[c], i);
@@ -210,11 +305,30 @@ static void montar_categorias(void) {
     }
 }
 
+/* Texto do link de um arquivo dentro de uma categoria. Em Autores e Data o
+   link mostra o Algoritmo (a obra datada e atribuída); sem Algoritmo, o
+   título. Nas demais categorias, sempre o título. */
+static const char *rotulo_em(int c, const Arquivo *a) {
+    if ((c == C_AUTORES || c == C_DATA) && a->campo[C_ALGORITMO][0] && !ROTULO_PELO_ARQUIVO)
+        return a->campo[C_ALGORITMO];
+    return a->rotulo;
+}
+
+static int cat_atual;                   /* categoria usada por cmp_idx */
+
 static int cmp_valor(const void *a, const void *b) {
     return cmp_ci(((const Valor *)a)->texto, ((const Valor *)b)->texto);
 }
 static int cmp_idx(const void *a, const void *b) {
-    return cmp_ci(arq[*(const int *)a].rotulo, arq[*(const int *)b].rotulo);
+    return cmp_ci(rotulo_em(cat_atual, &arq[*(const int *)a]),
+                  rotulo_em(cat_atual, &arq[*(const int *)b]));
+}
+
+/* índice do arquivo com esse nome-base, ou -1 */
+static int achar_arquivo(const char *base) {
+    for (int i = 0; i < n_arq; i++)
+        if (strcmp(arq[i].base, base) == 0) return i;
+    return -1;
 }
 
 /* ---------- geração dos HTMLs ---------- */
@@ -255,19 +369,36 @@ static void gerar_categoria(int c) {
 
     if (C->n == 0) fputs("<p>Nenhum item encontrado.</p>\n", o);
 
+    cat_atual = c;
     for (int i = 0; i < C->n; i++) {
         Valor *v = &C->v[i];
         qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
 
         fputs("<details><summary>", o);
-        esc(o, v->texto);
-        fprintf(o, " <span class=\"n\">(%d)</span></summary>\n<ul>\n", v->n);
+        if (c == C_PROBLEMA) esc_links(o, v->texto);   /* [[alvo|texto]] vira link */
+        else                 esc(o, v->texto);
+        fprintf(o, " <span class=\"n\">(%d)</span></summary>\n", v->n);
+
+        /* Conceitos: liga o nome do conceito à página que o explica */
+        if (c == C_CONCEITOS) {
+            int k = no_vocabulario(v->texto);
+            int p = (k >= 0 && VOCABULARIO[k].pagina) ? achar_arquivo(VOCABULARIO[k].pagina) : -1;
+            if (p >= 0) {
+                fputs("<p class=\"exp\">Explicação: <a href=\"", o);
+                href(o, arq[p].base);
+                fputs(".html\">", o);
+                esc(o, arq[p].rotulo);
+                fputs("</a></p>\n", o);
+            }
+        }
+
+        fputs("<ul>\n", o);
         for (int j = 0; j < v->n; j++) {
             Arquivo *a = &arq[v->idx[j]];
             fputs("  <li><a href=\"", o);
             href(o, a->base);
             fputs(".html\">", o);
-            esc(o, a->rotulo);
+            esc(o, rotulo_em(c, a));
             fputs("</a></li>\n", o);
         }
         fputs("</ul></details>\n", o);
