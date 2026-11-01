@@ -1,8 +1,8 @@
 2. Algoritmo: Inserção, busca e remoção em lista encadeada
 3. Autores: Allen Newell, Cliff Shaw, Herbert A. Simon
 4. Data: 1956
-5. Conceitos: Listas encadeadas, Ponteiros, Registros, Recursão, Alocação dinâmica
-6. Problema: Manter uma sequência de elementos que cresce e diminui durante a execução, inserindo e removendo em qualquer ponto sem deslocar os demais
+5. Conceitos: Listas encadeadas, Ponteiros, Registros, Recursão
+6. Problema: Dada uma sequência de elementos que cresce e diminui durante a execução, inserir e remover elementos em qualquer ponto sem deslocar os demais
 7. Titulo: Listas encadeadas
 
 ## Ideia geral
@@ -21,9 +21,9 @@ pista diz onde está a pista seguinte, e a última diz "fim".
 
 ## A célula
 
-Cada célula é um registro (struct) com dois campos:
+Cada célula é um [[registros|registro]] (struct) com dois campos:
 - o conteúdo (um número, uma cadeia, um registro com vários dados);
-- um ponteiro para a próxima célula, chamado prox.
+- um [[ponteiros|ponteiro]] para a próxima célula, chamado prox.
 
 Em C, a declaração é autorreferente: a struct celula contém um campo do tipo
 "ponteiro para struct celula". A última célula tem prox == NULL, o que marca
@@ -36,6 +36,7 @@ vontade durante a execução, limitada apenas pela memória disponível.
 
 ## Vetor x lista encadeada
 
+```
   Operação                          Vetor         Lista encadeada
   acessar o i-ésimo elemento        O(1)          O(i)
   buscar um valor                   O(n)          O(n)
@@ -45,6 +46,7 @@ vontade durante a execução, limitada apenas pela memória disponível.
                                                   ponteiro para o último
   memória extra por elemento        nenhuma       um ponteiro
   tamanho                           fixo          variável
+```
 
 (*) se houver espaço no vetor.
 
@@ -56,25 +58,33 @@ para simplesmente percorrer os dados.
 
 Percorrer (por exemplo, para imprimir ou contar):
 
+```
   p <- primeira célula
   enquanto p != NULL:
       processe p->conteudo
       p <- p->prox
+```
 
 Buscar x: percorrer até encontrar uma célula com conteúdo x (devolve um
 ponteiro para ela) ou chegar a NULL (x não está). Custo O(n).
 
 Inserir uma nova célula logo DEPOIS da célula p:
+
+```
   1) nova <- malloc(...); nova->conteudo = x
   2) nova->prox = p->prox      (a nova aponta para quem vinha depois de p)
   3) p->prox = nova            (p passa a apontar para a nova)
+```
 A ordem dos passos 2 e 3 importa: invertê-los perderia o resto da lista.
 Custo O(1): nenhum elemento é deslocado.
 
 Remover a célula logo DEPOIS de p:
+
+```
   1) lixo = p->prox
   2) p->prox = lixo->prox      ("pula" a célula removida)
   3) free(lixo)
+```
 Também O(1).
 
 Observe que, para inserir ou remover, precisamos de um ponteiro para a
@@ -92,16 +102,18 @@ curto e com menos chances de erro.
 
 ## Listas e recursão
 
-Uma lista encadeada é uma estrutura recursiva: ou é vazia (NULL), ou é uma
+Uma lista encadeada é uma estrutura [[recursao|recursiva]]: ou é vazia (NULL), ou é uma
 célula seguida de uma lista (a que começa em prox). Por isso muitas
 operações têm versões recursivas naturais:
 
+```
   tamanho(lst): se lst == NULL devolva 0; senão devolva 1 + tamanho(lst->prox)
   imprime(lst): se lst == NULL pare; imprima lst->conteudo; imprime(lst->prox)
+```
 
 Trocando a ordem das duas últimas ações de imprime, obtém-se a lista impressa
 de trás para a frente, sem esforço extra. Cuidado: para listas muito longas,
-a recursão pode esgotar a pilha de execução.
+a recursão pode esgotar a [[pilhas|pilha]] de execução.
 
 ## Variações
 
@@ -115,13 +127,13 @@ a recursão pode esgotar a pilha de execução.
   rodízio, o problema de Josefo).
 - Lista ordenada: mantida em ordem crescente; a inserção procura o lugar
   certo. Intercalar duas listas ordenadas é fácil e não exige memória extra,
-  o que torna o Merge Sort muito adequado para listas.
+  o que torna o [[mergesort|Merge Sort]] muito adequado para listas.
 
 ## Onde as listas são usadas
 
-- implementação de pilhas e filas de tamanho ilimitado;
-- listas de adjacência de grafos esparsos;
-- encadeamento de colisões em tabelas de espalhamento;
+- implementação de pilhas e [[filas]] de tamanho ilimitado;
+- listas de adjacência de [[grafos]] esparsos;
+- encadeamento de colisões em [[hash|tabelas de espalhamento]];
 - polinômios esparsos (só os termos não nulos) e matrizes esparsas;
 - gerenciadores de memória, que mantêm listas de blocos livres;
 - a linguagem LISP, inteiramente baseada em listas.

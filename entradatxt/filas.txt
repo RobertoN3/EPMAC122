@@ -1,6 +1,6 @@
 2. Algoritmo: Fila circular em vetor
 5. Conceitos: Filas, Vetores, Listas encadeadas, Grafos
-6. Problema: Manter uma sequência de elementos em que o primeiro a entrar é o primeiro a sair, com inserção e remoção em tempo constante
+6. Problema: Dada uma sequência de chegadas e atendimentos, atender os elementos na ordem em que chegaram (o primeiro a entrar é o primeiro a sair), com inserção e remoção em tempo constante
 7. Titulo: Filas
 
 ## Ideia geral
@@ -11,7 +11,7 @@ inserido é o primeiro a ser removido: a política é FIFO (first in, first
 out, "primeiro a entrar, primeiro a sair").
 
 É exatamente o comportamento de uma fila de banco ou de supermercado: quem
-chega vai para o fim, e é atendido quem está no começo. Enquanto a pilha
+chega vai para o fim, e é atendido quem está no começo. Enquanto a [[pilhas|pilha]]
 "inverte" a ordem de chegada, a fila a preserva. Por isso filas aparecem
 sempre que é preciso atender pedidos de forma justa, na ordem em que
 chegaram.
@@ -45,8 +45,10 @@ custaria O(n) por operação.
 A solução é tratar o vetor como se fosse circular: depois da última posição,
 N-1, vem de novo a posição 0. Os índices avançam "módulo N":
 
+```
   fim = (fim + 1) % N
   ini = (ini + 1) % N
+```
 
 Assim o espaço liberado no começo do vetor é reaproveitado, e todas as
 operações continuam O(1).
@@ -60,11 +62,13 @@ vazia quanto com a fila cheia. Há duas soluções usuais:
 
 Exemplo com N = 5 (os índices dão a volta):
 
+```
   insere 10, 20, 30, 40     f = [10 20 30 40 _ ]   ini=0 fim=4 tam=4
   remove -> 10, remove -> 20 f = [_  _  30 40 _ ]   ini=2 fim=4 tam=2
   insere 50, 60, 70          f = [60 70 30 40 50]   ini=2 fim=2 tam=5
   insere 80                  recusado: fila cheia
   remove tudo                30 40 50 60 70, na ordem de chegada
+```
 
 Essa estrutura também é chamada buffer circular (ring buffer) e é usada em
 drivers de dispositivos, placas de som e rede e na comunicação entre
@@ -73,7 +77,7 @@ início, sem que nada precise ser deslocado.
 
 ## Implementação em lista encadeada
 
-Mantêm-se dois ponteiros: um para a primeira célula (de onde se remove) e
+Mantêm-se dois [[ponteiros]]: um para a primeira célula (de onde se remove) e
 outro para a última (onde se insere).
 - insere(x): cria uma célula com x e prox = NULL; se a fila está vazia, ela
   vira a primeira e a última; senão, ultima->prox = nova e a última passa a
@@ -86,10 +90,10 @@ com um único ponteiro para a última célula (cuja prox é a primeira).
 
 ## Aplicações
 
-- Busca em largura em grafos: a fila garante que os vértices sejam
+- [[bfs|Busca em largura]] em [[grafos]]: a fila garante que os vértices sejam
   visitados em ordem de distância à origem, e por isso a BFS calcula
   menores caminhos em número de arestas. Também é usada no percurso por
-  níveis de árvores.
+  níveis de [[arvores|árvores]].
 - Sistemas operacionais: fila de processos prontos para usar a CPU (o
   escalonamento "round robin" atende cada processo por um tempo e o devolve
   ao fim da fila), filas de impressão, filas de requisições de disco.
@@ -102,10 +106,10 @@ com um único ponteiro para a última célula (cuja prox é a primeira).
 
 - Deque (double-ended queue): permite inserir e remover nas duas
   extremidades; generaliza a pilha e a fila.
-- Fila de prioridade: cada elemento tem uma prioridade e sai primeiro o de
+- [[heapsort|Fila de prioridade]]: cada elemento tem uma prioridade e sai primeiro o de
   maior (ou menor) prioridade, independentemente da ordem de chegada. É
   implementada eficientemente com um heap, com inserção e remoção em
-  O(log n), e é usada nos algoritmos de Dijkstra, de Prim, no Heap Sort e no
+  O(log n), e é usada nos [[dijkstra|algoritmos de Dijkstra]], de [[prim|Prim]], no Heap Sort e no
   código de Huffman.
 
 ## Histórico

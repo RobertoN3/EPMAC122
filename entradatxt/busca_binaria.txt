@@ -3,7 +3,7 @@
 3. Autores: John Mauchly
 4. Data: 1946
 5. Conceitos: Busca binária, Vetores, Ordenação, Recursão, Eficiência de algoritmos, Invariante
-6. Problema: Dado um vetor em ordem crescente e um valor x, decidir se x está no vetor e em que posição
+6. Problema: Dado um vetor [[ordenacao|em ordem crescente]] e um valor x, decidir se x está no vetor e em que posição
 7. Titulo: Busca binária
 
 ## Ideia geral
@@ -39,17 +39,21 @@ T(n) = O(log n).
 
 v = (2, 5, 8, 12, 16, 23, 38, 56, 72, 91), procurando x = 23.
 
+```
   ini = 0, fim = 9: m = 4, v[4] = 16 < 23  -> ini = 5
   ini = 5, fim = 9: m = 7, v[7] = 56 > 23  -> fim = 6
   ini = 5, fim = 6: m = 5, v[5] = 23 = x   -> encontrado na posição 5
+```
 
 Procurando x = 40:
 
+```
   ini = 0, fim = 9: m = 4, v[4] = 16 < 40  -> ini = 5
   ini = 5, fim = 9: m = 7, v[7] = 56 > 40  -> fim = 6
   ini = 5, fim = 6: m = 5, v[5] = 23 < 40  -> ini = 6
   ini = 6, fim = 6: m = 6, v[6] = 38 < 40  -> ini = 7
   ini = 7 > fim = 6: trecho vazio          -> 40 não está no vetor
+```
 
 ## Análise
 
@@ -57,15 +61,17 @@ A cada passo, o tamanho do trecho cai de k para no máximo k/2. Começando com
 n, depois de t passos o trecho tem no máximo n/2^t elementos; ele fica vazio
 quando 2^t > n, isto é, depois de cerca de log2(n) + 1 passos. Assim:
 
+```
   n = 1 000          ->  no máximo 10 comparações
   n = 1 000 000      ->  no máximo 20 comparações
   n = 1 000 000 000  ->  no máximo 30 comparações
+```
 
 Comparada à busca sequencial (até um bilhão de comparações no último caso),
 a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado:
 ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas
 no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca
-binária não funciona bem em listas encadeadas (para isso existem as árvores
+binária não funciona bem em [[listas_encadeadas|listas encadeadas]] (para isso existem as [[arvores|árvores]]
 binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).
 
 ## Correção: o invariante
@@ -73,7 +79,9 @@ binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).
 O invariante do laço da versão iterativa, com intervalo fechado [ini, fim],
 é:
 
+```
   se x está no vetor, então x está em v[ini..fim].
+```
 
 - No início, ini = 0 e fim = n-1: o trecho é o vetor todo, e o invariante
   vale.
@@ -104,16 +112,18 @@ corretamente. Pontos que exigem atenção:
 
 ## Versão recursiva
 
+```
   busca(v, ini, fim, x):
       se ini > fim: devolva -1          (trecho vazio)
       m <- (ini + fim) / 2
       se v[m] == x: devolva m
       se x < v[m]: devolva busca(v, ini, m-1, x)
       senão:       devolva busca(v, m+1, fim, x)
+```
 
-É uma recursão de cauda (a chamada recursiva é a última operação), que se
+É uma [[recursao|recursão]] de cauda (a chamada recursiva é a última operação), que se
 traduz diretamente na versão iterativa. A profundidade da recursão é
-O(log n), então não há risco de estourar a pilha.
+O(log n), então não há risco de estourar a [[pilhas|pilha]].
 
 ## Generalizações
 

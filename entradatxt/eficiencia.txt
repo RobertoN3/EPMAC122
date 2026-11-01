@@ -1,5 +1,4 @@
-5. Conceitos: Eficiência de algoritmos, Notação O, Vetores
-6. Problema: Comparar algoritmos que resolvem o mesmo problema quanto à precisão da resposta e ao tempo e memória que consomem em função do tamanho da entrada
+5. Conceitos: Eficiência de algoritmos, Vetores
 7. Titulo: Eficiência de algoritmos
 
 ## Ideia geral
@@ -41,7 +40,9 @@ número finito de somas e multiplicações. Calculadoras e bibliotecas as
 aproximam por séries truncadas, como a série de Taylor (de MacLaurin) em
 torno de 0:
 
+```
   cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ...
+```
 
 Três maneiras de implementá-la:
 
@@ -70,7 +71,7 @@ comparar ALGORITMOS, usa-se um modelo abstrato:
   atribuições, operações aritméticas, acessos a vetor), supondo que cada uma
   custa tempo constante;
 - expressa-se essa contagem como função do tamanho n da entrada (o número
-  de elementos do vetor, de vértices do grafo, de dígitos do número...).
+  de elementos do vetor, de vértices do [[grafos|grafo]], de dígitos do número...).
 
 Como entradas do mesmo tamanho podem exigir esforços diferentes, analisam-se
 três casos:
@@ -101,6 +102,7 @@ assintótica descreve só a ordem de crescimento.
 
 Ordens de crescimento comuns, da mais rápida para a mais lenta:
 
+```
   O(1)        constante     acesso a v[i], empilhar
   O(log n)    logarítmica   busca binária
   O(n)        linear        busca sequencial, maior elemento
@@ -109,6 +111,7 @@ Ordens de crescimento comuns, da mais rápida para a mais lenta:
   O(n³)       cúbica        multiplicação ingênua de matrizes
   O(2^n)      exponencial   subconjuntos, Fibonacci recursivo ingênuo
   O(n!)       fatorial      todas as permutações
+```
 
 Para sentir a diferença, suponha um computador que faça 10^9 operações por
 segundo e uma entrada com n = 10^6 elementos:
@@ -125,16 +128,16 @@ algoritmo O(2^n) resolver entradas só cerca de 10 unidades maiores.
 - Laços em sequência: somam-se os custos (o maior domina).
 - Laços aninhados: multiplicam-se. Dois laços de 1 a n dão O(n²).
 - Laço em que a variável é dividida por 2 a cada passo: O(log n).
-- Algoritmos recursivos: escreve-se uma recorrência, como T(n) = 2T(n/2) +
-  n, e resolve-se (árvore de recursão, substituição ou teorema mestre).
+- Algoritmos [[recursao|recursivos]]: escreve-se uma recorrência, como T(n) = 2T(n/2) +
+  n, e resolve-se ([[arvores|árvore]] de recursão, substituição ou teorema mestre).
 
 ## Memória
 
 A mesma análise vale para o espaço. Um algoritmo é "in place" se usa memória
-extra O(1) (bolha, seleção, inserção, Heap Sort). O Merge Sort usa O(n)
-extra; algoritmos recursivos usam memória de pilha proporcional à
+extra O(1) (bolha, seleção, inserção, [[heapsort|Heap Sort]]). O [[mergesort|Merge Sort]] usa O(n)
+extra; algoritmos recursivos usam memória de [[pilhas|pilha]] proporcional à
 profundidade da recursão. Muitas vezes é possível trocar memória por tempo,
-como na programação dinâmica e nas tabelas de espalhamento.
+como na [[programacao_dinamica|programação dinâmica]] e nas [[hash|tabelas de espalhamento]].
 
 ## Limites do que é possível
 

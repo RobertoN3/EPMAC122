@@ -1,4 +1,4 @@
-5. Conceitos: Ordenação, Vetores, Algoritmo estável, Eficiência de algoritmos
+5. Conceitos: Ordenação, Vetores, Estabilidade, Eficiência de algoritmos
 6. Problema: Dado um vetor de n elementos comparáveis, rearranjá-lo de modo que fique em ordem crescente
 7. Titulo: Algoritmos de ordenação
 
@@ -10,7 +10,7 @@ computação, por três razões:
 
 - é extremamente frequente: listas de contatos, resultados de busca,
   relatórios, índices de livros, bancos de dados;
-- dados ordenados tornam outros problemas fáceis: busca binária, encontrar
+- dados ordenados tornam outros problemas fáceis: [[busca_binaria|busca binária]], encontrar
   repetidos, intercalar listas, calcular a mediana, encontrar os k maiores;
 - é um ótimo "laboratório" para estudar técnicas de projeto (guloso, divisão
   e conquista, distribuição) e de análise de algoritmos.
@@ -20,11 +20,11 @@ processamento dos computadores comerciais era gasta ordenando dados.
 
 ## Chaves e registros
 
-Em geral não se ordenam números soltos, mas registros (structs) com vários
+Em geral não se ordenam números soltos, mas [[registros]] (structs) com vários
 campos, usando um deles como chave de ordenação: alunos por número USP,
 produtos por preço, arquivos por data. Os algoritmos são os mesmos; só a
 comparação e a cópia mudam. Quando os registros são grandes, costuma-se
-ordenar um vetor de ponteiros ou de índices, para não copiar registros
+ordenar um vetor de [[ponteiros]] ou de índices, para não copiar registros
 inteiros.
 
 ## Estabilidade
@@ -43,15 +43,17 @@ chave primária.
 
 Exemplo com pares (primária, secundária):
 
+```
   original:            (3,6) (7,5) (3,5) (6,2) (9,1)
   pela secundária:     (9,1) (6,2) (7,5) (3,5) (3,6)
   depois, estável,
   pela primária:       (3,5) (3,6) (6,2) (7,5) (9,1)
+```
 
 Os pares (3,5) e (3,6) empatam na chave primária e permanecem na ordem
 obtida na etapa anterior, isto é, ordenados pela secundária. Usos práticos:
 ordenar uma planilha por cidade e, dentro de cada cidade, por nome;
-ordenar índices (linha, coluna) de uma matriz; e o próprio Radix Sort, que
+ordenar índices (linha, coluna) de uma matriz; e o próprio [[radixsort|Radix Sort]], que
 ordena dígito a dígito, do menos para o mais significativo, e depende de cada
 passada ser estável.
 
@@ -62,14 +64,14 @@ como critério de desempate, ao custo de memória extra.
 
 Métodos elementares, O(n²):
 
-- Bolha (bubble sort): troca vizinhos fora de ordem; cada passada leva o
+- Bolha ([[bubblesort|bubble sort]]): troca vizinhos fora de ordem; cada passada leva o
   maior elemento restante para o fim. Estável. Faz muitas trocas.
-  Pode ser vista como método guloso.
-- Seleção direta (selection sort): a cada passo, seleciona o menor elemento
+  Pode ser vista como [[metodo_guloso|método guloso]].
+- [[selecao_direta|Seleção direta]] (selection sort): a cada passo, seleciona o menor elemento
   restante e o troca com o primeiro da parte não ordenada. Faz sempre
   n(n-1)/2 comparações, mas apenas n-1 trocas. A versão com trocas NÃO é
   estável.
-- Inserção direta (insertion sort): como quem organiza cartas na mão, insere
+- [[insertionsort|Inserção direta]] (insertion sort): como quem organiza cartas na mão, insere
   cada novo elemento na posição correta entre os anteriores, já ordenados,
   deslocando os maiores para a direita. Estável. Muito rápida para vetores
   pequenos ou quase ordenados: o custo é O(n + número de inversões), e um
@@ -77,16 +79,16 @@ Métodos elementares, O(n²):
 
 Métodos eficientes, O(n log n):
 
-- Merge Sort (von Neumann, 1945): divisão e conquista; divide ao meio,
+- [[mergesort|Merge Sort]] (von Neumann, 1945): [[divisao_conquista|divisão e conquista]]; divide ao meio,
   ordena as metades recursivamente e intercala. O(n log n) em todos os
   casos, estável, mas usa O(n) de memória extra.
-- Quick Sort (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona
+- [[quicksort|Quick Sort]] (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona
   o vetor em "menores" e "maiores" que ele, ordenando cada parte
   recursivamente. O(n log n) em média, mas O(n²) no pior caso (pivô sempre
   extremo, por exemplo com vetor já ordenado e pivô no início). Escolher o
   pivô ao acaso ou pela mediana de três torna o pior caso muito improvável.
   Em geral é o mais rápido na prática. Não é estável.
-- Heap Sort (Williams, 1964): monta um heap (árvore binária guardada no
+- [[heapsort|Heap Sort]] (Williams, 1964): monta um heap ([[arvores|árvore binária]] guardada no
   vetor, em que cada pai é maior que os filhos) e retira repetidamente o
   máximo. O(n log n) no pior caso e memória O(1). Não é estável.
 
@@ -100,6 +102,7 @@ Métodos por distribuição (não comparam elementos entre si):
 
 Resumo:
 
+```
   Algoritmo       Técnica              Pior caso    Médio       Memória  Estável
   Bolha           método guloso        O(n²)        O(n²)       O(1)     sim
   Seleção direta  método guloso        O(n²)        O(n²)       O(1)     não
@@ -108,8 +111,9 @@ Resumo:
   Quick Sort      divisão e conquista  O(n²)        O(n log n)  O(log n) não
   Heap Sort       seleção com heap     O(n log n)   O(n log n)  O(1)     não
   Radix Sort      distribuição         O(d(n+k))    O(d(n+k))   O(n+k)   sim
+```
 
-(A memória do Quick Sort é a da pilha de recursão, quando se ordena
+(A memória do Quick Sort é a da [[pilhas|pilha]] de [[recursao|recursão]], quando se ordena
 recursivamente primeiro a parte menor.)
 
 ## Limite inferior para ordenação por comparação

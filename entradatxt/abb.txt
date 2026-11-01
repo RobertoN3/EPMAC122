@@ -1,0 +1,208 @@
+2. Algoritmo: Busca, inserção e remoção em árvore binária de busca
+3. Autores: P. F. Windley, A. D. Booth, A. J. T. Colin, Thomas N. Hibbard
+4. Data: 1960, 1962
+5. Conceitos: Árvores, Busca binária, Recursão, Ponteiros, Registros, Ordenação
+6. Problema: Dado um conjunto de chaves que muda durante a execução, buscar, inserir e remover chaves e listá-las [[ordenacao|em ordem crescente]], cada operação em tempo proporcional à altura da [[arvores|árvore]]
+7. Titulo: Árvore binária de busca (ABB)
+
+## Ideia geral
+
+Uma árvore binária de busca (ABB) é uma [[arvores|árvore binária]] em que
+cada nó tem uma chave e vale, para todo nó x:
+- todas as chaves da subárvore esquerda de x são menores que a chave de x;
+- todas as chaves da subárvore direita de x são maiores que a chave de x.
+
+É a ideia da [[busca_binaria|busca binária]] transformada em estrutura de
+dados. No vetor ordenado, a busca é rápida, mas inserir ou remover exige
+deslocar até n elementos. Na [[listas_encadeadas|lista encadeada]], inserir
+e remover é barato, mas a busca é sequencial. A ABB combina as duas
+vantagens: os nós são [[registros]] ligados por [[ponteiros]], e cada
+comparação descarta uma subárvore inteira.
+
+Exemplo, inserindo 50, 30, 70, 20, 40, 60 e 80, nessa ordem:
+
+```
+            50
+          /    \
+        30      70
+       /  \    /  \
+      20  40  60  80
+```
+
+## Busca
+
+Começa na raiz. Se a chave procurada k é igual à do nó, achou; se é menor,
+desce para a esquerda; se é maior, desce para a direita; se chegar a NULL,
+k não está na árvore. Na árvore acima, buscar 60 examina 50, 70 e 60: três
+comparações em vez das até sete de uma busca sequencial.
+
+## Inserção
+
+Faz a mesma descida da busca. O lugar NULL onde ela termina é exatamente
+onde o novo nó deve ser pendurado, como folha. Na versão
+[[recursao|recursiva]], a função devolve a raiz da subárvore depois da
+inserção, o que trata de forma uniforme o caso da árvore vazia.
+
+## Listagem ordenada
+
+O percurso in-ordem (esquerda, raiz, direita) visita as chaves em ordem
+crescente, em tempo O(n). A prova é por indução: todas as chaves da
+esquerda são menores que a raiz, que é menor que todas as da direita, e cada
+subárvore é listada em ordem pela hipótese de indução. Inserir n chaves e
+fazer o percurso é, portanto, um algoritmo de [[ordenacao|ordenação]], o
+"tree sort".
+
+## Mínimo, máximo e sucessor
+
+O mínimo é o nó mais à esquerda (desce por esq até não poder mais) e o
+máximo, o mais à direita. O sucessor de um nó x com subárvore direita é o
+mínimo dessa subárvore.
+
+## Remoção
+
+É a operação mais delicada. Seja x o nó a remover:
+1) x é folha: basta retirá-lo (o ponteiro do pai passa a ser NULL).
+2) x tem um único filho: o filho ocupa o lugar de x.
+3) x tem dois filhos: copia-se para x a chave do seu sucessor s (o menor nó
+   da subárvore direita) e remove-se s, que não tem filho esquerdo e cai no
+   caso 1 ou 2.
+
+Na árvore do exemplo, remover 50 (dois filhos) copia 60 para a raiz e
+remove a folha 60:
+
+```
+            60
+          /    \
+        30      70
+       /  \       \
+      20  40      80
+```
+
+## Complexidade
+
+Busca, inserção e remoção custam O(h), em que h é a altura da árvore.
+- Se a árvore for balanceada, h = O(log n): com um milhão de chaves, cerca
+  de 20 comparações.
+- No pior caso, h = n-1 e as operações custam O(n). Isso acontece, por
+  exemplo, ao inserir as chaves já em ordem crescente: cada nova chave vira
+  filho direito da anterior, e a árvore degenera em uma lista.
+- Inserindo as chaves em ordem aleatória, a altura esperada é O(log n), e o
+  número médio de comparações de uma busca é cerca de 1,39 log2 n.
+
+Para garantir O(log n) no pior caso usam-se árvores balanceadas (AVL,
+rubro-negras), que reorganizam a árvore com rotações. Veja a página
+[[arvores]] e [[eficiencia|eficiência de algoritmos]].
+
+## ABB x tabela de espalhamento
+
+Uma [[hash|tabela de espalhamento]] faz busca, inserção e remoção em tempo
+médio constante, mais rápido que a ABB. Mas ela espalha as chaves sem
+ordem: listar em ordem crescente, achar o mínimo, o sucessor ou todas as
+chaves entre a e b é natural na ABB e caro na tabela.
+
+## Histórico
+
+A árvore binária de busca foi inventada independentemente por vários
+grupos por volta de 1960: P. F. Windley, A. D. Booth e A. J. T. Colin
+publicaram em 1960, e Thomas N. Hibbard, em 1962, analisou a estrutura e
+propôs o algoritmo de remoção pelo sucessor. As árvores balanceadas
+vieram logo depois, com as árvores AVL de Adelson-Velsky e Landis (1962).
+
+## Sobre o código
+
+O programa de exemplo insere as chaves do exemplo com inserção recursiva,
+lista em ordem com o percurso in-ordem, busca uma chave presente e uma
+ausente com busca iterativa, remove a raiz (caso de dois filhos) e uma
+folha, lista de novo e libera a memória em pós-ordem.
+
+REFERENCIAS:
+- FEOFILOFF, P. Árvores binárias de busca. https://www.ime.usp.br/~pf/algoritmos/aulas/binst.html
+- FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 12 (Árvores binárias de busca).
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.2.2 (Binary tree searching).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 12 (Symbol Tables and Binary Search Trees).
+- SZWARCFITER, J. L.; MARKENZON, L. Estruturas de Dados e seus Algoritmos. 3. ed. Rio de Janeiro: LTC, 2010.
+- HIBBARD, T. N. Some combinatorial properties of certain trees with applications to searching and sorting. Journal of the ACM, v. 9, n. 1, p. 13-28, 1962.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct no {
+  int chave;
+  struct no *esq, *dir;
+} No;
+
+/* insere x na ABB de raiz r e devolve a (nova) raiz */
+No *insere(No *r, int x) {
+  if (r == NULL) {                     /* lugar vazio: cria o nó */
+    No *novo = malloc(sizeof(No));
+    if (novo == NULL) exit(1);
+    novo->chave = x;
+    novo->esq = novo->dir = NULL;
+    return novo;
+  }
+  if (x < r->chave) r->esq = insere(r->esq, x);
+  else if (x > r->chave) r->dir = insere(r->dir, x);
+  return r;                            /* chave repetida: nada a fazer */
+}
+
+/* devolve o nó com chave x, ou NULL */
+No *busca(No *r, int x) {
+  while (r != NULL && r->chave != x)
+    r = (x < r->chave) ? r->esq : r->dir;
+  return r;
+}
+
+No *minimo(No *r) {
+  while (r->esq != NULL) r = r->esq;
+  return r;
+}
+
+/* remove x da ABB de raiz r e devolve a (nova) raiz */
+No *remove_chave(No *r, int x) {
+  No *filho;
+  if (r == NULL) return NULL;          /* x não está na árvore */
+  if (x < r->chave) r->esq = remove_chave(r->esq, x);
+  else if (x > r->chave) r->dir = remove_chave(r->dir, x);
+  else if (r->esq != NULL && r->dir != NULL) {
+    r->chave = minimo(r->dir)->chave;  // copia o sucessor
+    r->dir = remove_chave(r->dir, r->chave);
+  } else {                             // zero ou um filho
+    filho = (r->esq != NULL) ? r->esq : r->dir;
+    free(r);
+    return filho;
+  }
+  return r;
+}
+
+void inordem(No *r) {                  // lista em ordem crescente
+  if (r == NULL) return;
+  inordem(r->esq);
+  printf("%d ", r->chave);
+  inordem(r->dir);
+}
+
+void libera(No *r) {
+  if (r == NULL) return;
+  libera(r->esq);
+  libera(r->dir);
+  free(r);
+}
+
+int main(void) {
+  int v[] = {50, 30, 70, 20, 40, 60, 80}, i;
+  No *raiz = NULL;
+  for (i = 0; i < 7; i++) raiz = insere(raiz, v[i]);
+  inordem(raiz);
+  printf("\n40 %s na arvore\n", busca(raiz, 40) ? "esta" : "nao esta");
+  printf("45 %s na arvore\n", busca(raiz, 45) ? "esta" : "nao esta");
+  raiz = remove_chave(raiz, 50);       /* dois filhos */
+  raiz = remove_chave(raiz, 20);       /* folha */
+  printf("raiz agora: %d\n", raiz->chave);
+  inordem(raiz);
+  printf("\n");
+  libera(raiz);
+  return 0;
+}
+FIM_CODIGO_C

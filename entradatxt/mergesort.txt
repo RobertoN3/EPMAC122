@@ -2,8 +2,8 @@
 2. Algoritmo: Ordenação por fusão (Merge Sort)
 3. Autores: John von Neumann
 4. Data: 1945
-5. Conceitos: Ordenação, Vetores, Recursão, Intercalação, Algoritmo estável
-6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+5. Conceitos: Ordenação, Vetores, Recursão, Estabilidade
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
 7. Titulo: Ordenação por fusão (Merge Sort)
 
 ## Ideia geral
@@ -15,9 +15,9 @@ um vetor:
 1) divide-se o vetor ao meio;
 2) ordena-se cada metade, recursivamente, pelo mesmo método;
 3) intercalam-se (fundem-se) as duas metades ordenadas.
-Um vetor com 0 ou 1 elemento já está ordenado e é o caso base da recursão.
+Um vetor com 0 ou 1 elemento já está ordenado e é o caso base da [[recursao|recursão]].
 
-É o exemplo clássico da técnica de divisão e conquista, e a página dessa
+É o exemplo clássico da técnica de [[divisao_conquista|divisão e conquista]], e a página dessa
 técnica traz a análise geral. Aqui o foco está nos detalhes do algoritmo,
 nas suas variações e nos seus usos.
 
@@ -35,36 +35,41 @@ Algoritmo, com um vetor auxiliar aux:
 - copie aux de volta para v[ini..fim].
 
 Exemplo: intercalar (3, 27, 38, 43) e (9, 10, 82):
+
+```
   3 < 9  -> 3;   27 > 9 -> 9;   27 > 10 -> 10;   27 < 82 -> 27;
   38 < 82 -> 38;  43 < 82 -> 43;  primeiro trecho acabou -> 82
   resultado: (3, 9, 10, 27, 38, 43, 82)
+```
 
 Cada comparação coloca um elemento no lugar definitivo, então intercalar
 trechos com n elementos no total faz no máximo n-1 comparações e n cópias:
 O(n). O preço é o vetor auxiliar, de tamanho n.
 
-Estabilidade: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que
+[[ordenacao|Estabilidade]]: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que
 veio da metade ESQUERDA (comparação v[i] <= v[j]). Assim, elementos iguais
 mantêm a ordem original e o Merge Sort é estável. Usar < no lugar de <=
 destruiria essa propriedade.
 
 ## Versão recursiva (de cima para baixo)
 
+```
   mergesort(v, ini, fim):
       se ini < fim:
           meio <- (ini + fim) / 2
           mergesort(v, ini, meio)
           mergesort(v, meio+1, fim)
           intercala(v, ini, meio, fim)
+```
 
-Análise: T(n) = 2T(n/2) + O(n), cuja solução é O(n log n). A árvore de
+Análise: T(n) = 2T(n/2) + O(n), cuja solução é O(n log n). A [[arvores|árvore]] de
 recursão tem cerca de log2(n) níveis, e em cada nível as intercalações
 somadas processam todos os n elementos. O número de comparações fica entre
 (n/2) log2 n e n log2 n, aproximadamente: é muito próximo do limite inferior
 de log2(n!) ~ n log2 n - 1,44n para qualquer ordenação por comparação.
 
 O tempo é O(n log n) em TODOS os casos (melhor, médio e pior): o Merge Sort
-não tem "entradas ruins", ao contrário do Quick Sort. Essa previsibilidade é
+não tem "entradas ruins", ao contrário do [[quicksort|Quick Sort]]. Essa previsibilidade é
 uma de suas principais virtudes.
 
 ## Versão iterativa (de baixo para cima)
@@ -72,14 +77,16 @@ uma de suas principais virtudes.
 Também é possível dispensar a recursão. Observa-se que a recursão acaba
 intercalando trechos de tamanho 1, depois de tamanho 2, 4, 8... Então:
 
+```
   para largura = 1, 2, 4, 8, ... enquanto largura < n:
       para cada par de trechos consecutivos de tamanho largura:
           intercale os dois trechos
+```
 
 Na primeira rodada, intercalam-se os pares (v[0], v[1]), (v[2], v[3]), ...;
 na segunda, os blocos de 2 já ordenados formam blocos de 4; e assim por
 diante. São cerca de log2(n) rodadas, cada uma O(n). Essa versão não usa a
-pilha de recursão e é a base da ordenação externa.
+[[pilhas|pilha]] de recursão e é a base da ordenação externa.
 
 ## Memória
 
@@ -89,14 +96,14 @@ a intercalação. Melhorias comuns:
 - alternar os papéis de v e aux a cada nível, evitando a cópia de volta;
 - não intercalar se v[meio] <= v[meio+1] (as metades já estão em ordem
   relativa), o que torna o algoritmo O(n) para vetores já ordenados;
-- usar inserção direta para trechos pequenos.
+- usar [[insertionsort|inserção direta]] para trechos pequenos.
 Existem intercalações "in place", com memória O(1), mas são complicadas e
 mais lentas na prática.
 
 ## Onde o Merge Sort brilha
 
-- Listas encadeadas: a intercalação de duas listas ordenadas é feita apenas
-  mudando ponteiros, sem memória extra e sem acesso direto. O Merge Sort é o
+- [[listas_encadeadas|Listas encadeadas]]: a intercalação de duas listas ordenadas é feita apenas
+  mudando [[ponteiros]], sem memória extra e sem acesso direto. O Merge Sort é o
   método preferido para ordenar listas.
 - Ordenação externa: quando os dados não cabem na memória principal (estão
   em disco ou, antigamente, em fitas magnéticas), ordenam-se pedaços que
@@ -119,7 +126,7 @@ muito rápido em dados reais.
 - Merge Sort: O(n log n) garantido, estável, mas usa O(n) de memória extra.
 - Quick Sort: O(n log n) em média e, em geral, o mais rápido na prática em
   vetores; O(n²) no pior caso; não é estável; memória O(log n).
-- Heap Sort: O(n log n) garantido, memória O(1), mas não é estável e costuma
+- [[heapsort|Heap Sort]]: O(n log n) garantido, memória O(1), mas não é estável e costuma
   ser mais lento por acessar a memória de forma espalhada.
 
 ## Histórico

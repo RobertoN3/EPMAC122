@@ -1,0 +1,194 @@
+1. Tecnica: Método guloso
+2. Algoritmo: Ordenação por heap (Heapsort)
+3. Autores: J. W. J. Williams, Robert W. Floyd
+4. Data: 1964
+5. Conceitos: Ordenação, Vetores, Árvores, Fila de prioridade, Invariante
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
+7. Titulo: Ordenação por heap (Heapsort)
+
+## Ideia geral
+
+O Heapsort é a [[selecao_direta|seleção direta]] com uma estrutura de dados
+melhor. Na seleção direta, a cada passo procura-se o maior elemento da parte
+ainda não ordenada e ele é levado para o fim; essa procura custa O(n), e o
+total fica O(n²). O Heapsort organiza a parte não ordenada como um heap, uma
+[[arvores|árvore binária]] em que o maior elemento está sempre na raiz.
+Retirar o maior e reorganizar o heap custa só O(log n), e o total cai para
+O(n log n), sem memória extra.
+
+Como na seleção direta, cada passo escolhe o maior elemento restante (a
+função critério) e o fixa definitivamente no fim do vetor. Por isso o
+algoritmo é classificado aqui como [[metodo_guloso|método guloso]].
+
+## O heap
+
+Um heap (de máximo) é uma árvore binária quase completa, com todos os
+níveis cheios exceto talvez o último, preenchido da esquerda para a direita,
+em que cada pai é maior ou igual a seus filhos. Consequência: o maior
+elemento está na raiz.
+
+Uma árvore quase completa cabe num vetor, sem [[ponteiros]]. Com
+índices a partir de 0:
+- a raiz fica em v[0];
+- os filhos de v[i] ficam em v[2i+1] e v[2i+2];
+- o pai de v[i] fica em v[(i-1)/2].
+
+Exemplo: o vetor (37, 29, 14, 10, 13, 5) é um heap. Visto como árvore:
+
+```
+            37
+          /    \
+        29      14
+       /  \    /
+     10   13  5
+```
+
+## A operação básica: descer (sift-down)
+
+Suponha que as duas subárvores de v[i] já sejam heaps, mas v[i] talvez seja
+menor que algum filho. Para consertar, troca-se v[i] com o MAIOR dos filhos
+e repete-se a partir da posição do filho, até que v[i] seja maior ou igual
+aos filhos ou chegue a uma folha. Cada troca desce um nível, então o custo é
+O(log n).
+
+## O algoritmo
+
+1) Construção do heap: para i de n/2 - 1 até 0, desça v[i]. As posições de
+   n/2 em diante são folhas e já são heaps sozinhas; processando de baixo
+   para cima, as subárvores de cada nó já são heaps quando ele é tratado.
+2) Ordenação: para fim de n-1 até 1, troque v[0] (o maior) com v[fim] e
+   desça v[0] no heap v[0..fim-1].
+
+Invariante da fase 2: v[0..fim] é um heap e v[fim+1..n-1] contém os maiores
+elementos do vetor, em ordem crescente. Quando fim chega a 0, o vetor está
+ordenado.
+
+## Exemplo
+
+v = (29, 10, 14, 37, 13, 5), o mesmo da página da seleção direta.
+
+```
+  construção do heap (i de 2 até 0):
+    i = 2: 14 já é maior que o filho 5      (29, 10, 14, 37, 13, 5)
+    i = 1: 10 desce, troca com 37           (29, 37, 14, 10, 13, 5)
+    i = 0: 29 desce, troca com 37           (37, 29, 14, 10, 13, 5)
+
+  ordenação (raiz vai para o fim; o novo v[0] desce):
+    37 para o fim, 5 desce                  (29, 13, 14, 10, 5 | 37)
+    29 para o fim, 5 desce                  (14, 13, 5, 10 | 29, 37)
+    14 para o fim, 10 desce                 (13, 10, 5 | 14, 29, 37)
+    13 para o fim, 5 desce                  (10, 5 | 13, 14, 29, 37)
+    10 para o fim                           (5 | 10, 13, 14, 29, 37)
+```
+
+## Análise
+
+- Construção: parece custar O(n log n), mas a maioria dos nós está perto
+  das folhas e desce pouco. Somando, o custo é O(n) (Floyd, 1964).
+- Ordenação: n-1 descidas de O(log n) cada, ou seja, O(n log n).
+- Total: O(n log n) no pior caso, no caso médio e no melhor caso.
+- Memória extra: O(1). A ordenação é feita no próprio vetor.
+
+Comparação com as outras ordenações O(n log n) da disciplina:
+- [[mergesort|Merge Sort]]: também O(n log n) no pior caso, mas usa O(n) de
+  memória extra; em compensação é estável.
+- [[quicksort|Quick Sort]]: em geral mais rápido na prática (acessos à
+  memória mais sequenciais), mas O(n²) no pior caso. A introsort, usada em
+  bibliotecas de C++, começa com Quick Sort e passa para Heapsort se a
+  [[recursao|recursão]] ficar funda demais.
+
+## Estabilidade
+
+O Heapsort não é estável: as trocas entre posições distantes podem inverter
+a ordem de elementos iguais. Exemplo: em (2a, 2b, 1), a construção não muda
+nada, e a primeira troca leva 2a para o fim, depois de 2b. Veja
+[[ordenacao|ordenação]].
+
+## Fila de prioridade
+
+O heap é útil além da ordenação. Uma fila de prioridade guarda elementos
+com prioridades e permite inserir e retirar o de maior prioridade. Com um
+heap em vetor:
+- retirar o máximo: troca-se a raiz com o último, diminui-se o tamanho e
+  desce-se a nova raiz: O(log n);
+- inserir: coloca-se o novo elemento no fim e faz-se ele SUBIR, trocando com
+  o pai enquanto for maior: O(log n);
+- consultar o máximo: O(1).
+
+Filas de prioridade aparecem nos algoritmos de [[dijkstra|Dijkstra]] e de
+[[prim|Prim]] (com heap de mínimo), no escalonamento de processos de um
+sistema operacional e em simulações de eventos, em que o próximo evento a
+acontecer é sempre o de menor horário.
+
+## Histórico
+
+O Heapsort foi publicado por J. W. J. Williams em 1964, na seção de
+algoritmos das Communications of the ACM, junto com a estrutura de heap.
+No mesmo ano, Robert W. Floyd publicou uma versão melhorada ("Treesort 3")
+com a construção do heap de baixo para cima em tempo linear, que é a usada
+até hoje.
+
+## Sobre o código
+
+O programa de exemplo implementa a descida (sift-down) de forma iterativa,
+constrói o heap de baixo para cima e ordena o vetor do exemplo, imprimindo o
+heap construído e o vetor final.
+
+REFERENCIAS:
+- WILLIAMS, J. W. J. Algorithm 232: Heapsort. Communications of the ACM, v. 7, n. 6, p. 347-348, 1964.
+- FLOYD, R. W. Algorithm 245: Treesort 3. Communications of the ACM, v. 7, n. 12, p. 701, 1964.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 6 (Ordenação por heap).
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 9 (Priority Queues and Heapsort).
+- KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.3 (Sorting by selection).
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+void troca(int v[], int i, int j) {
+  int t = v[i];
+  v[i] = v[j];
+  v[j] = t;
+}
+
+/* desce v[i] no heap v[0..n-1]; as subárvores de v[i] já são heaps */
+void desce(int v[], int n, int i) {
+  int f;                               /* maior filho de i */
+  while (2 * i + 1 < n) {
+    f = 2 * i + 1;                     // filho esquerdo
+    if (f + 1 < n && v[f + 1] > v[f]) f++;
+    if (v[i] >= v[f]) break;           /* já é heap */
+    troca(v, i, f);
+    i = f;
+  }
+}
+
+void heapsort(int v[], int n) {
+  int i, fim;
+  for (i = n / 2 - 1; i >= 0; i--)     /* construção: O(n) */
+    desce(v, n, i);
+  for (fim = n - 1; fim > 0; fim--) {
+    troca(v, 0, fim);                  // o maior vai para o fim
+    desce(v, fim, 0);
+  }
+}
+
+void imprime(const char *rotulo, int v[], int n) {
+  int i;
+  printf("%s", rotulo);
+  for (i = 0; i < n; i++) printf(" %d", v[i]);
+  printf("\n");
+}
+
+int main(void) {
+  int v[] = {29, 10, 14, 37, 13, 5};
+  int n = sizeof(v) / sizeof(v[0]), i;
+
+  for (i = n / 2 - 1; i >= 0; i--) desce(v, n, i);
+  imprime("heap:     ", v, n);
+
+  heapsort(v, n);                      /* um heap também pode ser ordenado */
+  imprime("ordenado: ", v, n);
+  return 0;
+}
+FIM_CODIGO_C

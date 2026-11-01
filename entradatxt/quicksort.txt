@@ -2,15 +2,15 @@
 2. Algoritmo: Ordenação rápida (Quick Sort)
 3. Autores: Tony Hoare
 4. Data: 1959
-5. Conceitos: Ordenação, Vetores, Recursão, Pivô, Partição
-6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+5. Conceitos: Ordenação, Vetores, Recursão
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
 7. Titulo: Ordenação rápida (Quick Sort)
 
 ## Ideia geral
 
 O Quick Sort (ordenação rápida) é, em geral, o algoritmo de ordenação por
 comparação mais rápido na prática, e por isso é a base de muitas funções de
-bibliotecas. Como o Merge Sort, usa divisão e conquista, mas de um jeito
+bibliotecas. Como o [[mergesort|Merge Sort]], usa [[divisao_conquista|divisão e conquista]], mas de um jeito
 "invertido":
 - no Merge Sort, a divisão é trivial (cortar ao meio) e o trabalho está na
   COMBINAÇÃO (intercalar);
@@ -24,12 +24,13 @@ Para ordenar v[ini..fim]:
    maiores ou iguais. O pivô fica, então, na sua posição definitiva p.
 3) Ordene recursivamente v[ini..p-1] e v[p+1..fim].
 Como tudo o que está à esquerda é menor e tudo o que está à direita é maior,
-depois das chamadas recursivas o trecho inteiro está ordenado.
+depois das chamadas [[recursao|recursivas]] o trecho inteiro está ordenado.
 
 ## A partição (esquema de Lomuto)
 
 Uma forma simples de particionar, com o pivô x = v[fim]:
 
+```
   i <- ini - 1
   para j de ini até fim-1:
       se v[j] <= x:
@@ -37,16 +38,20 @@ Uma forma simples de particionar, com o pivô x = v[fim]:
           troque v[i] e v[j]
   troque v[i+1] e v[fim]     (coloca o pivô entre as duas partes)
   devolva i + 1
+```
 
 Invariante: durante o laço, v[ini..i] contém elementos <= x, v[i+1..j-1]
 contém elementos > x e v[j..fim-1] ainda não foi examinado. A partição faz
 exatamente n-1 comparações em um trecho de n elementos: O(n).
 
 Exemplo: v = (7, 2, 1, 6, 8, 5, 3, 4), pivô 4.
+
+```
   7 > 4: fica; 2 <= 4: vai para a esquerda; 1 <= 4: vai; 6, 8, 5 > 4:
   ficam; 3 <= 4: vai.  Resultado parcial: (2, 1, 3, 6, 8, 5, 7, 4)
   pivô vai para a posição 3: (2, 1, 3, 4, 8, 5, 7, 6)
   Agora ordenam-se (2, 1, 3) e (8, 5, 7, 6) separadamente.
+```
 
 ## O esquema original de Hoare
 
@@ -81,12 +86,12 @@ interno da partição é muito simples (comparar com o pivô, que fica em um
 registrador, e avançar), acessa a memória de forma sequencial (bom uso da
 cache) e o algoritmo ordena no próprio vetor, sem vetor auxiliar.
 
-Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a pilha de
+Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a [[pilhas|pilha]] de
 recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro
 a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a
 O(log n).
 
-Estabilidade: a partição faz trocas entre posições distantes e pode inverter
+[[ordenacao|Estabilidade]]: a partição faz trocas entre posições distantes e pode inverter
 a ordem de elementos iguais. O Quick Sort NÃO é estável.
 
 ## Escolha do pivô
@@ -111,7 +116,7 @@ a ordem de elementos iguais. O Quick Sort NÃO é estável.
 - Dual-pivot Quick Sort (Yaroslavskiy, 2009): usa dois pivôs e três partes;
   é o algoritmo usado pelo Java para tipos primitivos.
 - Introsort (Musser, 1997): começa como Quick Sort e, se a recursão ficar
-  profunda demais (sinal de partições ruins), troca para Heap Sort. Garante
+  profunda demais (sinal de partições ruins), troca para [[heapsort|Heap Sort]]. Garante
   O(n log n) no pior caso; é o std::sort de muitas implementações de C++.
 
 ## Quick Select

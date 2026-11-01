@@ -1,5 +1,4 @@
-5. Conceitos: Ponteiros, Vetores, Registros, Alocação dinâmica
-6. Problema: Permitir que uma função altere variáveis de quem a chamou e que o programa crie e ligue estruturas de dados cujo tamanho só é conhecido durante a execução
+5. Conceitos: Ponteiros, Vetores, Registros
 7. Titulo: Ponteiros e endereços
 
 ## Ideia geral
@@ -19,7 +18,7 @@ Ponteiros estão no coração da linguagem C. Sem eles não seria possível:
 - uma função alterar variáveis de quem a chamou;
 - passar vetores grandes para funções sem copiá-los;
 - criar estruturas cujo tamanho só se conhece durante a execução;
-- ligar dados entre si, formando listas encadeadas, árvores e grafos.
+- ligar dados entre si, formando [[listas_encadeadas|listas encadeadas]], [[arvores|árvores]] e [[grafos]].
 
 ## Operadores & e *
 
@@ -33,11 +32,13 @@ aritmética de ponteiros.
 
 Exemplo:
 
+```
   int x = 1;
   int *p;
   p = &x;      // p aponta para x
   *p = 10;     // o mesmo que x = 10
   printf("%d", x);    // imprime 10
+```
 
 Depois de p = &x, a expressão *p é um outro nome (um apelido) para x.
 
@@ -66,14 +67,18 @@ Erros clássicos com ponteiros:
 Em C, os argumentos são sempre passados por valor: a função recebe CÓPIAS
 dos valores. Por isso esta função não funciona:
 
+```
   void trocaErrada(int a, int b) { int aux = a; a = b; b = aux; }
+```
 
 Ela troca as cópias, e as variáveis de quem chamou ficam intactas. A solução
 é passar os ENDEREÇOS das variáveis:
 
+```
   void troca(int *a, int *b) { int aux = *a; *a = *b; *b = aux; }
   ...
   troca(&x, &y);
+```
 
 A função recebe cópias dos endereços, mas, desreferenciando-os, chega às
 variáveis originais. É por isso que scanf("%d", &n) precisa do &: scanf

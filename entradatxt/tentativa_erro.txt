@@ -1,8 +1,8 @@
 1. Tecnica: Tentativa e erro
 2. Algoritmo: Backtracking para o problema das N rainhas
-3. Autores: Derrick H. Lehmer
-4. Data: 1950
-5. Conceitos: Recursão, Backtracking, Árvore de busca, Pilhas
+3. Autores: Max Bezzel, Niklaus Wirth
+4. Data: 1848, 1971
+5. Conceitos: Recursão, Árvores, Pilhas
 6. Problema: Dado um inteiro N, posicionar N rainhas em um tabuleiro N x N de modo que nenhuma ataque outra (mesma linha, coluna ou diagonal)
 7. Titulo: Tentativa e erro (backtracking)
 
@@ -35,6 +35,7 @@ com giz: seguimos por um corredor até um beco sem saída, voltamos até a
 
 ## Esquema geral
 
+```
   tenta(solucao parcial s):
       se s é uma solução completa:
           registre/imprima s; (e pare, se basta uma)
@@ -44,14 +45,15 @@ com giz: seguimos por um corredor até um beco sem saída, voltamos até a
               acrescente c a s
               tenta(s)
               remova c de s      <- "voltar atrás"
+```
 
-A forma recursiva é a mais natural. A pilha de execução guarda,
+A forma [[recursao|recursiva]] é a mais natural. A [[pilhas|pilha]] de execução guarda,
 automaticamente, as decisões de cada nível e o ponto em que cada laço
 parou; "desfazer" uma escolha é simplesmente retornar da chamada.
 
 ## A árvore de busca
 
-As escolhas possíveis formam uma árvore, chamada árvore de busca (ou
+As escolhas possíveis formam uma [[arvores|árvore]], chamada árvore de busca (ou
 árvore de estados):
 
 - a raiz é a solução vazia, sem nenhuma decisão tomada;
@@ -61,7 +63,7 @@ As escolhas possíveis formam uma árvore, chamada árvore de busca (ou
 - as folhas de profundidade máxima são as soluções completas candidatas.
 
 O backtracking percorre essa árvore em profundidade (como a busca em
-profundidade em grafos). Sua força está na PODA: assim que uma solução
+profundidade em [[grafos]]). Sua força está na PODA: assim que uma solução
 parcial viola alguma restrição, toda a subárvore abaixo dela é descartada
 sem ser visitada. É isso que diferencia o backtracking da força bruta, que
 geraria todas as configurações completas para só depois testá-las.

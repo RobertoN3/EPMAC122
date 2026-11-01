@@ -2,8 +2,8 @@
 2. Algoritmo: Ordenação bolha (Bubble Sort)
 3. Autores: Edward H. Friend
 4. Data: 1956
-5. Conceitos: Ordenação, Vetores, Algoritmo estável, Invariante
-6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+5. Conceitos: Ordenação, Vetores, Estabilidade, Invariante
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
 7. Titulo: Ordenação bolha (Bubble Sort)
 
 ## Ideia geral
@@ -24,6 +24,7 @@ diante. Cada passada pode ignorar a parte final, já ordenada.
 
 ## O algoritmo
 
+```
   para fim de n-1 até 1:
       trocou <- falso
       para i de 0 até fim-1:
@@ -31,6 +32,7 @@ diante. Cada passada pode ignorar a parte final, já ordenada.
               troque v[i] e v[i+1]
               trocou <- verdadeiro
       se não trocou: pare        (o vetor já está ordenado)
+```
 
 A variável trocou é uma melhoria importante: se uma passada inteira não faz
 nenhuma troca, todos os vizinhos estão em ordem e, portanto, o vetor todo
@@ -41,27 +43,36 @@ está ordenado; não há por que continuar.
 v = (5, 1, 4, 2, 8)
 
 1a passada (fim = 4):
+
+```
   (5 1) troca -> (1, 5, 4, 2, 8)
   (5 4) troca -> (1, 4, 5, 2, 8)
   (5 2) troca -> (1, 4, 2, 5, 8)
   (5 8) ok    -> (1, 4, 2, 5, 8)    o 8 está no lugar definitivo
+```
 2a passada (fim = 3):
+
+```
   (1 4) ok; (4 2) troca -> (1, 2, 4, 5, 8); (4 5) ok
+```
 3a passada (fim = 2):
+
+```
   (1 2) ok; (2 4) ok                nenhuma troca: fim
+```
 
 Observe que o vetor ficou ordenado já durante a 2a passada, mas o algoritmo
 só tem certeza disso depois de uma passada sem trocas.
 
 ## A bolha como método guloso
 
-Lida com os "óculos" do método guloso, a ordenação bolha:
+Lida com os "óculos" do [[metodo_guloso|método guloso]], a ordenação bolha:
 - tem como candidatos os elementos ainda não posicionados, v[0..fim];
 - usa como função critério "o maior elemento ainda não posicionado";
 - toma uma decisão definitiva: esse elemento é levado a v[fim] e aquela
   posição nunca mais muda.
 Por isso ela é apresentada, nesta disciplina, como exemplo do método guloso.
-É o "espelho" da seleção direta, que fixa o MENOR elemento no INÍCIO; a
+É o "espelho" da [[selecao_direta|seleção direta]], que fixa o MENOR elemento no INÍCIO; a
 diferença é que a seleção localiza o elemento e faz uma troca só, enquanto a
 bolha o arrasta com várias trocas entre vizinhos. (Alguns textos classificam
 a bolha como força bruta, por fazer muitas comparações sem nenhuma esperteza;
@@ -70,8 +81,11 @@ as duas visões são compatíveis.)
 ## Correção: o invariante
 
 No início de cada passada (para cada valor de fim):
+
+```
   v[fim+1..n-1] contém os maiores elementos do vetor, em ordem crescente,
   e cada um deles é maior ou igual a todo elemento de v[0..fim].
+```
 
 - No início, fim = n-1 e o trecho v[n..n-1] é vazio: vale.
 - A passada leva o maior elemento de v[0..fim] até v[fim]; ele é menor ou
@@ -96,7 +110,7 @@ inversão. Logo:
 
 Memória extra: O(1) (ordena no próprio vetor).
 
-Estabilidade: a troca só acontece quando v[i] > v[i+1], estritamente. Dois
+[[ordenacao|Estabilidade]]: a troca só acontece quando v[i] > v[i+1], estritamente. Dois
 elementos iguais nunca são trocados entre si, então mantêm sua ordem
 relativa: a bolha é estável.
 
@@ -114,7 +128,7 @@ Variações que atacam esse problema:
 - Comb sort (Dobosiewicz, 1980; Lacey e Box, 1991): compara elementos a uma
   distância grande, que diminui a cada passada, até chegar a 1 (a bolha
   comum). Remove as tartarugas cedo e fica muito mais rápido. É a mesma ideia
-  do Shell sort em relação à inserção direta.
+  do Shell sort em relação à [[insertionsort|inserção direta]].
 - Ordenação par-ímpar (odd-even transposition sort): compara os pares
   (0,1), (2,3), ... e depois (1,2), (3,4), ... alternadamente; as
   comparações de cada fase são independentes e podem ser feitas em paralelo.
