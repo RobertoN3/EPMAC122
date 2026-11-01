@@ -1,5 +1,4 @@
-5. Conceitos: Registros, Ponteiros, Vetores, Ordenação, Algoritmo estável
-6. Problema: Agrupar dados de tipos diferentes que descrevem uma mesma entidade (por exemplo, nome, número USP e nota de um aluno) em uma única variável
+5. Conceitos: Registros, Ponteiros, Vetores, Ordenação, Estabilidade
 7. Titulo: Registros (structs)
 
 ## Ideia geral
@@ -8,7 +7,7 @@ Um vetor agrupa vários dados do MESMO tipo, identificados por um índice.
 Muitas vezes, porém, precisamos agrupar dados de tipos DIFERENTES que
 descrevem uma mesma coisa: um aluno tem nome (cadeia de caracteres), número
 USP (inteiro) e nota (real); um ponto do plano tem duas coordenadas; uma data
-tem dia, mês e ano; uma aresta de um grafo tem duas pontas e um peso.
+tem dia, mês e ano; uma aresta de um [[grafos|grafo]] tem duas pontas e um peso.
 
 Um registro (em C, struct, de "structure") é um pacote de variáveis,
 possivelmente de tipos diferentes, tratado como uma unidade. Cada
@@ -20,18 +19,22 @@ linha de uma tabela.
 
 Declara-se primeiro o tipo do registro, descrevendo seus campos:
 
+```
   struct aluno {
       char nome[50];
       int nusp;
       float nota;
   };
+```
 
 Isso cria um novo tipo, struct aluno, mas nenhuma variável. Depois,
 declaram-se variáveis desse tipo: struct aluno a, b;
 
 Com typedef pode-se dar um nome mais curto ao tipo:
 
+```
   typedef struct aluno Aluno;     // agora basta escrever Aluno a;
+```
 
 É comum fazer as duas coisas de uma vez: typedef struct { ... } Aluno;.
 
@@ -41,7 +44,7 @@ Inicialização na declaração: Aluno a = {"Ana", 1111, 7.5};
 
 - Com uma variável do tipo registro, usa-se o ponto: a.nota = 8.0;
   a.nusp; a.nome.
-- Com um ponteiro p para um registro, usa-se a seta: p->nota, que é
+- Com um [[ponteiros|ponteiro]] p para um registro, usa-se a seta: p->nota, que é
   abreviação de (*p).nota.
 
 Campos podem ser de qualquer tipo, inclusive vetores, outros registros e
@@ -74,7 +77,7 @@ ordenação: alunos por número USP, por nome ou por nota. Os algoritmos de
 ordenação são os mesmos usados para números; muda apenas a comparação
 (t[j].nota < x.nota) e o fato de que se movem registros inteiros.
 
-É aqui que a estabilidade de um algoritmo de ordenação se torna importante.
+É aqui que a [[ordenacao|estabilidade]] de um algoritmo de ordenação se torna importante.
 Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota
 com um método estável, alunos com a mesma nota continuarão em ordem
 alfabética entre si: obtemos a ordenação por (nota, nome) "de graça". Com um
@@ -89,8 +92,8 @@ apenas nos ponteiros.
 Um campo de um registro pode ser um ponteiro para outro registro do mesmo
 tipo. É assim que se constroem as estruturas encadeadas:
 
-- lista encadeada: struct celula { int conteudo; struct celula *prox; };
-- árvore binária: struct no { int chave; struct no *esq, *dir; };
+- [[listas_encadeadas|lista encadeada]]: struct celula { int conteudo; struct celula *prox; };
+- [[arvores|árvore binária]]: struct no { int chave; struct no *esq, *dir; };
 
 Um registro não pode conter a si mesmo como campo (teria tamanho infinito),
 mas pode conter um PONTEIRO para outro registro do mesmo tipo.
@@ -117,7 +120,7 @@ existem desde as primeiras versões da linguagem, por volta de 1973.
 
 O programa de exemplo define o registro Aluno, altera a nota de um aluno
 passando um ponteiro para o registro e ordena a turma por nota (em ordem
-decrescente) com inserção direta, que é estável.
+decrescente) com [[insertionsort|inserção direta]], que é estável.
 
 REFERENCIAS:
 - FEOFILOFF, P. Registros e structs. https://users.ime.usp.br/~pf/algoritmos/aulas/stru.html

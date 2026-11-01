@@ -1,7 +1,6 @@
 3. Autores: Leonhard Euler
 4. Data: 1736
-5. Conceitos: Grafos, Filas, Pilhas, Matriz de adjacência, Listas encadeadas, Recursão
-6. Problema: Dado um grafo e um vértice de origem, determinar quais vértices são alcançáveis a partir dela e a distância (em número de arestas) até cada um
+5. Conceitos: Grafos, Listas encadeadas, Ponteiros, Registros, Filas, Pilhas, Recursão
 7. Titulo: Grafos
 
 ## Ideia geral
@@ -53,8 +52,8 @@ e provados corretos, em vez de inventar uma solução específica.
   denso: m é da ordem de n².
 - Grafo bipartido: os vértices se dividem em dois grupos e toda aresta liga
   um grupo ao outro (por exemplo, alunos e disciplinas).
-- Árvore: grafo conexo e sem ciclos. Tem exatamente n-1 arestas. Uma
-  floresta é um grafo sem ciclos (cada componente é uma árvore).
+- [[arvores|Árvore]]: grafo conexo e sem ciclos. Tem exatamente n-1 arestas.
+  Uma floresta é um grafo sem ciclos (cada componente é uma árvore).
 - Árvore espalhada (geradora) de G: subgrafo de G que é árvore e contém
   todos os vértices. Se há pesos, a de menor peso total é a árvore
   espalhada mínima.
@@ -68,8 +67,8 @@ e provados corretos, em vez de inventar uma solução específica.
    - percorrer os vizinhos de u: O(n), mesmo que u tenha poucos vizinhos;
    - memória: O(n²). Boa para grafos densos ou pequenos.
 
-2) Listas de adjacência: um vetor de n listas encadeadas; a lista do vértice
-   u contém seus vizinhos (e os pesos, se houver).
+2) Listas de adjacência: um vetor de n [[listas_encadeadas|listas encadeadas]];
+   a lista do vértice u contém seus vizinhos (e os pesos, se houver).
    - testar se u-v é aresta: O(grau(u));
    - percorrer os vizinhos de u: O(grau(u));
    - memória: O(n + m). Boa para grafos esparsos, que são a maioria dos
@@ -77,62 +76,59 @@ e provados corretos, em vez de inventar uma solução específica.
      poucas ruas por cruzamento).
 
 3) Lista de arestas: um vetor com os m pares (u, v, peso). Simples e útil
-   quando o algoritmo processa as arestas em ordem, como o de Kruskal.
+   quando o algoritmo processa as arestas em ordem, como o de
+   [[kruskal|Kruskal]].
 
-## Percorrendo um grafo: busca em largura (BFS)
+Exemplo: o grafo não dirigido com vértices 0 a 4 e arestas 0-1, 0-2, 1-3,
+2-3 e 3-4 fica assim nas duas representações principais:
 
-A busca em largura (breadth-first search) visita os vértices em "ondas" a
-partir de uma origem s: primeiro s, depois todos os vizinhos de s (distância
-1), depois os vizinhos desses (distância 2), e assim por diante.
+```
+  matriz de adjacência        listas de adjacência
+      0 1 2 3 4
+  0:  0 1 1 0 0               0: 2 -> 1
+  1:  1 0 0 1 0               1: 3 -> 0
+  2:  1 0 0 1 0               2: 3 -> 0
+  3:  0 1 1 0 1               3: 4 -> 2 -> 1
+  4:  0 0 0 1 0               4: 3
+```
 
-Ela usa uma FILA:
+Nas listas, cada vizinho novo é inserido no início da lista (custo O(1)),
+por isso os vizinhos aparecem na ordem inversa da inserção.
 
-  marque todos os vértices como não visitados; dist[s] = 0
-  insira s na fila
-  enquanto a fila não estiver vazia:
-      u <- remova o primeiro da fila
-      para cada vizinho v de u:
-          se v não foi visitado:
-              dist[v] = dist[u] + 1; pai[v] = u
-              insira v no fim da fila
+## Percorrendo um grafo
 
-Como a fila é FIFO, os vértices saem em ordem de distância. Por isso a BFS
-calcula, em grafos sem pesos, o caminho com o menor NÚMERO de arestas de s a
-cada vértice; o vetor pai descreve esses caminhos (é uma árvore enraizada em
-s, a árvore de busca em largura). Vértices que terminam sem distância não são
-alcançáveis a partir de s.
+Quase todo algoritmo em grafos começa por um percurso sistemático, que
+visita cada vértice alcançável uma única vez. Os dois percursos básicos
+diferem apenas na estrutura que guarda os vértices "a visitar":
 
-Custo: cada vértice entra na fila no máximo uma vez e cada lista de
-adjacência é percorrida uma vez: O(n + m) com listas de adjacência e O(n²)
-com matriz.
+- Busca em largura ([[bfs|BFS]]): usa uma [[filas|fila]]. Visita os vértices
+  em "ondas" a partir da origem e, por isso, calcula o menor número de
+  arestas da origem a cada vértice. Tem página própria.
+- Busca em profundidade (DFS): usa uma [[pilhas|pilha]], ou, de forma
+  equivalente, a [[recursao|recursão]]. Segue um caminho o mais longe
+  possível; quando chega a um vértice sem vizinhos novos, volta (como no
+  [[tentativa_erro|backtracking]]) e tenta outro ramo:
 
-Aplicações: menor número de conexões entre duas pessoas em uma rede social,
-menor número de movimentos em um quebra-cabeça, roteamento, verificar se um
-grafo é bipartido, "inundar" uma região em um programa de desenho.
-
-## Busca em profundidade (DFS)
-
-A busca em profundidade (depth-first search) segue um caminho o mais longe
-possível; quando chega a um vértice sem vizinhos novos, volta (como no
-backtracking) e tenta outro ramo.
-
+```
   dfs(u):
       marque u como visitado
       para cada vizinho v de u:
           se v não foi visitado: dfs(v)
+```
 
-É naturalmente recursiva; a versão iterativa troca a fila da BFS por uma
-PILHA. Também custa O(n + m). Aplicações: encontrar componentes conexas,
-detectar ciclos, ordenação topológica (ordem para executar tarefas com
-dependências), encontrar pontes e pontos de articulação, resolver
-labirintos.
+As duas custam O(n + m) com listas de adjacência e O(n²) com matriz.
+Aplicações da DFS: encontrar componentes conexas, detectar ciclos,
+ordenação topológica (ordem para executar tarefas com dependências),
+encontrar pontes e pontos de articulação, resolver labirintos.
 
 ## Problemas clássicos em grafos
 
 - Árvore espalhada mínima: ligar todos os vértices com o menor custo
-  (algoritmos de Kruskal e de Prim; método guloso).
-- Caminhos mínimos com pesos: algoritmo de Dijkstra (pesos não negativos,
-  guloso), Bellman-Ford e Floyd-Warshall (programação dinâmica).
+  (algoritmos de [[kruskal|Kruskal]] e de [[prim|Prim]];
+  [[metodo_guloso|método guloso]]).
+- Caminhos mínimos com pesos: algoritmo de [[dijkstra|Dijkstra]] (pesos não
+  negativos, guloso), Bellman-Ford e Floyd-Warshall
+  ([[programacao_dinamica|programação dinâmica]]).
 - Ordenação topológica de um grafo dirigido sem ciclos.
 - Coloração: atribuir cores aos vértices de modo que vizinhos tenham cores
   diferentes (alocação de horários, de registradores, de frequências). O
@@ -161,17 +157,17 @@ O artigo foi publicado em 1741.
 
 A palavra "graph" foi usada nesse sentido por J. J. Sylvester em 1878, e o
 primeiro livro sobre o assunto foi escrito por Dénes König em 1936. A busca
-em largura foi descrita por Edward F. Moore (1959), para encontrar a saída
-de labirintos, e por C. Y. Lee (1961), para rotear fios em circuitos; a
-busca em profundidade foi estudada já no século XIX por Charles Trémaux, como
+em profundidade foi estudada já no século XIX por Charles Trémaux, como
 método para explorar labirintos, e sistematizada por Hopcroft e Tarjan
 (1973).
 
 ## Sobre o código
 
-O programa de exemplo representa um grafo não dirigido por matriz de
-adjacência e executa a busca em largura a partir do vértice 0, imprimindo a
-distância até cada vértice (-1 para o vértice isolado, que não é alcançável).
+O programa de exemplo monta o mesmo grafo do exemplo acima nas duas
+representações: uma matriz de adjacência (vetor de vetores) e um vetor de
+listas de adjacência ([[registros]] ligados por [[ponteiros]], alocados com malloc).
+Em seguida imprime as duas e libera a memória das listas. Os percursos estão
+nas páginas [[bfs]] e [[dijkstra]].
 
 REFERENCIAS:
 - FEOFILOFF, P. Algoritmos para Grafos em C via Sedgewick. https://www.ime.usp.br/~pf/algoritmos_para_grafos/
@@ -180,42 +176,66 @@ REFERENCIAS:
 - BONDY, J. A.; MURTY, U. S. R. Graph Theory. London: Springer, 2008.
 - FEOFILOFF, P.; KOHAYAKAWA, Y.; WAKABAYASHI, Y. Uma introdução sucinta à teoria dos grafos. São Paulo: IME-USP, 2011. https://www.ime.usp.br/~pf/teoriadosgrafos/
 - EULER, L. Solutio problematis ad geometriam situs pertinentis. Commentarii academiae scientiarum Petropolitanae, v. 8, p. 128-140, 1741.
-- Material de MAC122 (e-Disciplinas): Introdução a grafos.
+- Material de MAC122 (e-Disciplinas): Introdução a grafos. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
 
 INICIO_CODIGO_C
 #include <stdio.h>
+#include <stdlib.h>
 #define MAXV 8
 
-int adj[MAXV][MAXV];   /* matriz de adjacência */
-int nv = 6;            /* número de vértices */
+/* Representação 1: matriz de adjacência */
+int adj[MAXV][MAXV];
 
-void aresta(int u, int v) {
-  adj[u][v] = adj[v][u] = 1;   /* grafo não dirigido */
+/* Representação 2: vetor de listas de adjacência */
+typedef struct no {
+  int vizinho;
+  struct no *prox;
+} No;
+
+No *lista[MAXV];
+int nv = 5;                     /* número de vértices */
+
+/* insere v no início da lista de u: custo O(1) */
+void insere_lista(int u, int v) {
+  No *novo = malloc(sizeof(No));
+  if (novo == NULL) exit(1);
+  novo->vizinho = v;
+  novo->prox = lista[u];
+  lista[u] = novo;
 }
 
-/* Busca em largura a partir de s: dist[v] = -1 se v não é alcançável */
-void bfs(int s, int dist[]) {
-  int fila[MAXV], ini = 0, fim = 0, u, v;
-  for (v = 0; v < nv; v++) dist[v] = -1;
-  dist[s] = 0;
-  fila[fim++] = s;                       // insere a origem
-  while (ini < fim) {
-    u = fila[ini++];                     // remove o primeiro da fila
-    for (v = 0; v < nv; v++)
-      if (adj[u][v] && dist[v] == -1) {  // vizinho ainda não visitado
-        dist[v] = dist[u] + 1;
-        fila[fim++] = v;
-      }
-  }
+/* grafo não dirigido: a aresta u-v vale nos dois sentidos */
+void aresta(int u, int v) {
+  adj[u][v] = adj[v][u] = 1;
+  insere_lista(u, v);
+  insere_lista(v, u);
 }
 
 int main(void) {
-  int dist[MAXV], v;
+  int u, v;
+  No *p, *q;
   aresta(0, 1); aresta(0, 2); aresta(1, 3);
-  aresta(2, 3); aresta(3, 4);           /* vértice 5 fica isolado */
-  bfs(0, dist);
-  for (v = 0; v < nv; v++)
-    printf("distancia de 0 ate %d: %d\n", v, dist[v]);
+  aresta(2, 3); aresta(3, 4);
+
+  printf("Matriz de adjacencia:\n");
+  for (u = 0; u < nv; u++) {
+    for (v = 0; v < nv; v++) printf("%d ", adj[u][v]);
+    printf("\n");
+  }
+
+  printf("Listas de adjacencia:\n");
+  for (u = 0; u < nv; u++) {
+    printf("%d:", u);
+    for (p = lista[u]; p != NULL; p = p->prox)   // percorre os vizinhos
+      printf(" %d", p->vizinho);
+    printf("\n");
+  }
+
+  for (u = 0; u < nv; u++)                       /* libera as listas */
+    for (p = lista[u]; p != NULL; p = q) {
+      q = p->prox;
+      free(p);
+    }
   return 0;
 }
 FIM_CODIGO_C

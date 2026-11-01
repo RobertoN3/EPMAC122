@@ -1,6 +1,5 @@
 1. Tecnica: Método guloso
-5. Conceitos: Ordenação, Vetores, Função critério, Algoritmo estável
-6. Problema: Construir uma solução passo a passo, escolhendo em cada passo a opção que parece melhor segundo uma função critério, sem nunca desfazer escolhas já feitas
+5. Conceitos: Ordenação, Subestrutura ótima, Grafos
 7. Titulo: Método guloso
 
 ## Ideia geral
@@ -19,7 +18,7 @@ planejar a refeição inteira. Às vezes isso leva à melhor refeição possíve
 
 A grande vantagem da técnica é a eficiência: como cada decisão é tomada uma
 única vez e nunca desfeita, o algoritmo não precisa explorar combinações de
-escolhas, ao contrário da tentativa e erro. A grande dificuldade é a
+escolhas, ao contrário da [[tentativa_erro|tentativa e erro]]. A grande dificuldade é a
 correção: é preciso provar que as escolhas locais levam à solução ótima
 global, e isso nem sempre é verdade.
 
@@ -28,7 +27,7 @@ global, e isso nem sempre é verdade.
 Quase todo algoritmo guloso pode ser descrito pelos mesmos componentes:
 
 - conjunto de candidatos: os elementos que podem fazer parte da solução
-  (elementos de um vetor, arestas de um grafo, moedas, tarefas, ...);
+  (elementos de um vetor, arestas de um [[grafos|grafo]], moedas, tarefas, ...);
 - função critério (ou função de seleção): diz qual é o melhor candidato
   ainda disponível. É o "coração" do algoritmo, e escolher a função certa é
   o que distingue um guloso correto de um incorreto;
@@ -40,6 +39,7 @@ Quase todo algoritmo guloso pode ser descrito pelos mesmos componentes:
 
 Esquema geral, em pseudocódigo:
 
+```
   solucao <- vazia
   enquanto solucao não está completa e há candidatos:
       x <- melhor candidato segundo a função critério
@@ -47,10 +47,11 @@ Esquema geral, em pseudocódigo:
       se solucao + x é viável:
           solucao <- solucao + x
   devolva solucao
+```
 
 ## Exemplo principal: a ordenação "bolha" como método guloso
 
-A ordenação bolha (bubble sort) percorre o vetor várias vezes. Em cada
+A [[bubblesort|ordenação bolha]] (bubble sort) percorre o vetor várias vezes. Em cada
 passada compara pares de elementos vizinhos, v[i] e v[i+1], e troca os dois
 quando estão fora de ordem. O efeito de uma passada completa sobre o trecho
 v[0..fim] é levar o MAIOR elemento desse trecho até a posição v[fim], como
@@ -71,10 +72,12 @@ com os elementos corretos, e v[0] fica, automaticamente, com o menor.
 
 Exemplo com v = (5, 2, 9, 1, 7):
 
+```
   1a passada: (2, 5, 1, 7, 9)   o 9 subiu até o fim e ficou fixo
   2a passada: (2, 1, 5, 7, 9)   o 7 está fixo
   3a passada: (1, 2, 5, 7, 9)   o 5 está fixo
   4a passada: nenhuma troca     o vetor já está ordenado
+```
 
 Uma melhoria simples é guardar se houve alguma troca durante a passada. Se
 não houve nenhuma, o vetor já está em ordem e o algoritmo pode parar. Com
@@ -96,22 +99,22 @@ as escolhas gulosas feitas até ali estão corretas.
 - Melhor caso: com a verificação de "nenhuma troca", um vetor já ordenado
   custa uma única passada, O(n).
 - Memória extra: constante (algoritmo "in place").
-- Estabilidade: a troca só acontece quando v[i] > v[i+1] (estritamente),
+- [[ordenacao|Estabilidade]]: a troca só acontece quando v[i] > v[i+1] (estritamente),
   então elementos iguais nunca trocam de lugar entre si: o método é estável.
 
 Por fazer muitas trocas, a bolha costuma ser mais lenta na prática do que a
-inserção direta, que tem a mesma complexidade assintótica. Seu valor é
+[[insertionsort|inserção direta]], que tem a mesma complexidade assintótica. Seu valor é
 principalmente didático.
 
 ## Outros exemplos gulosos vistos na disciplina
 
-- Seleção direta: a cada passo escolhe o MENOR elemento restante e o coloca
+- [[selecao_direta|Seleção direta]]: a cada passo escolhe o MENOR elemento restante e o coloca
   na próxima posição livre do início do vetor. É o "espelho" da bolha.
-- Algoritmo de Kruskal (árvore espalhada mínima): a cada passo escolhe a
+- [[kruskal|Algoritmo de Kruskal]] (árvore espalhada mínima): a cada passo escolhe a
   aresta mais leve que não forma ciclo com as já escolhidas.
-- Algoritmo de Prim (árvore espalhada mínima): a cada passo escolhe a aresta
-  mais leve que liga a árvore em construção a um vértice novo.
-- Algoritmo de Dijkstra (caminho mínimo): a cada passo fixa o vértice ainda
+- [[prim|Algoritmo de Prim]] (árvore espalhada mínima): a cada passo escolhe a aresta
+  mais leve que liga a [[arvores|árvore]] em construção a um vértice novo.
+- [[dijkstra|Algoritmo de Dijkstra]] (caminho mínimo): a cada passo fixa o vértice ainda
   não fixado mais próximo da origem.
 - Código de Huffman (compressão de dados, 1952): a cada passo junta as duas
   árvores de menor frequência.
@@ -128,7 +131,7 @@ Exemplo 1: troco com moedas. Com as moedas do real (1, 5, 10, 25, 50 e 100
 centavos), a regra "use sempre a maior moeda que cabe" dá o troco com o
 menor número de moedas. Mas, com moedas de 1, 3 e 4, para dar troco de 6 o
 guloso escolhe 4 + 1 + 1 (três moedas), enquanto o ótimo é 3 + 3 (duas
-moedas). Nesse caso é preciso usar programação dinâmica.
+moedas). Nesse caso é preciso usar [[programacao_dinamica|programação dinâmica]].
 
 Exemplo 2: mochila binária (0/1). Com capacidade 50 e objetos de (peso,
 valor) = (10, 60), (20, 100), (30, 120), escolher pela maior razão

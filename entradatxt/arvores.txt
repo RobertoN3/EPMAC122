@@ -1,6 +1,6 @@
-2. Algoritmo: Árvore binária de busca
-5. Conceitos: Árvores, Grafos, Recursão, Ponteiros, Registros, Filas
-6. Problema: Manter um conjunto dinâmico de chaves permitindo inserir, buscar e listar em ordem crescente de forma eficiente
+3. Autores: Arthur Cayley
+4. Data: 1857
+5. Conceitos: Árvores, Grafos, Recursão, Ponteiros, Registros, Filas, Pilhas
 7. Titulo: Árvores
 
 ## Ideia geral
@@ -13,7 +13,7 @@ capítulos, seções e subseções de um livro, a estrutura de uma página HTML
 
 ## Árvores como grafos
 
-Em teoria dos grafos, uma árvore é um grafo conexo e sem ciclos. Para um
+Em teoria dos [[grafos]], uma árvore é um grafo conexo e sem ciclos. Para um
 grafo T com n vértices, as afirmações abaixo são equivalentes (qualquer uma
 pode servir de definição):
 - T é conexo e não tem ciclos;
@@ -26,7 +26,7 @@ pode servir de definição):
 
 Essas propriedades explicam o papel das árvores em grafos: uma árvore é a
 forma mais econômica de manter todos os vértices ligados. Daí o problema da
-árvore espalhada mínima (algoritmo de Kruskal).
+árvore espalhada mínima ([[kruskal|algoritmo de Kruskal]]).
 
 ## Árvores enraizadas: vocabulário
 
@@ -42,7 +42,7 @@ Em estruturas de dados escolhe-se um vértice especial, a raiz, e
 - altura da árvore: maior profundidade de uma folha;
 - subárvore de x: x junto com todos os seus descendentes.
 
-Uma árvore é uma estrutura RECURSIVA: ou é vazia, ou é uma raiz ligada a
+Uma árvore é uma estrutura [[recursao|RECURSIVA]]: ou é vazia, ou é uma raiz ligada a
 uma sequência de subárvores, que também são árvores. Por isso quase todos os
 algoritmos sobre árvores são recursivos e podem ser provados corretos por
 indução na altura.
@@ -51,8 +51,8 @@ indução na altura.
 
 Em uma árvore binária cada nó tem no máximo dois filhos, chamados esquerdo
 e direito (a distinção importa: um nó só com filho esquerdo é diferente de
-um nó só com filho direito). Em C, cada nó é um registro (struct) com a
-informação e dois ponteiros, esq e dir; o valor NULL representa a subárvore
+um nó só com filho direito). Em C, cada nó é um [[registros|registro]] (struct) com a
+informação e dois [[ponteiros]], esq e dir; o valor NULL representa a subárvore
 vazia.
 
 Fatos importantes:
@@ -74,46 +74,23 @@ raiz é visitada:
 - pós-ordem: esquerda, direita, raiz.
 Todos custam O(n). Há ainda o percurso em largura (por níveis), que visita
 a raiz, depois os nós de profundidade 1, depois os de profundidade 2, e usa
-uma FILA, exatamente como a busca em largura em grafos.
+uma [[filas|FILA]], exatamente como a [[bfs|busca em largura]] em grafos.
 
 Exemplo: na árvore da expressão (2 + 3) * 4, com * na raiz, + à esquerda e
 4 à direita, os percursos dão:
 - pré-ordem: * + 2 3 4   (notação prefixa ou polonesa)
 - in-ordem:  2 + 3 * 4   (notação infixa, sem os parênteses)
-- pós-ordem: 2 3 + 4 *   (notação posfixa, avaliada com uma pilha)
+- pós-ordem: 2 3 + 4 *   (notação posfixa, avaliada com uma [[pilhas|pilha]])
 Calcular o valor da expressão é um percurso em pós-ordem: primeiro os
 valores das subárvores, depois o operador da raiz.
 
 ## Árvore binária de busca (ABB)
 
-Uma árvore binária de busca é uma árvore binária em que cada nó tem uma
-chave e vale, para todo nó x:
-- todas as chaves da subárvore esquerda de x são menores que a chave de x;
-- todas as chaves da subárvore direita de x são maiores que a chave de x.
-
-Operações:
-- Busca de k: começa na raiz; se k é igual à chave do nó, achou; se é menor,
-  desce para a esquerda; se é maior, desce para a direita; se chegar a NULL,
-  k não está na árvore. A cada passo uma subárvore inteira é descartada,
-  como na busca binária em vetor.
-- Inserção de k: faz a mesma descida da busca; o lugar NULL onde ela
-  termina é exatamente onde o novo nó deve ser pendurado, como folha.
-- Mínimo e máximo: o nó mais à esquerda e o mais à direita.
-- Listagem ordenada: o percurso in-ordem visita as chaves em ordem
-  crescente. (Inserir n chaves e fazer o percurso é um algoritmo de
-  ordenação, o "tree sort".)
-- Remoção de um nó x: se x é folha, basta retirá-lo; se tem um filho, o
-  filho ocupa seu lugar; se tem dois filhos, troca-se a chave de x pela do
-  seu sucessor (o menor nó da subárvore direita) e remove-se o sucessor, que
-  tem no máximo um filho.
-
-Custo: busca, inserção e remoção custam O(h), em que h é a altura.
-- Se a árvore for balanceada, h = O(log n): com um milhão de chaves, cerca de
-  20 comparações.
-- No pior caso, h = n-1 e as operações custam O(n). Isso acontece, por
-  exemplo, ao inserir as chaves já em ordem crescente: cada nova chave vira
-  filho direito da anterior.
-- Inserindo as chaves em ordem aleatória, a altura esperada é O(log n).
+A aplicação mais importante das árvores binárias na disciplina é a
+[[abb|árvore binária de busca]]: cada nó guarda uma chave, as chaves menores
+ficam na subárvore esquerda e as maiores na direita. Assim, buscar, inserir
+e remover custam um tempo proporcional à altura da árvore, e o percurso
+in-ordem lista as chaves em ordem crescente. Ela tem página própria.
 
 ## Árvores balanceadas
 
@@ -130,11 +107,11 @@ remoções:
 ## Outras árvores na disciplina
 
 - Heap: árvore binária quase completa, guardada em um vetor, em que cada pai
-  é maior ou igual aos filhos. Base do Heap Sort e das filas de prioridade.
-- Árvore espalhada mínima de um grafo (Kruskal, Prim).
+  é maior ou igual aos filhos. Base do Heap Sort e das [[heapsort|filas de prioridade]].
+- Árvore espalhada mínima de um grafo (Kruskal, [[prim|Prim]]).
 - Árvore de caminhos mínimos (Dijkstra) e árvore de busca em largura.
-- Árvore de recursão (análise de Merge Sort) e árvore de busca do
-  backtracking.
+- Árvore de recursão (análise de [[mergesort|Merge Sort]]) e árvore de busca do
+  [[tentativa_erro|backtracking]].
 - Trie (árvore digital), para dicionários de palavras, e árvore de Huffman,
   para compressão.
 
@@ -149,9 +126,11 @@ Booth e Colin; Hibbard), e Knuth dedica a ela boa parte do volume 3 de
 
 ## Sobre o código
 
-O programa de exemplo implementa uma árvore binária de busca com inserção
-recursiva, busca iterativa, percurso in-ordem (que imprime as chaves em ordem
-crescente) e liberação da memória em pós-ordem.
+O programa de exemplo monta, com registros ligados por ponteiros, a árvore
+da expressão (2 + 3) * 4 e a percorre recursivamente em pré-ordem, in-ordem
+e pós-ordem. Em seguida calcula, também por recursão, a altura da árvore, o
+número de nós e o valor da expressão (um percurso em pós-ordem), e libera a
+memória.
 
 REFERENCIAS:
 - FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html
@@ -166,39 +145,73 @@ INICIO_CODIGO_C
 #include <stdio.h>
 #include <stdlib.h>
 
+/* nó de uma árvore de expressão: operador (+, -, *) ou número */
 typedef struct no {
-  int chave;
+  char op;                      /* ' ' quando o nó é um número */
+  int valor;
   struct no *esq, *dir;
 } No;
 
-/* insere x na ABB de raiz r e devolve a (nova) raiz */
-No *insere(No *r, int x) {
-  if (r == NULL) {                     /* lugar vazio: cria o nó */
-    No *novo = malloc(sizeof(No));
-    novo->chave = x;
-    novo->esq = novo->dir = NULL;
-    return novo;
-  }
-  if (x < r->chave) r->esq = insere(r->esq, x);
-  else              r->dir = insere(r->dir, x);
-  return r;
+No *cria(char op, int valor, No *esq, No *dir) {
+  No *novo = malloc(sizeof(No));
+  if (novo == NULL) exit(1);
+  novo->op = op;
+  novo->valor = valor;
+  novo->esq = esq;
+  novo->dir = dir;
+  return novo;
 }
 
-/* devolve o nó com chave x, ou NULL */
-No *busca(No *r, int x) {
-  while (r != NULL && r->chave != x)
-    r = (x < r->chave) ? r->esq : r->dir;
-  return r;
+No *numero(int x) { return cria(' ', x, NULL, NULL); }
+
+void visita(No *r) {
+  if (r->op == ' ') printf("%d ", r->valor);
+  else printf("%c ", r->op);
 }
 
-void inordem(No *r) {                  // lista em ordem crescente
+void preordem(No *r) {          /* raiz, esquerda, direita */
   if (r == NULL) return;
-  inordem(r->esq);
-  printf("%d ", r->chave);
-  inordem(r->dir);
+  visita(r); preordem(r->esq); preordem(r->dir);
 }
 
-void libera(No *r) {
+void inordem(No *r) {           /* esquerda, raiz, direita */
+  if (r == NULL) return;
+  inordem(r->esq); visita(r); inordem(r->dir);
+}
+
+void posordem(No *r) {          /* esquerda, direita, raiz */
+  if (r == NULL) return;
+  posordem(r->esq); posordem(r->dir); visita(r);
+}
+
+/* altura: -1 para a árvore vazia, 0 para uma folha */
+int altura(No *r) {
+  int he, hd;
+  if (r == NULL) return -1;
+  he = altura(r->esq);
+  hd = altura(r->dir);
+  return 1 + (he > hd ? he : hd);
+}
+
+int conta(No *r) {
+  if (r == NULL) return 0;
+  return 1 + conta(r->esq) + conta(r->dir);
+}
+
+/* valor da expressão: percurso em pós-ordem */
+int avalia(No *r) {
+  int a, b;
+  if (r->op == ' ') return r->valor;
+  a = avalia(r->esq);
+  b = avalia(r->dir);
+  switch (r->op) {
+    case '+': return a + b;
+    case '-': return a - b;
+    default:  return a * b;
+  }
+}
+
+void libera(No *r) {            // pós-ordem: filhos antes do pai
   if (r == NULL) return;
   libera(r->esq);
   libera(r->dir);
@@ -206,11 +219,12 @@ void libera(No *r) {
 }
 
 int main(void) {
-  int v[] = {50, 30, 70, 20, 40, 60, 80}, i;
-  No *raiz = NULL;
-  for (i = 0; i < 7; i++) raiz = insere(raiz, v[i]);
-  inordem(raiz);
-  printf("\n40 %s na arvore\n", busca(raiz, 40) ? "esta" : "nao esta");
+  /* (2 + 3) * 4 */
+  No *raiz = cria('*', 0, cria('+', 0, numero(2), numero(3)), numero(4));
+  printf("pre-ordem: "); preordem(raiz); printf("\n");
+  printf("in-ordem:  "); inordem(raiz);  printf("\n");
+  printf("pos-ordem: "); posordem(raiz); printf("\n");
+  printf("altura %d, %d nos, valor %d\n", altura(raiz), conta(raiz), avalia(raiz));
   libera(raiz);
   return 0;
 }

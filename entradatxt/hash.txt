@@ -2,7 +2,7 @@
 3. Autores: Hans Peter Luhn
 4. Data: 1953
 5. Conceitos: Hash, Vetores, Listas encadeadas, Ponteiros, Eficiência de algoritmos
-6. Problema: Armazenar um conjunto de chaves de modo que inserir, buscar e remover custem, em média, tempo constante
+6. Problema: Dado um conjunto de chaves que muda durante a execução, inserir, buscar e remover chaves em tempo médio constante
 7. Titulo: Hash e espalhamento
 
 ## Ideia geral
@@ -15,8 +15,8 @@ guarda páginas visitadas recentemente.
 
 Opções já conhecidas e seus custos para n chaves:
 - vetor não ordenado: inserção O(1), busca O(n);
-- vetor ordenado: busca O(log n) (busca binária), inserção O(n);
-- árvore binária de busca balanceada: tudo O(log n).
+- vetor ordenado: busca O(log n) ([[busca_binaria|busca binária]]), inserção O(n);
+- [[abb|árvore binária de busca]] balanceada: tudo O(log n).
 
 O espalhamento (hashing) faz melhor em média: O(1) por operação. A ideia é
 evitar comparações: em vez de PROCURAR a chave, CALCULA-SE onde ela deveria
@@ -71,7 +71,7 @@ colisão após cerca de sqrt(M) inserções. Portanto, todo esquema de
 espalhamento precisa tratar colisões.
 
 1) Encadeamento (separate chaining): cada posição t[i] da tabela guarda o
-   início de uma lista encadeada com todas as chaves que tiveram h(k) = i.
+   início de uma [[listas_encadeadas|lista encadeada]] com todas as chaves que tiveram h(k) = i.
    - inserir: calcular h(k) e inserir no início da lista, O(1) (se for
      permitido repetir; senão, buscar antes);
    - buscar: calcular h(k) e percorrer a lista t[h(k)];
@@ -117,7 +117,7 @@ entrada fixa seja ruim com alta probabilidade.
 
 O que o espalhamento NÃO faz bem: as chaves ficam fora de ordem, então
 operações como "listar em ordem", "mínimo" ou "todas as chaves entre a e b"
-são caras. Para isso, prefere-se uma árvore de busca balanceada.
+são caras. Para isso, prefere-se uma [[arvores|árvore]] de busca balanceada.
 
 ## Aplicações
 

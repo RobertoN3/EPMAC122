@@ -1,7 +1,7 @@
 1. Tecnica: Método guloso
 2. Algoritmo: Ordenação por seleção direta
-5. Conceitos: Ordenação, Vetores, Invariante, Algoritmo estável
-6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+5. Conceitos: Ordenação, Vetores, Estabilidade, Invariante
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
 7. Titulo: Seleção direta
 
 ## Ideia geral
@@ -13,9 +13,11 @@ que sobraram e a colocamos na segunda posição; e assim por diante.
 
 Para ordenar v[0..n-1]:
 
+```
   para i de 0 até n-2:
       menor <- índice do menor elemento de v[i..n-1]
       troque v[i] com v[menor]
+```
 
 No passo i, o vetor está dividido em duas partes:
 - v[0..i-1]: a parte já ordenada, com os i menores elementos do vetor, cada
@@ -26,13 +28,13 @@ fronteira, aumentando a parte ordenada em uma posição.
 
 ## Seleção direta como método guloso
 
-O algoritmo se encaixa perfeitamente no método guloso:
+O algoritmo se encaixa perfeitamente no [[metodo_guloso|método guloso]]:
 - candidatos: os elementos de v[i..n-1], ainda não posicionados;
 - função critério: "o menor elemento restante";
 - decisão: colocar esse elemento na próxima posição livre, v[i];
 - a decisão é definitiva: v[i] nunca mais será alterado.
 
-É o "espelho" da ordenação bolha: a bolha fixa, a cada passada, o MAIOR
+É o "espelho" da [[bubblesort|ordenação bolha]]: a bolha fixa, a cada passada, o MAIOR
 elemento restante no FIM do vetor; a seleção fixa o MENOR elemento restante
 no INÍCIO. A diferença é a forma de levar o elemento até lá: a bolha faz uma
 série de trocas entre vizinhos, enquanto a seleção primeiro localiza o
@@ -42,11 +44,13 @@ elemento e depois faz uma única troca.
 
 v = (29, 10, 14, 37, 13, 5)
 
+```
   i = 0: menor de v[0..5] é 5 (posição 5)   -> (5, 10, 14, 37, 13, 29)
   i = 1: menor de v[1..5] é 10 (posição 1)  -> (5, 10, 14, 37, 13, 29)
   i = 2: menor de v[2..5] é 13 (posição 4)  -> (5, 10, 13, 37, 14, 29)
   i = 3: menor de v[3..5] é 14 (posição 4)  -> (5, 10, 13, 14, 37, 29)
   i = 4: menor de v[4..5] é 29 (posição 5)  -> (5, 10, 13, 14, 29, 37)
+```
 
 Note que, no passo i = 1, o elemento já estava no lugar e a "troca" é de v[1]
 com ele mesmo.
@@ -57,9 +61,11 @@ Um invariante é uma propriedade que vale no início de cada iteração de um
 laço. Ele é a ferramenta para provar que o laço faz o que deve. Para a
 seleção direta, no início de cada iteração (para cada valor de i):
 
+```
   (a) v[0..i-1] está em ordem crescente; e
   (b) todo elemento de v[0..i-1] é menor ou igual a todo elemento de
       v[i..n-1].
+```
 
 - No início (i = 0), a parte v[0..-1] é vazia e (a) e (b) valem
   trivialmente.
@@ -81,19 +87,19 @@ cada iteração com índice j, v[menor] é o menor elemento de v[i..j-1].
   ordenação prévia do vetor. É O(n²) no melhor, no pior e no caso médio.
 - Trocas: exatamente uma por passo, no máximo n-1. É o método elementar que
   menos movimenta os dados, o que é uma vantagem quando cada elemento é um
-  registro grande e mover custa caro (ou quando escrever na memória é
+  [[registros|registro]] grande e mover custa caro (ou quando escrever na memória é
   caro, como em memórias flash).
 - Memória extra: O(1).
 
 Comparação com os outros métodos elementares:
-- a inserção direta faz, em média, cerca de n²/4 comparações e é O(n) para
+- a [[insertionsort|inserção direta]] faz, em média, cerca de n²/4 comparações e é O(n) para
   vetores já ordenados, mas faz até n²/2 movimentações;
 - a bolha também é O(n²), mas faz muito mais trocas;
 - na prática, a inserção direta costuma ser a mais rápida das três.
 
 ## Estabilidade
 
-A versão com trocas apresentada acima NÃO é estável.
+A versão com trocas apresentada acima NÃO é [[ordenacao|estável]].
 
 A busca do menor, usando comparação estrita (v[j] < v[menor]), sempre escolhe
 o PRIMEIRO entre os elementos empatados como menores; isso, sozinho, seria
@@ -113,14 +119,14 @@ Como torná-la estável: em vez de trocar, retira-se o menor da sua posição e
 desloca-se todo o trecho v[i..menor-1] uma posição para a direita, inserindo
 o menor em v[i]. Assim os demais elementos mantêm sua ordem relativa. O custo
 é perder a principal vantagem do método (poucas movimentações), que passam a
-ser O(n²). Em listas encadeadas esse deslocamento não é necessário, e a
+ser O(n²). Em [[listas_encadeadas|listas encadeadas]] esse deslocamento não é necessário, e a
 seleção estável é natural.
 
 ## Variações
 
 - Seleção bidirecional: em cada passada encontra o menor e o maior,
   colocando-os nas duas pontas; reduz o número de passadas pela metade.
-- Heap Sort: usa a mesma ideia de "selecionar o máximo e colocá-lo no lugar",
+- [[heapsort|Heap Sort]]: usa a mesma ideia de "selecionar o máximo e colocá-lo no lugar",
   mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca
   linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma
   seleção direta com uma estrutura de dados melhor.

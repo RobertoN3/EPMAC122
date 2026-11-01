@@ -1,8 +1,8 @@
 2. Algoritmo: Torres de Hanói recursivo
 3. Autores: Édouard Lucas
 4. Data: 1883
-5. Conceitos: Recursão, Pilhas, Indução matemática
-6. Problema: Mover n discos da haste A para a haste C, usando B como auxiliar, movendo um disco por vez e sem nunca colocar um disco maior sobre um menor
+5. Conceitos: Recursão, Pilhas
+6. Problema: Dados n discos de tamanhos distintos empilhados na haste A, movê-los para a haste C usando B como auxiliar, um disco por vez e sem nunca colocar um disco maior sobre um menor
 7. Titulo: Recursão
 
 ## Ideia geral
@@ -36,8 +36,10 @@ MESMO problema.
 
 Exemplo: fatorial.
 
+```
   fat(0) = 1                    (base)
   fat(n) = n * fat(n-1), n > 0  (passo)
+```
 
 ## Recursão e indução matemática
 
@@ -55,12 +57,13 @@ chamada.
 
 ## Como o computador executa: a pilha de execução
 
-Cada chamada de função cria um novo registro de ativação (ou contexto), com
+Cada chamada de função cria um novo [[registros|registro]] de ativação (ou contexto), com
 seus parâmetros, variáveis locais e o endereço de retorno. Esses contextos
-são guardados em uma pilha: a chamada mais recente fica no topo.
+são guardados em uma [[pilhas|pilha]]: a chamada mais recente fica no topo.
 
 Execução de fat(3):
 
+```
   fat(3) precisa de fat(2)      pilha: fat(3)
   fat(2) precisa de fat(1)      pilha: fat(3) fat(2)
   fat(1) precisa de fat(0)      pilha: fat(3) fat(2) fat(1)
@@ -68,6 +71,7 @@ Execução de fat(3):
   fat(1) devolve 1 * 1 = 1      (fat(0) foi desempilhada)
   fat(2) devolve 2 * 1 = 2
   fat(3) devolve 3 * 2 = 6
+```
 
 Cada chamada pendente "espera" a resposta da seguinte. Consequências:
 - uma recursão de profundidade n usa memória O(n) na pilha;
@@ -89,12 +93,14 @@ simples. Para mover os n discos de A para C, o maior disco precisa, em algum
 momento, sair de A e ir direto para C; para isso, os n-1 discos menores têm
 de estar todos em B. Logo:
 
+```
   hanoi(n, A, C, B):
       se n == 1: mova o disco de A para C
       senão:
           hanoi(n-1, A, B, C)    # leva os n-1 menores para B
           mova o disco n de A para C
           hanoi(n-1, B, C, A)    # traz os n-1 menores para cima dele
+```
 
 Pela hipótese de indução, a chamada hanoi(n-1, ...) sabe mover n-1 discos
 respeitando as regras; como os discos que ela move são todos menores que os
@@ -115,7 +121,9 @@ provar corretos. Mas a elegância não garante eficiência.
 
 Exemplo: Fibonacci.
 
+```
   fib(0) = 0, fib(1) = 1, fib(n) = fib(n-1) + fib(n-2)
+```
 
 A tradução direta para uma função recursiva faz duas chamadas por nível, e
 as mesmas instâncias são recalculadas um número enorme de vezes: fib(n-2) é
@@ -123,7 +131,7 @@ calculado duas vezes, fib(n-3) três vezes, fib(n-4) cinco vezes... O total
 de chamadas cresce exponencialmente (aproximadamente 1,618^n). Uma versão
 iterativa, que guarda os dois últimos valores, faz apenas n passos. Medindo
 o tempo com a função clock(), a diferença é dramática já para n perto de 40.
-A programação dinâmica é a técnica que transforma recursões assim em
+A [[programacao_dinamica|programação dinâmica]] é a técnica que transforma recursões assim em
 algoritmos eficientes.
 
 Outro custo é a própria chamada de função (empilhar e desempilhar
@@ -133,7 +141,7 @@ contextos). Quando a chamada recursiva é a última operação da função
 ## Tipos de recursão
 
 - Linear: uma chamada recursiva por execução (fatorial, busca em lista).
-- Múltipla ou em árvore: duas ou mais chamadas (Fibonacci, Hanói, Merge
+- Múltipla ou em [[arvores|árvore]]: duas ou mais chamadas (Fibonacci, Hanói, Merge
   Sort, percursos em árvores binárias).
 - Mútua (indireta): f chama g e g chama f (por exemplo, par(n) e impar(n);
   análise de expressões aritméticas).
@@ -141,9 +149,9 @@ contextos). Quando a chamada recursiva é a última operação da função
 
 ## Onde a recursão aparece na disciplina
 
-- Técnicas de projeto: divisão e conquista (Merge Sort, Quick Sort, busca
-  binária) e tentativa e erro (backtracking).
-- Estruturas recursivas: uma lista encadeada é vazia ou é uma célula seguida
+- Técnicas de projeto: [[divisao_conquista|divisão e conquista]] ([[mergesort|Merge Sort]], [[quicksort|Quick Sort]], busca
+  binária) e [[tentativa_erro|tentativa e erro]] (backtracking).
+- Estruturas recursivas: uma [[listas_encadeadas|lista encadeada]] é vazia ou é uma célula seguida
   de uma lista; uma árvore é vazia ou é uma raiz ligada a subárvores. Os
   algoritmos sobre elas são naturalmente recursivos.
 - Geração de objetos combinatórios: todos os números binários com k bits,

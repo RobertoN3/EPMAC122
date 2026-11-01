@@ -1,15 +1,14 @@
-1. Tecnica: Ordenação por distribuição
 2. Algoritmo: Ordenação digital (Radix Sort)
 3. Autores: Herman Hollerith
 4. Data: 1887
-5. Conceitos: Ordenação, Vetores, Algoritmo estável, Counting Sort, Dígitos
-6. Problema: Dado um vetor de números inteiros, reorganizá-lo em ordem crescente sem comparar os elementos entre si
+5. Conceitos: Ordenação, Vetores, Estabilidade
+6. Problema: Dado um vetor de números inteiros, reorganizá-lo [[ordenacao|em ordem crescente]] sem comparar os elementos entre si
 7. Titulo: Ordenação digital (Radix Sort)
 
 ## Ideia geral
 
 Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge
-Sort, Quick Sort, Heap Sort) obtêm informação apenas COMPARANDO pares de
+Sort, [[quicksort|Quick Sort]], [[heapsort|Heap Sort]]) obtêm informação apenas COMPARANDO pares de
 elementos. Para eles vale um limite inferior: no pior caso precisam de pelo
 menos da ordem de n log n comparações.
 
@@ -28,14 +27,18 @@ partes de tamanho limitado, como datas (ano, mês, dia).
 
 A versão mais usada processa os dígitos da DIREITA para a ESQUERDA:
 
+```
   para cada posição de dígito, das unidades até a mais significativa:
       ordene o vetor, de forma ESTÁVEL, apenas por esse dígito
+```
 
 Exemplo com v = (170, 45, 75, 90, 802, 24, 2, 66), base 10, três dígitos:
 
+```
   pelas unidades:   (170, 90, 802, 2, 24, 45, 75, 66)
   pelas dezenas:    (802, 2, 24, 45, 66, 170, 75, 90)
   pelas centenas:   (2, 24, 45, 66, 75, 90, 170, 802)
+```
 
 Note, na passada das dezenas, que 802 e 2 têm o mesmo dígito (0) e 802 vem
 antes porque já vinha antes; na passada das centenas, 2, 24, ..., 90 têm todos
@@ -50,7 +53,7 @@ está ordenado pelo número formado por esses k dígitos.
 Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES
 ficam na ordem certa, pois a passada os ordena por esse dígito. Dois
 números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos
-anteriores; isso só é garantido se a passada for ESTÁVEL, preservando a
+anteriores; isso só é garantido se a passada for [[ordenacao|ESTÁVEL]], preservando a
 ordem que eles já tinham. Sem estabilidade, o trabalho das passadas
 anteriores seria perdido.
 

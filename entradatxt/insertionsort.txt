@@ -1,9 +1,8 @@
-1. Tecnica: Método incremental
 2. Algoritmo: Ordenação por inserção direta (Insertion Sort)
 3. Autores: John Mauchly
 4. Data: 1946
-5. Conceitos: Ordenação, Vetores, Algoritmo estável, Invariante
-6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo em ordem crescente
+5. Conceitos: Ordenação, Vetores, Estabilidade, Invariante
+6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
 7. Titulo: Inserção direta (Insertion Sort)
 
 ## Ideia geral
@@ -27,6 +26,7 @@ espaço aberto é onde x é colocado.
 
 ## O algoritmo
 
+```
   para i de 1 até n-1:
       x <- v[i]
       j <- i - 1
@@ -34,6 +34,7 @@ espaço aberto é onde x é colocado.
           v[j+1] <- v[j]       (desloca para a direita)
           j <- j - 1
       v[j+1] <- x
+```
 
 Repare que não se fazem trocas, só deslocamentos: x é guardado em uma
 variável e copiado uma única vez, no final. Isso torna a inserção mais
@@ -43,25 +44,30 @@ rápida que a bolha, que faz trocas (três atribuições cada).
 
 v = (12, 11, 13, 5, 6)
 
+```
   i = 1, x = 11: 12 > 11 desloca          -> (11, 12, 13, 5, 6)
   i = 2, x = 13: 12 < 13, fica no lugar   -> (11, 12, 13, 5, 6)
   i = 3, x = 5:  desloca 13, 12 e 11      -> (5, 11, 12, 13, 6)
   i = 4, x = 6:  desloca 13, 12 e 11      -> (5, 6, 11, 12, 13)
+```
 
 ## Técnica: método incremental
 
 A inserção direta é o exemplo típico do método incremental: resolve-se o
 problema para os i primeiros elementos e, a partir dessa solução, obtém-se a
-solução para os i+1 primeiros. Em termos recursivos: para ordenar v[0..i],
+solução para os i+1 primeiros. Em termos [[recursao|recursivos]]: para ordenar v[0..i],
 ordena-se v[0..i-1] e depois insere-se v[i]. É uma forma de "diminuir e
 conquistar", em que o problema diminui uma unidade por vez (em contraste com
-a divisão e conquista, que o divide ao meio).
+a [[divisao_conquista|divisão e conquista]], que o divide ao meio).
 
 ## Correção: o invariante
 
 No início de cada iteração do laço externo (para cada i):
+
+```
   v[0..i-1] está em ordem crescente e contém exatamente os elementos que
   estavam originalmente em v[0..i-1].
+```
 
 - Vale para i = 1 (um elemento só).
 - O laço interno desloca para a direita os elementos maiores que x e coloca
@@ -69,7 +75,7 @@ No início de cada iteração do laço externo (para cada i):
   ordenado, com os mesmos elementos de antes mais x.
 - Ao final, i = n e o vetor inteiro está ordenado.
 
-Note a diferença para a seleção direta: lá, a parte ordenada já contém os
+Note a diferença para a [[selecao_direta|seleção direta]]: lá, a parte ordenada já contém os
 MENORES elementos do vetor, em suas posições definitivas; aqui, contém apenas
 os PRIMEIROS elementos, ordenados entre si, que ainda poderão ser deslocados.
 
@@ -90,7 +96,7 @@ o número de inversões do vetor (pares i < j com v[i] > v[j]). Portanto:
   isso a inserção é excelente para vetores "quase ordenados", com poucos
   elementos fora do lugar.
 
-Memória extra: O(1). Estabilidade: o laço interno só desloca elementos
+Memória extra: O(1). [[ordenacao|Estabilidade]]: o laço interno só desloca elementos
 ESTRITAMENTE maiores que x (condição v[j] > x); um elemento igual a x faz o
 laço parar, e x fica depois dele. A ordem relativa dos iguais é mantida: o
 método é estável. (Trocar > por >= tornaria o algoritmo instável.)
@@ -101,7 +107,7 @@ dados à medida que eles chegam, sem precisar conhecer o vetor inteiro.
 ## Variações
 
 - Inserção binária: como v[0..i-1] está ordenado, a posição de x pode ser
-  encontrada com busca binária, em O(log i) comparações. O número de
+  encontrada com [[busca_binaria|busca binária]], em O(log i) comparações. O número de
   deslocamentos não muda, então o algoritmo continua O(n²), mas é útil quando
   comparar é muito mais caro que mover (por exemplo, comparar cadeias
   longas).
@@ -114,15 +120,15 @@ dados à medida que eles chegam, sem precisar conhecer o vetor inteiro.
   casas de uma vez, e a inserção final encontra um vetor quase ordenado.
   Com boas sequências de distâncias, fica muito mais rápido que O(n²) na
   prática.
-- Em listas encadeadas a inserção não precisa deslocar nada: basta mudar
-  ponteiros.
+- Em [[listas_encadeadas|listas encadeadas]] a inserção não precisa deslocar nada: basta mudar
+  [[ponteiros]].
 
 ## Na prática
 
 Entre os métodos elementares, a inserção direta é a mais rápida na prática,
 e é imbatível para vetores pequenos (até algumas dezenas de elementos),
 porque seu laço é muito simples. Por isso as implementações profissionais
-de Merge Sort e Quick Sort, ao chegarem a trechos pequenos na recursão,
+de [[mergesort|Merge Sort]] e [[quicksort|Quick Sort]], ao chegarem a trechos pequenos na recursão,
 trocam para a inserção direta. O Timsort, usado em Python e Java, aplica
 inserção binária para formar os pequenos trechos ordenados que depois
 intercala, e o Introsort, do C++, termina com inserção.

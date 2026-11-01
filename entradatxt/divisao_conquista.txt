@@ -1,6 +1,5 @@
 1. Tecnica: Divisão e conquista
-5. Conceitos: Recursão, Ordenação, Vetores, Intercalação, Algoritmo estável
-6. Problema: Resolver um problema dividindo-o em instâncias menores do mesmo problema, resolvendo cada uma recursivamente e combinando as soluções parciais na solução global
+5. Conceitos: Recursão, Ordenação, Vetores, Eficiência de algoritmos
 7. Titulo: Divisão e conquista
 
 ## Ideia geral
@@ -19,19 +18,21 @@ fases:
 3) Combinar: juntar as soluções das instâncias menores para obter a solução
    da instância original.
 
-A técnica está intimamente ligada à recursão: o algoritmo chama a si mesmo
+A técnica está intimamente ligada à [[recursao|recursão]]: o algoritmo chama a si mesmo
 sobre as partes. Por isso, para provar que ele está correto usa-se indução:
 supõe-se que as chamadas recursivas resolvem corretamente as instâncias
 menores e mostra-se que a fase de combinação produz a resposta certa.
 
 Esquema geral, em pseudocódigo:
 
+```
   resolve(I):
       se I é pequena:
           devolva a solução direta de I
       divida I em I1, I2, ..., Ik
       para cada Ij: Sj <- resolve(Ij)
       devolva combina(S1, S2, ..., Sk)
+```
 
 ## Exemplo principal: ordenação por fusão (Merge Sort)
 
@@ -53,26 +54,30 @@ o tamanho do trecho.
 
 Exemplo com v = (38, 27, 43, 3, 9, 82, 10):
 
+```
   dividir:    (38 27 43 3) | (9 82 10)
               (38 27)(43 3) | (9 82)(10)
               (38)(27)(43)(3) | (9)(82)(10)
   intercalar: (27 38)(3 43) | (9 82)(10)
               (3 27 38 43) | (9 10 82)
               (3 9 10 27 38 43 82)
+```
 
-Estabilidade: na intercalação, quando os dois elementos comparados são
+[[ordenacao|Estabilidade]]: na intercalação, quando os dois elementos comparados são
 iguais, copia-se primeiro o da metade esquerda (usa-se <= na comparação).
-Assim, elementos iguais preservam a ordem original e o Merge Sort é estável.
+Assim, elementos iguais preservam a ordem original e o [[mergesort|Merge Sort]] é estável.
 
 ## Análise por recorrência
 
 Seja T(n) o tempo para ordenar n elementos. Há duas chamadas recursivas
 sobre metades e uma intercalação linear, então:
 
+```
   T(1) = c
   T(n) = 2 T(n/2) + c n
+```
 
-Abrindo a recorrência (árvore de recursão): no nível 0 há 1 problema de
+Abrindo a recorrência ([[arvores|árvore]] de recursão): no nível 0 há 1 problema de
 tamanho n, que custa c n; no nível 1 há 2 problemas de tamanho n/2, que
 custam juntos c n; no nível 2 há 4 problemas de tamanho n/4, de novo c n no
 total; e assim por diante. A árvore tem log2(n) + 1 níveis, cada um custando
@@ -86,7 +91,9 @@ memória auxiliar para a intercalação.
 
 Muitos algoritmos de divisão e conquista geram recorrências da forma
 
+```
   T(n) = a T(n/b) + f(n)
+```
 
 em que a é o número de subproblemas, n/b o tamanho de cada um e f(n) o custo
 de dividir e combinar. O teorema mestre resolve essa recorrência comparando
@@ -101,7 +108,7 @@ f(n) com n^(log_b a), o custo total das folhas da árvore de recursão:
 
 Exemplos:
 - Merge Sort: a = 2, b = 2, f(n) = n, n^(log_2 2) = n -> Theta(n log n).
-- Busca binária: a = 1, b = 2, f(n) = 1, n^0 = 1 -> Theta(log n).
+- [[busca_binaria|Busca binária]]: a = 1, b = 2, f(n) = 1, n^0 = 1 -> Theta(log n).
 - Karatsuba: a = 3, b = 2, f(n) = n -> Theta(n^(log_2 3)) ~ Theta(n^1,585).
 
 ## Outros exemplos de divisão e conquista
@@ -109,7 +116,7 @@ Exemplos:
 - Busca binária: compara com o elemento do meio e descarta metade do vetor.
   Só um subproblema precisa ser resolvido (às vezes chamado de "diminuir e
   conquistar").
-- Quick Sort (Hoare, 1959): divide o vetor em "menores que o pivô" e
+- [[quicksort|Quick Sort]] (Hoare, 1959): divide o vetor em "menores que o pivô" e
   "maiores que o pivô"; aqui o trabalho está na DIVISÃO (partição) e a
   combinação é trivial, o oposto do Merge Sort.
 - Multiplicação de inteiros de Karatsuba (1960): multiplica números de n
@@ -126,14 +133,14 @@ Exemplos:
 - Subproblemas que se repetem: se a divisão gera muitas vezes os mesmos
   subproblemas, a divisão e conquista refaz cálculos. O Fibonacci recursivo,
   fib(n) = fib(n-1) + fib(n-2), gasta tempo exponencial por isso. Nesse caso
-  a técnica indicada é a programação dinâmica, que guarda os resultados.
+  a técnica indicada é a [[programacao_dinamica|programação dinâmica]], que guarda os resultados.
 - Divisões desequilibradas: se uma parte fica quase do tamanho do problema
   original (como no pior caso do Quick Sort, com pivô sempre extremo), a
   profundidade da recursão vira n e o tempo vira O(n²).
 - Custo da recursão: para instâncias pequenas, o custo das chamadas pode
   superar o ganho. Implementações práticas param a recursão em trechos
-  pequenos (por exemplo, com menos de 16 elementos) e usam inserção direta.
-- Memória da pilha: a profundidade da recursão consome pilha de execução;
+  pequenos (por exemplo, com menos de 16 elementos) e usam [[insertionsort|inserção direta]].
+- Memória da [[pilhas|pilha]]: a profundidade da recursão consome pilha de execução;
   no Merge Sort ela é O(log n), o que não é problema.
 
 ## Histórico

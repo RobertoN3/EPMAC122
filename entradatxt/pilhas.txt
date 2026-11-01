@@ -1,4 +1,3 @@
-2. Algoritmo: Verificação de parênteses balanceados com pilha
 3. Autores: Friedrich L. Bauer, Klaus Samelson
 4. Data: 1957
 5. Conceitos: Pilhas, Vetores, Listas encadeadas, Recursão
@@ -54,7 +53,7 @@ O topo é a primeira célula da lista.
 - desempilha(): guarda o conteúdo da primeira célula, faz o topo apontar
   para a segunda e libera a primeira com free.
 Não há limite de tamanho além da memória disponível, mas cada elemento gasta
-memória extra com o ponteiro.
+memória extra com o [[ponteiros|ponteiro]].
 
 ## Aplicação 1: parênteses balanceados
 
@@ -86,11 +85,13 @@ nem de regras de precedência, e é avaliada com uma pilha:
   empilha o resultado;
 - no fim, o resultado é o único elemento da pilha.
 
+```
   lê 2:  pilha 2
   lê 3:  pilha 2 3
   lê +:  desempilha 3 e 2, empilha 5    -> pilha 5
   lê 4:  pilha 5 4
   lê *:  desempilha 4 e 5, empilha 20   -> pilha 20
+```
 
 A conversão de uma expressão infixa (a notação usual) para posfixa também
 usa uma pilha, de operadores (algoritmo "shunting-yard" de Dijkstra, 1961).
@@ -100,10 +101,10 @@ máquina virtual Java).
 
 ## Aplicação 3: a pilha de execução e a recursão
 
-Quando uma função é chamada, o computador empilha um registro de ativação
+Quando uma função é chamada, o computador empilha um [[registros|registro]] de ativação
 com os parâmetros, as variáveis locais e o endereço para onde voltar; quando
 ela termina, o registro é desempilhado. Essa pilha de execução (call stack)
-é o que torna a recursão possível: cada chamada recursiva tem seu próprio
+é o que torna a [[recursao|recursão]] possível: cada chamada recursiva tem seu próprio
 contexto, guardado sobre o contexto da chamada anterior.
 
 Consequências:
@@ -115,7 +116,7 @@ Consequências:
 
 - desfazer (undo) e refazer em editores;
 - voltar páginas no navegador;
-- busca em profundidade em grafos e backtracking (a pilha guarda o caminho
+- busca em profundidade em [[grafos]] e [[tentativa_erro|backtracking]] (a pilha guarda o caminho
   percorrido, para poder voltar);
 - verificar se uma página HTML ou XML tem as marcas bem aninhadas;
 - inverter uma sequência: empilhar tudo e desempilhar.
