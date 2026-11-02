@@ -1,0 +1,89 @@
+# Relatório das maiores dificuldades
+
+Este relatório registra os problemas que mais deram trabalho no EP, por que foram difíceis e como foram resolvidos. Estão agrupados por tema, dos que mais afetaram o projeto para os de menor impacto.
+
+## 1. Definir o formato dos TXT
+
+O enunciado mostra só o cabeçalho de um exemplo (o de Kruskal). Todo o resto do formato teve de ser decidido por nós, e cada decisão afetava os três programas ao mesmo tempo.
+
+- **O que faltava no enunciado:** como dar nome a uma página que não tem Algoritmo (por exemplo, Grafos), onde termina o cabeçalho, onde ficam as referências e como separar o código C do texto.
+- **Solução:** acrescentamos o campo `7. Titulo:`, que nomeia a página sem virar uma sétima categoria; o cabeçalho termina na primeira linha em branco; as referências começam na linha `REFERENCIAS:`; o código fica entre `INICIO_CODIGO_C` e `FIM_CODIGO_C`. Não dava para depender de o código começar por `#include <stdio.h>`, porque vários programas começam com comentários ou outros includes.
+- **Mudanças no meio do caminho:** a regra do separador de valores mudou duas vezes. Primeiro foi "vírgula seguida de espaço exatamente", depois "vírgula, removendo os espaços das pontas" (a regra final, em `formato_txt.md`). Cada mudança exigiu ajustar o `gerador.c` e conferir todos os TXT de novo.
+- **Lição:** o arquivo `documentacao/formato_txt.md` só foi escrito depois de alguns TXT já existirem. Ter a especificação desde o começo teria evitado retrabalho.
+
+## 2. Manter os índices consistentes
+
+Os índices agrupam os TXT pelo texto exato dos campos. Qualquer diferença de grafia cria um grupo novo.
+
+- **Exemplos reais:** "Algoritmo estável" num arquivo e "Estabilidade" em outro; "Union-find" e "Conjuntos disjuntos" para a mesma coisa; "Desconhecido" como autor, que aparecia no índice de Autores como se fosse uma pessoa, e "Desconhecida" como data, que virava um "ano" no índice de Data.
+- **Solução:** criamos um vocabulário fechado de Conceitos (tabela no `formato_txt.md`), proibimos valores como "Desconhecido" (o campo vazio é omitido) e fizemos o `gerador.c` avisar quando aparece um conceito fora do vocabulário ou um `[[link]]` para um TXT que não existe.
+- **Ponto fraco que ficou:** o vocabulário está escrito em dois lugares, no `formato_txt.md` e no `gerador.c`. Um conceito novo precisa ser acrescentado nos dois.
+
+## 3. Classificar técnicas, autores e datas
+
+Preencher os campos parecia fácil, mas exigiu pesquisa e algumas decisões discutíveis.
+
+- **Técnica:** a ordenação bolha estava classificada como "Força bruta", mas o enunciado a usa como exemplo de método guloso. Adotamos o enunciado e explicamos no texto que alguns livros a chamam de força bruta. Também limitamos as técnicas às quatro do enunciado.
+- **Autores e datas:** vários algoritmos não têm um "inventor" claro. Usamos as atribuições registradas na literatura, principalmente por Knuth, e explicamos no texto o que cada data significa:
+  - bolha: Friend, 1956;
+  - inserção direta: Mauchly, 1946;
+  - espalhamento: memorando de Luhn, 1953;
+  - Radix Sort: Hollerith, 1887;
+  - programação dinâmica: 1952, ano do artigo de Bellman na PNAS. Antes estava 1953; trocamos porque o artigo de 1952 é uma fonte verificável.
+- **Vários autores ou datas:** casos como Prim (Jarník 1930, Prim 1957, Dijkstra 1959) e a árvore binária de busca (1960, 1962) obrigaram a aceitar vários valores também no campo Data.
+- **Divergência com o material do curso:** a página sobre ordenação estável diz que a seleção direta é estável. A versão com trocas não é: no vetor (2a, 2b, 1), a primeira troca produz (1, 2b, 2a). Mantivemos "instável", com o contraexemplo no texto.
+
+## 4. Acesso e confiabilidade das fontes
+
+- O PDF de grafos e árvores do professor, no e-Disciplinas, exige login e não pôde ser lido no início. As primeiras versões de grafos e árvores foram escritas só com livros, e o conteúdo do PDF (grafos G1 e G2, matriz de incidência, árvore completamente balanceada, n0 = n2 + 1, representações) só entrou depois.
+- Recebemos textos de apoio gerados por outra ferramenta de IA. Eram bons, mas fora do nosso formato: técnica "Força bruta", conceito "Memoização" fora do vocabulário, marcadores `[codigo]` e sem seções. Não dava para colar: cada trecho foi conferido e convertido. Aproveitamos três páginas novas (ordenação topológica, estabilidade e algoritmos recursivos em árvores) e acréscimos em dez páginas; o resto já estava coberto.
+- Alguns sites não puderam ser acessados durante o trabalho, e várias referências tiveram de ser conferidas antes de citar (por exemplo, o post de Joshua Bloch sobre o erro de estouro na busca binária).
+
+## 5. Transformar o texto dos TXT em HTML
+
+O texto dos TXT é quebrado em linhas de cerca de 75 colunas para ser lido num editor. Por isso cada quebra de linha não pode virar um `<br>`.
+
+- O `gerador_conteudo.c` precisou de uma máquina de estados: linhas seguidas se juntam num parágrafo, linha em branco fecha o bloco, `- ` e `1) ` abrem itens de lista, uma linha recuada continua o item anterior, e as linhas entre ` ``` ` saem pré-formatadas (tabelas e pseudocódigo).
+- Os links `[[alvo|texto]]` aparecem no meio do texto e também no campo Problema, e precisam ser tratados nos dois programas. Tudo ainda tem de ser escapado (`<`, `>`, `&`), senão um `m < n²` ou um `#include <stdio.h>` quebraria o HTML.
+
+## 6. O filtro de cores (colorir.c)
+
+Foi a parte tecnicamente mais delicada, porque um analisador léxico precisa acertar casos que quase nunca aparecem num teste simples.
+
+- **Casos difíceis:**
+  - comentários de bloco com várias linhas;
+  - `\"` dentro de uma cadeia;
+  - o caractere `'"'`, que não pode abrir uma cadeia;
+  - `#define` continuado com `\` e com comentário no fim;
+  - `x/2 /* ... */`, em que a barra é divisão e logo depois começa um comentário;
+  - números como `1.5e-3`, `.25` e `0x1Fp+2`.
+- **As cores:** o enunciado manda usar as cores sugeridas pela Wikipédia, mas o texto do artigo não cita nenhuma cor. Elas vêm do realce que a própria Wikipédia aplica aos exemplos de código, que é o estilo "default" do Pygments. Lemos as cores direto do Pygments.
+- **Escolhas de classificação:** decidimos tratar `struct`, `union` e `enum` como tipos, o `-` de `-1` como operador e destacar o escape de `'\0'`. Para validar, comparamos caractere por caractere com o Pygments nos 31 programas: 99,35% de concordância. As diferenças são justamente essas escolhas.
+- **Erro curioso:** o próprio comentário de abertura do `colorir.c` citava `/* */` e `*.txt`, o que fecharia o comentário antes da hora. Foi pego antes de compilar.
+
+## 7. Ligar os três programas entre si
+
+Os três programas são independentes, mas as páginas que eles geram apontam umas para as outras.
+
+- O `gerador_conteudo.c` cria o link "Ver código em C" para `nome_codigo.html`. Até o `colorir.c` existir, os 31 links estavam quebrados.
+- A ficha de cada página aponta para um grupo dentro de um índice (por exemplo, `tecnica.html#método-guloso`). Isso exige que dois programas diferentes gerem exatamente a mesma âncora, inclusive com acentos, que no endereço viram `m%C3%A9todo`. A solução foi o arquivo `slug.h`, incluído pelos dois.
+- Para garantir que nada ficou quebrado, gerávamos o site inteiro e conferíamos todos os links. Hoje são 69 páginas e 225 links com âncora, e nenhum quebrado.
+
+## 8. Garantir que os exemplos estão certos
+
+- Todo código C dos TXT precisa compilar sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e rodar. Conferimos isso a cada mudança, extraindo os blocos dos 31 TXT automaticamente.
+- Os exemplos passo a passo do texto (tabela da mochila, execução de Dijkstra e Kruskal, passadas do Radix Sort) foram montados com os mesmos dados dos programas, e conferimos se a saída de cada programa batia com o texto. Também tivemos de cuidar de afirmações numéricas fáceis de errar, como "13! já não cabe num int de 32 bits".
+
+## 9. Git e trabalho em dupla
+
+- O push direto ao repositório foi bloqueado várias vezes: primeiro faltava o convite de colaborador (que precisa ser aceito), depois o login no terminal, que não aceita a senha normal e exige um token com permissão `repo`. Enquanto isso, as mudanças foram passadas como arquivos de patch e aplicadas com `git am`.
+- Como dois membros alteravam os mesmos TXT em paralelo (via pull requests), houve commits com o mesmo conteúdo e históricos diferentes. Foi preciso conferir que o conteúdo era idêntico e reposicionar os commits (rebase) antes de continuar, para não gerar conflitos.
+
+## 10. Detalhes de plataforma e de visual
+
+- O grupo usa Windows. Os programas tratam o `\r` das quebras de linha do Windows, o BOM do UTF-8 no início dos arquivos e a criação de pasta com `_mkdir`.
+- Ao testar no celular, as páginas de conteúdo ficavam mais largas que a tela (589 px numa tela de 390 no Kruskal, 798 px em Grafos) por causa dos URLs longos das referências. Resolvido no CSS, com quebra de palavras longas. Agora nenhuma das 69 páginas passa da largura da tela.
+
+## Resumo
+
+As maiores dificuldades não estavam no C em si, e sim em definir regras e mantê-las consistentes entre muitos arquivos e três programas: o formato dos TXT, o vocabulário dos índices, as âncoras compartilhadas e a fidelidade entre texto, código e saída. A parte puramente técnica mais trabalhosa foi o analisador léxico do filtro de cores. O que mais ajudou foi automatizar as conferências: compilar todos os exemplos, gerar o site inteiro e verificar todos os links a cada mudança.
