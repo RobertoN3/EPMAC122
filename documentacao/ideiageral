@@ -3,8 +3,8 @@
 O desenvolvimento será feito por etapas, discutindo as decisões antes de implementar os programas.
 
 - gerador.c já existe e gera index.html e as páginas indexadoras, com links para as páginas de conteúdo. Manter essa responsabilidade.
-- Um novo programa, ainda sem nome definido, gerará as páginas de conteúdo dos TXT.
-- Um terceiro programa gerará páginas separadas com o código C e a coloração dos itens léxicos exigida pelo enunciado.
+- gerador_conteudo.c gera as páginas de conteúdo dos TXT.
+- colorir.c gera as páginas separadas com o código C e a coloração dos itens léxicos exigida pelo enunciado.
 
 # Formato dos TXT
 
@@ -28,6 +28,27 @@ As regras de formato valem como estão em `documentacao/formato_txt.md`. O gerad
 - No índice de Conceitos, cada conceito traz um link para a sua página explicativa, conforme a tabela do vocabulário fechado.
 - Avisa no terminal sobre conceitos fora do vocabulário e sobre `[[alvo]]` sem `alvo.txt`.
 - Linhas do cabeçalho podem ter até 4095 caracteres.
+
+# colorir.c: filtro de código C (feito)
+
+Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODIGO_C`, grava `saida/<nome>_codigo.html`, a página que o link "Ver código em C" do `gerador_conteudo.c` espera. Um TXT com mais de um bloco gera uma página com "Programa 1", "Programa 2"... TXT sem código não gera página.
+
+- Itens léxicos coloridos: pragmas (a diretiva inteira, com o arquivo do `#include` destacado à parte), tipos (incluindo `struct`, `union`, `enum` e tipos da biblioteca, como `size_t` e `FILE`), comandos e palavras reservadas, comentários de linha e de bloco (inclusive de várias linhas), cadeias e caracteres (com as sequências de escape destacadas), números, operadores e constantes como `NULL`.
+- Cores: estilo "default" do Pygments, que é o realce aplicado aos exemplos de código da Wikipédia. A página traz uma legenda com as cores.
+- Escapa `<`, `>` e `&`; o texto da página, sem as tags, é idêntico ao código do TXT.
+- Modo filtro: `colorir -f < programa.c > programa.html` colore qualquer arquivo C, sem passar pelos TXT.
+- Mesmos argumentos opcionais dos outros programas: `colorir pasta_entrada pasta_saida`.
+
+# Como gerar o site
+
+```
+gcc -Wall -Wextra -pedantic -std=c99 gerador.c -o gerador
+gcc -Wall -Wextra -pedantic -std=c99 gerador_conteudo.c -o gerador_conteudo
+gcc -Wall -Wextra -pedantic -std=c99 colorir.c -o colorir
+./gerador && ./gerador_conteudo && ./colorir
+```
+
+Os três leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Abrir `saida/index.html`.
 
 # Arquivo auxiliar: sugestão ainda não adotada
 
