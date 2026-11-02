@@ -33,7 +33,7 @@ static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
     {"Caminho mínimo", "dijkstra"},         {"Memorização", "programacao_dinamica"},
     {"Conjuntos disjuntos", "kruskal"},     {"Ordenação", "ordenacao"},
     {"Eficiência de algoritmos", "eficiencia"}, {"Pilhas", "pilhas"},
-    {"Estabilidade", "ordenacao"},          {"Ponteiros", "ponteiros"},
+    {"Estabilidade", "estabilidade"},          {"Ponteiros", "ponteiros"},
     {"Filas", "filas"},                     {"Registros", "registros"},
     {"Fila de prioridade", "heapsort"},     {"Recursão", "recursao"},
     {"Grafos", "grafos"},                   {"Subestrutura ótima", "programacao_dinamica"},

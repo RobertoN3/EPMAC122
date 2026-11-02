@@ -100,7 +100,14 @@ Consequências:
   ponteiro (int *v). O vetor não é copiado, e a função pode alterar o vetor
   original, como fazem todas as funções de ordenação;
 - dentro da função não há como saber o tamanho do vetor; por isso ele é
-  passado separadamente (n);
+  passado separadamente (n). Cuidado com sizeof: aplicado ao próprio vetor
+  (int v[10]; sizeof v), dá o tamanho do vetor inteiro, pois aí o nome NÃO é
+  convertido em ponteiro; aplicado a um parâmetro declarado como int v[],
+  dá o tamanho de um ponteiro;
+- pode-se formar o ponteiro para a posição logo DEPOIS do último elemento
+  (v + n) e usá-lo como limite de um percurso, como em
+  for (p = v; p != v + n; p++), mas nunca desreferenciá-lo. Comparar ou
+  subtrair ponteiros só faz sentido entre posições do mesmo vetor;
 - cadeias de caracteres são vetores de char terminados por '\0', e
   manipulá-las é, em grande parte, manipular ponteiros.
 

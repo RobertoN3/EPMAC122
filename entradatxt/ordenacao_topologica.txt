@@ -1,0 +1,301 @@
+2. Algoritmo: Ordenação topológica por remoção de fontes
+3. Autores: Arthur B. Kahn
+4. Data: 1962
+5. Conceitos: Grafos, Filas, Listas encadeadas, Invariante
+6. Problema: Dado um [[grafos|grafo]] dirigido acíclico, determinar uma ordem de seus vértices em que a origem de cada aresta venha antes do seu destino
+7. Titulo: Ordenação topológica
+
+## Ideia geral
+
+Uma ordenação topológica de um [[grafos|grafo]] dirigido é uma sequência que
+contém cada vértice exatamente uma vez e coloca a origem de cada aresta
+antes do seu destino: se existe a aresta u->v, então u aparece antes de v.
+
+A aplicação típica é ordenar tarefas com dependências. O material de grafos
+da disciplina usa o exemplo das dependências de compilação: se um arquivo
+precisa estar pronto antes de outro, representamos essa exigência por uma
+aresta do primeiro para o segundo. Outros exemplos:
+- disciplinas e seus pré-requisitos (em que ordem cursá-las?);
+- etapas de uma obra (fundação antes das paredes, paredes antes do
+  telhado);
+- células de uma planilha que dependem de outras células;
+- pacotes de software que dependem de outros pacotes.
+
+A sequência resultante respeita todas as dependências, mas não precisa
+ordenar os rótulos numericamente. Em geral há várias ordenações topológicas
+válidas para o mesmo grafo.
+
+## Quando existe
+
+Um grafo dirigido admite ordenação topológica exatamente quando não tem
+ciclos dirigidos. Um grafo assim é chamado grafo dirigido acíclico (em
+inglês, DAG, de directed acyclic graph).
+
+- Se houver um ciclo v1->v2->...->vk->v1, cada vértice do ciclo teria de vir
+  antes do seguinte e, dando a volta, antes de si mesmo: impossível.
+- Se não houver ciclo, o algoritmo abaixo constrói uma ordenação.
+
+## O algoritmo de remoção de fontes (Kahn)
+
+Uma fonte é um vértice com grau de entrada zero, isto é, sem arestas
+chegando nele vindas de vértices ainda não processados. Uma fonte não
+depende de ninguém que falte e, portanto, pode ser colocada agora.
+
+```
+  calcule o grau de entrada de cada vértice
+  insira na fila todas as fontes (grau de entrada 0)
+  enquanto a fila não estiver vazia:
+      u <- remova o primeiro da fila
+      acrescente u ao fim da sequência
+      para cada aresta u->v:
+          diminua o grau de entrada de v
+          se ele chegou a 0: insira v na fila
+  se a sequência tem todos os vértices: ela é uma ordenação topológica
+  senão: o grafo tem um ciclo
+```
+
+Não é preciso apagar fisicamente as arestas: basta diminuir os graus de
+entrada em um vetor separado, preservando as [[listas_encadeadas|listas de
+adjacência]] originais. A estrutura que guarda as fontes disponíveis é uma
+[[filas|fila]], mas uma pilha também funcionaria: só mudaria qual das
+ordenações válidas é produzida.
+
+## Exemplo
+
+Usamos o grafo dirigido G2 do material de grafos da disciplina, com
+vértices 1, 2, 3 e 4 e arestas 1->2, 1->4, 2->3, 2->4 e 3->4. Lido como
+dependências de compilação, 1->2 significa que a tarefa 1 precisa preceder a
+tarefa 2.
+
+- Graus de entrada iniciais: 0, 1, 1 e 3. A fila começa com o vértice 1.
+- Processa 1: os graus de 2 e 4 passam a 0 e 2; o vértice 2 entra na fila.
+- Processa 2: os graus de 3 e 4 passam a 0 e 1; o vértice 3 entra na fila.
+- Processa 3: o grau de 4 chega a 0; o vértice 4 entra na fila.
+- Processa 4. A ordem obtida é 1, 2, 3, 4.
+
+Se acrescentarmos a aresta 4->2, criamos o ciclo 2->3->4->2. O algoritmo
+processa o vértice 1, mas os demais ficam bloqueados (todos continuam com
+grau de entrada positivo) e a fila esvazia com apenas um dos quatro
+vértices processado: o ciclo é detectado.
+
+## Por que funciona
+
+Invariante: os graus atualizados contam apenas as arestas que
+chegam de vértices ainda não processados.
+
+- Quando retiramos uma fonte u, todos os seus predecessores já foram
+  processados e colocados na sequência. Colocar u na próxima posição não
+  viola nenhuma dependência.
+- Todo grafo dirigido acíclico não vazio tem pelo menos uma fonte. Se cada
+  vértice tivesse um predecessor, poderíamos seguir predecessores
+  indefinidamente; como o conjunto de vértices é finito, algum vértice se
+  repetiria, formando um ciclo. Assim, enquanto restarem vértices de um
+  grafo acíclico, sempre haverá uma fonte disponível, e o algoritmo
+  processa todos.
+- Se a fila esvaziar antes de processar todos os vértices, cada vértice
+  restante tem ao menos uma aresta de entrada vinda de outro restante; o
+  mesmo argumento de seguir predecessores mostra que existe um ciclo. Nem
+  todo vértice que sobra precisa estar no ciclo: alguns podem apenas
+  depender dele. A sequência parcial obtida não é uma ordenação do grafo
+  inteiro.
+
+Quando várias fontes coexistem, qualquer uma pode ser escolhida; por isso
+há, em geral, mais de uma ordenação válida.
+
+## Complexidade
+
+Com n vértices e m arestas em listas de adjacência:
+- calcular os graus iniciais custa Theta(n + m);
+- cada vértice entra na fila no máximo uma vez, e cada aresta é examinada no
+  máximo uma vez;
+- o tempo total é Theta(n + m), mesmo quando um ciclo interrompe o
+  processamento;
+- o espaço auxiliar é Theta(n), para os graus, a fila e a sequência.
+
+## Outra forma: busca em profundidade
+
+Também se obtém uma ordenação topológica com a busca em profundidade (DFS,
+descrita na página de [[grafos]]): ao terminar a exploração de um vértice
+(quando todos os seus descendentes já foram visitados), ele é empilhado. No
+fim, a pilha lida do topo para a base é uma ordenação topológica. Esse
+método também custa Theta(n + m) e detecta ciclos quando encontra uma aresta
+para um vértice ainda "em exploração".
+
+## Histórico
+
+O método de remoção de fontes é conhecido como algoritmo de Kahn: Arthur B.
+Kahn o publicou em 1962, no artigo "Topological sorting of large networks",
+motivado pelo planejamento de projetos com milhares de atividades
+interdependentes (redes PERT). Knuth apresenta o mesmo algoritmo no volume 1
+de "The Art of Computer Programming" (seção 2.2.3).
+
+## Sobre o código
+
+O programa monta o grafo G2 em listas de adjacência, a partir de um vetor de
+pares (origem, destino), e executa o algoritmo de Kahn. No teste acíclico,
+confere se cada aresta vai de uma posição anterior para uma posterior na
+sequência obtida. No teste com o ciclo 2->3->4->2, mostra a sequência parcial
+e informa o ciclo. Os vértices usam índices de 0 a n-1 internamente e são
+impressos com rótulos de 1 a n.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Páginas 1 e 2 (grafo G2, ordenação topológica e dependências de compilação). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
+- KAHN, A. B. Topological sorting of large networks. Communications of the ACM, v. 5, n. 11, p. 558-562, 1962.
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.3 (Topological sorting).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 22.4 (Ordenação topológica).
+- SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 19 (Digraphs and DAGs).
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+#define MAX_VERTICES 8
+#define MAX_ARESTAS 16
+
+typedef struct {
+    int origem;
+    int destino;
+} Aresta;
+
+typedef struct No {
+    int destino;
+    struct No *proximo;
+} No;
+
+typedef struct {
+    int n;
+    No *lista[MAX_VERTICES];
+    No nos[MAX_ARESTAS];
+} Grafo;
+
+/* Os nos das listas pertencem ao proprio grafo: nao copiar a estrutura. */
+int construir(Grafo *g, int n, const Aresta arestas[], size_t m)
+{
+    if (n < 0 || n > MAX_VERTICES || m > MAX_ARESTAS) {
+        return 0;
+    }
+    g->n = n;
+    for (int u = 0; u < n; u++) {
+        g->lista[u] = NULL;
+    }
+    for (size_t i = 0; i < m; i++) {
+        int u = arestas[i].origem;
+        int v = arestas[i].destino;
+        if (u < 0 || u >= n || v < 0 || v >= n) {
+            return 0;
+        }
+        g->nos[i].destino = v;
+        g->nos[i].proximo = g->lista[u];
+        g->lista[u] = &g->nos[i];
+    }
+    return 1;
+}
+
+/* Algoritmo de Kahn: devolve quantos vertices foram processados.
+   Ha ciclo se esse total for menor que g->n. */
+int ordenar(const Grafo *g, int ordem[])
+{
+    int grau[MAX_VERTICES] = {0};
+    int fila[MAX_VERTICES];
+    int inicio = 0;
+    int fim = 0;
+    int quantidade = 0;
+
+    for (int u = 0; u < g->n; u++) {
+        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
+            grau[p->destino]++;
+        }
+    }
+    for (int u = 0; u < g->n; u++) {
+        if (grau[u] == 0) {
+            fila[fim++] = u;              /* fontes iniciais */
+        }
+    }
+    while (inicio < fim) {
+        int u = fila[inicio++];
+        ordem[quantidade++] = u;
+        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
+            int v = p->destino;
+            grau[v]--;                    // "remove" a aresta u->v
+            if (grau[v] == 0) {
+                fila[fim++] = v;
+            }
+        }
+    }
+    return quantidade;
+}
+
+/* Confere unicidade dos vertices e precedencia em todas as arestas. */
+int ordem_valida(const Grafo *g, const int ordem[])
+{
+    int posicao[MAX_VERTICES];
+    for (int u = 0; u < g->n; u++) {
+        posicao[u] = -1;
+    }
+    for (int i = 0; i < g->n; i++) {
+        int u = ordem[i];
+        if (u < 0 || u >= g->n || posicao[u] != -1) {
+            return 0;
+        }
+        posicao[u] = i;
+    }
+    for (int u = 0; u < g->n; u++) {
+        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
+            if (posicao[u] >= posicao[p->destino]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+int testar(const char *nome, const Aresta arestas[], size_t m,
+           int espera_ciclo)
+{
+    Grafo g;
+    int ordem[MAX_VERTICES];
+    if (!construir(&g, 4, arestas, m)) {
+        fprintf(stderr, "Erro ao construir o grafo.\n");
+        return 0;
+    }
+    int quantidade = ordenar(&g, ordem);
+    int tem_ciclo = quantidade < g.n;
+
+    printf("%s\n", nome);
+    printf("%s", tem_ciclo ? "Prefixo processado:" : "Ordem topologica:");
+    for (int i = 0; i < quantidade; i++) {
+        printf(" %d", ordem[i] + 1);
+    }
+    printf("\n");
+    if (tem_ciclo) {
+        printf("Ciclo detectado: %d de %d vertices processados.\n",
+               quantidade, g.n);
+    } else if (!ordem_valida(&g, ordem)) {
+        fprintf(stderr, "Erro: ordem invalida.\n");
+        return 0;
+    }
+    if (tem_ciclo != espera_ciclo) {
+        fprintf(stderr, "Erro: deteccao de ciclo diferente da esperada.\n");
+        return 0;
+    }
+    printf("Teste OK.\n\n");
+    return 1;
+}
+
+int main(void)
+{
+    /* Grafo G2 do material, convertido de rotulos 1..4 para indices 0..3. */
+    const Aresta aciclico[] = {
+        {0, 1}, {0, 3}, {1, 2}, {1, 3}, {2, 3}
+    };
+    const Aresta ciclico[] = {
+        {0, 1}, {0, 3}, {1, 2}, {1, 3}, {2, 3},
+        {3, 1} /* Acrescenta 4->2: ciclo 2->3->4->2. */
+    };
+    int falhas = 0;
+    falhas += !testar("Grafo aciclico:", aciclico,
+                      sizeof aciclico / sizeof aciclico[0], 0);
+    falhas += !testar("Grafo com ciclo:", ciclico,
+                      sizeof ciclico / sizeof ciclico[0], 1);
+    return falhas != 0;
+}
+FIM_CODIGO_C

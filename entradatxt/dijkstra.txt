@@ -89,7 +89,13 @@ contradição.
 
 O argumento quebra se houver pesos negativos: o trecho de y até u poderia
 "descontar" comprimento, e um vértice fixado cedo demais ficaria com uma
-distância errada. Para grafos com pesos negativos (mas sem ciclos negativos)
+distância errada. Um exemplo mínimo, sem nenhum ciclo: arestas dirigidas
+S->A com peso 2, S->B com peso 5 e B->A com peso -4. Depois de processar S,
+o algoritmo fixa A com distância 2, antes de B (que tem estimativa 5). Mas o
+caminho S->B->A custa 5 - 4 = 1. Como A já foi fixado, a resposta fica
+errada. Ou seja, não basta excluir ciclos negativos: o algoritmo de Dijkstra
+exige pesos NÃO NEGATIVOS (peso zero é permitido). Para grafos com pesos
+negativos (mas sem ciclos negativos)
 usa-se o algoritmo de Bellman-Ford, de [[programacao_dinamica|programação dinâmica]], que custa
 O(n m).
 

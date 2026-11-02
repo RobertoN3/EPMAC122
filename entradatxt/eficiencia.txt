@@ -82,9 +82,20 @@ três casos:
   supondo todas igualmente prováveis). É mais realista, porém mais difícil
   de calcular.
 
-Exemplo: busca sequencial de x em um vetor de n elementos. Pior caso: n
-comparações (x não está ou está no fim). Melhor caso: 1 comparação. Caso
-médio (x presente, em posição aleatória): cerca de n/2.
+Exemplo: busca sequencial de x em um vetor de n elementos, contando como
+operação o exame de um elemento. Pior caso: n exames (x não está, ou está na
+última posição). Melhor caso: 1 exame. Caso médio: se x está presente, uma
+única vez, e todas as posições são igualmente prováveis, a média é
+(1 + 2 + ... + n) / n = (n + 1) / 2 exames. Essa conta vale só sob essas
+hipóteses; se parte das buscas for sem sucesso, a média muda.
+
+Comparação concreta: no vetor ordenado 0, 1, 2, ..., 7 (n = 8), procurando
+o valor 8, que não está lá, a busca sequencial examina os 8 elementos. A
+[[busca_binaria|busca binária]] examina os índices 3, 5, 6 e 7 (o meio de
+cada trecho, arredondado para baixo) e para: 4 exames. Dobrando n, a busca
+sequencial dobra o trabalho, enquanto a binária faz só um exame a mais:
+para n = 1024 são 1024 contra 11. (A busca binária exige o vetor ordenado; o
+custo de ordená-lo não entra na conta de uma busca.)
 
 ## Notação assintótica
 
@@ -99,6 +110,13 @@ assintótica descreve só a ordem de crescimento.
   grande.
 - Theta (ordem exata): f(n) = Theta(g(n)) se f é O(g) e Omega(g) ao mesmo
   tempo.
+
+Uma confusão comum: O NÃO significa "pior caso", e Omega NÃO significa
+"melhor caso". As notações descrevem limites de uma função qualquer;
+podemos aplicá-las ao custo do pior caso, do melhor caso ou do caso médio.
+Por exemplo, o pior caso da inserção direta é Theta(n²) e o seu melhor caso
+é Theta(n). Também vale 3n + 2 = O(n²), mas é um limite pouco preciso: o
+mais informativo é dizer 3n + 2 = Theta(n).
 
 Ordens de crescimento comuns, da mais rápida para a mais lenta:
 

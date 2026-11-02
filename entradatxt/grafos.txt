@@ -37,14 +37,19 @@ e provados corretos, em vez de inventar uma solução específica.
 - Grau de um vértice: número de arestas que incidem nele. Em todo grafo, a
   soma dos graus é 2m, pois cada aresta contribui para o grau de dois
   vértices. Em digrafos distinguem-se grau de entrada e grau de saída.
-- Caminho: sequência de vértices v0, v1, ..., vk em que cada par
-  consecutivo é adjacente. O comprimento é o número de arestas (k), ou a
-  soma dos pesos, se houver pesos. Um caminho é simples se não repete
-  vértices.
-- Ciclo: caminho com pelo menos uma aresta que começa e termina no mesmo
-  vértice, sem repetir arestas.
+- Passeio e caminho: um passeio é uma sequência de vértices v0, v1, ..., vk
+  em que cada par consecutivo é ligado por uma aresta (em digrafos,
+  respeitando o sentido). O comprimento é o número de arestas (k), ou a
+  soma dos pesos, se houver pesos. Um caminho é um passeio que não repete
+  vértices (muitos livros dizem "caminho simples").
+- Ciclo: passeio com pelo menos uma aresta que começa e termina no mesmo
+  vértice e não repete arestas nem os demais vértices.
 - Grafo conexo: existe caminho entre quaisquer dois vértices. As
-  componentes conexas são os "pedaços" conexos maximais de um grafo.
+  componentes conexas são os "pedaços" conexos maximais de um grafo: não se
+  pode acrescentar a eles nenhum outro vértice mantendo a conexidade. Um
+  vértice isolado é, sozinho, uma componente. Em um digrafo, uma componente
+  fortemente conexa é um conjunto maximal de vértices em que cada um alcança
+  qualquer outro por um caminho dirigido.
 - Subgrafo: grafo formado por parte dos vértices e arestas de G.
 - Grafo completo: todos os pares de vértices são adjacentes; tem
   n(n-1)/2 arestas.
@@ -78,6 +83,19 @@ e provados corretos, em vez de inventar uma solução específica.
 3) Lista de arestas: um vetor com os m pares (u, v, peso). Simples e útil
    quando o algoritmo processa as arestas em ordem, como o de
    [[kruskal|Kruskal]].
+
+4) Matriz de incidência (apresentada no material da disciplina): as linhas
+   representam vértices e as colunas representam arestas. Em um grafo não
+   dirigido, a coluna de uma aresta marca com 1 as suas duas extremidades;
+   em um digrafo, pode-se usar -1 na origem e 1 no destino. Ocupa
+   O(n · m) de memória e é mais usada em teoria (por exemplo, em fluxos e
+   circuitos elétricos) do que em algoritmos.
+
+Exemplo do material da disciplina, o grafo G1: V = {1, 2, 3, 4} e
+A = {1-2, 1-3, 1-4, 3-4}. Cada aresta não dirigida entra duas vezes na
+matriz de adjacência (posições [1][2] e [2][1], por exemplo) e nas listas de
+suas duas extremidades. Os graus ficam 3, 1, 2 e 2; a soma 8 é o dobro do
+número de arestas, como manda a propriedade dos graus.
 
 Exemplo: o grafo não dirigido com vértices 0 a 4 e arestas 0-1, 0-2, 1-3,
 2-3 e 3-4 fica assim nas duas representações principais:
@@ -118,8 +136,9 @@ diferem apenas na estrutura que guarda os vértices "a visitar":
 
 As duas custam O(n + m) com listas de adjacência e O(n²) com matriz.
 Aplicações da DFS: encontrar componentes conexas, detectar ciclos,
-ordenação topológica (ordem para executar tarefas com dependências),
-encontrar pontes e pontos de articulação, resolver labirintos.
+[[ordenacao_topologica|ordenação topológica]] (ordem para executar tarefas
+com dependências), encontrar pontes e pontos de articulação, resolver
+labirintos.
 
 ## Problemas clássicos em grafos
 
@@ -129,14 +148,19 @@ encontrar pontes e pontos de articulação, resolver labirintos.
 - Caminhos mínimos com pesos: algoritmo de [[dijkstra|Dijkstra]] (pesos não
   negativos, guloso), Bellman-Ford e Floyd-Warshall
   ([[programacao_dinamica|programação dinâmica]]).
-- Ordenação topológica de um grafo dirigido sem ciclos.
+- [[ordenacao_topologica|Ordenação topológica]]: dispor os vértices de um
+  grafo dirigido de modo que toda aresta vá de um vértice anterior para um
+  posterior. Existe exatamente quando o grafo não tem ciclos dirigidos.
 - Coloração: atribuir cores aos vértices de modo que vizinhos tenham cores
   diferentes (alocação de horários, de registradores, de frequências). O
   Teorema das Quatro Cores (1976) garante que todo mapa plano pode ser
   colorido com 4 cores.
-- Caminho euleriano (passar uma vez por cada ARESTA): fácil, decide-se pelos
-  graus. Caminho hamiltoniano (passar uma vez por cada VÉRTICE) e o
-  problema do caixeiro-viajante: NP-difíceis.
+- Circuito euleriano: percorre cada ARESTA exatamente uma vez e volta ao
+  início, podendo repetir vértices. É fácil: em um grafo conexo, existe se e
+  somente se todos os graus são pares. Circuito hamiltoniano: visita cada
+  VÉRTICE exatamente uma vez antes de voltar ao inicial. Parece parecido,
+  mas decidir se existe é NP-completo, assim como o problema do
+  caixeiro-viajante.
 - Fluxo máximo e emparelhamentos.
 
 ## Histórico: as pontes de Königsberg
@@ -176,7 +200,7 @@ REFERENCIAS:
 - BONDY, J. A.; MURTY, U. S. R. Graph Theory. London: Springer, 2008.
 - FEOFILOFF, P.; KOHAYAKAWA, Y.; WAKABAYASHI, Y. Uma introdução sucinta à teoria dos grafos. São Paulo: IME-USP, 2011. https://www.ime.usp.br/~pf/teoriadosgrafos/
 - EULER, L. Solutio problematis ad geometriam situs pertinentis. Commentarii academiae scientiarum Petropolitanae, v. 8, p. 128-140, 1741.
-- Material de MAC122 (e-Disciplinas): Introdução a grafos. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
+- BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
 
 INICIO_CODIGO_C
 #include <stdio.h>

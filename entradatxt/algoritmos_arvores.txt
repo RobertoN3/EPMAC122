@@ -1,0 +1,228 @@
+2. Algoritmo: Contagem de nós, contagem de folhas e altura de árvores binárias
+5. Conceitos: Árvores, Recursão, Ponteiros, Registros
+6. Problema: Dada uma [[arvores|árvore]] binária, determinar seu número de nós, seu número de folhas e sua altura
+7. Titulo: Algoritmos recursivos em árvores
+
+## Ideia geral
+
+Uma [[arvores|árvore]] binária ou é vazia, ou é formada por uma raiz, uma
+subárvore esquerda e uma subárvore direita, que também são árvores binárias.
+Essa definição [[recursao|recursiva]] sugere um modo de calcular quase
+qualquer propriedade de uma árvore:
+1) resolver o caso base (em geral, a árvore vazia) diretamente;
+2) resolver o mesmo problema nas duas subárvores;
+3) combinar os dois resultados com a informação da raiz.
+
+O exercício da página 4 do material de grafos e árvores da disciplina propõe
+três exemplos desse esquema: contar nós, contar folhas e calcular a altura.
+Aqui os casos base são escritos explicitamente: a árvore vazia tem zero nós,
+zero folhas e altura -1. A altura é medida em arestas, de modo que uma folha
+tem altura zero, a mesma convenção da página de [[arvores|árvores]].
+Supõe-se uma árvore válida: sem ciclos e sem nós compartilhados entre as
+duas subárvores.
+
+## Contar nós
+
+Seja N(T) o número de nós da árvore T, e E e D suas subárvores.
+
+```
+  N(vazia) = 0
+  N(T)     = 1 + N(E) + N(D)
+```
+
+O 1 conta a raiz; as outras parcelas contam os nós das subárvores. Uma folha
+tem as duas subárvores vazias, logo N(folha) = 1 + 0 + 0 = 1. Cada nó é
+contado exatamente uma vez, porque a raiz e as duas subárvores são partes
+disjuntas da árvore.
+
+## Contar folhas
+
+Seja F(T) o número de folhas de T. Aqui são necessários TRÊS casos:
+
+```
+  F(vazia) = 0
+  F(folha) = 1
+  F(T)     = F(E) + F(D),  se a raiz tem pelo menos um filho
+```
+
+O caso da folha precisa ser explícito. Se usássemos apenas a terceira regra,
+uma folha somaria os resultados de seus dois filhos ausentes e devolveria
+zero, deixando de contar a si mesma. Quando a raiz tem um só filho, a
+subárvore ausente contribui com zero e a outra com suas folhas: a raiz só
+conta como folha quando não tem filho algum.
+
+## Calcular a altura
+
+Seja H(T) a altura de T.
+
+```
+  H(vazia) = -1
+  H(T)     = 1 + max(H(E), H(D))
+```
+
+Com essa escolha de caso base, uma folha tem H = 1 + max(-1, -1) = 0. Se só
+um filho existe, vale a altura da subárvore dele, mais a aresta que liga a
+raiz a esse filho. Na implementação, as duas alturas são guardadas em
+variáveis antes de compará-las. Escrever 1 + (altura(E) > altura(D) ?
+altura(E) : altura(D)) chamaria a função DUAS vezes para a subárvore
+vencedora, em cada nível, e o tempo deixaria de ser linear.
+
+## Por que estão corretos
+
+Os três algoritmos se provam por indução no número de nós, exatamente como
+na página de [[recursao|recursão]]:
+- o caso base (árvore vazia, e a folha no caso de F) está certo por
+  definição;
+- supondo que as chamadas devolvem o valor certo para as subárvores, que
+  são menores, a regra de combinação dá o valor certo para a árvore toda;
+- as chamadas recebem subárvores estritamente menores, então sempre chegam
+  ao caso base: a recursão termina.
+
+## Exemplo
+
+Usamos a árvore da figura: a raiz 1 tem filhos 2 e 3; o nó 2 tem apenas o
+filho esquerdo 4; o nó 3 tem os filhos 5 e 6.
+
+```
+          1
+        /   \
+       2     3
+      /     / \
+     4     5   6
+```
+
+- Nós: as folhas 4, 5 e 6 devolvem 1. A subárvore de raiz 2 devolve
+  1 + 1 + 0 = 2, e a de raiz 3 devolve 1 + 1 + 1 = 3. A raiz devolve
+  1 + 2 + 3 = 6.
+- Folhas: a subárvore de raiz 2 contribui com 1 (o nó 4) e a de raiz 3 com
+  2 (os nós 5 e 6): total 3.
+- Altura: as folhas têm altura 0, os nós 2 e 3 têm altura 1, e a raiz tem
+  altura 1 + max(1, 1) = 2.
+
+## Complexidade
+
+Para uma árvore com n nós:
+- Tempo: cada função visita cada nó uma vez e faz trabalho constante por
+  visita. As chamadas para subárvores vazias são n + 1 (cada ponteiro NULL
+  é visitado uma vez), também em quantidade linear. Logo cada função custa
+  Theta(n). Na árvore vazia, termina em Theta(1).
+- Espaço: a [[pilhas|pilha]] de execução guarda os contextos das chamadas
+  ainda não concluídas de um único caminho da raiz até o ponto atual. Para
+  uma árvore de altura h, o espaço é Theta(h + 1): Theta(log n) em árvores
+  balanceadas e Theta(n) em uma árvore degenerada, que parece uma lista. As
+  duas subárvores são processadas uma depois da outra, então suas pilhas não
+  coexistem.
+
+## Outros problemas no mesmo esquema
+
+O mesmo molde (caso base + duas chamadas + combinação) resolve muitos
+outros problemas:
+- soma ou maior valor guardado nos nós;
+- número de nós no nível k (passando k-1 para os filhos);
+- verificar se duas árvores são iguais (mesma forma e mesmos valores);
+- espelhar uma árvore (trocar esquerda e direita em todo nó);
+- verificar se uma árvore é uma [[abb|árvore binária de busca]];
+- os três percursos (pré, in e pós-ordem) e a liberação da memória, que é um
+  percurso em pós-ordem: os filhos devem ser liberados antes do pai.
+
+## Sobre o código
+
+O programa representa a árvore com [[registros]] ligados por
+[[ponteiros]], usando NULL para a subárvore vazia. Ele calcula as três
+propriedades para a árvore de seis nós do exemplo, para a árvore vazia e para
+uma árvore de um só nó, e confere os resultados esperados: (6, 3, 2),
+(0, 0, -1) e (1, 1, 0), na ordem nós, folhas e altura. As funções recebem
+ponteiros para nós constantes e não alteram a árvore. Os nós são variáveis
+locais ligadas no main, sem alocação dinâmica.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Página 4 (recorrências e exercício 1.1). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf
+- FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html
+- SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 5 (Recursion and Trees).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.4 e apêndice B.5 (árvores).
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+typedef struct No {
+    int valor;
+    struct No *esquerdo;
+    struct No *direito;
+} No;
+
+size_t contar_nos(const No *raiz)
+{
+    if (raiz == NULL) {
+        return 0; /* Caso base: arvore vazia. */
+    }
+    return 1 + contar_nos(raiz->esquerdo) + contar_nos(raiz->direito);
+}
+
+size_t contar_folhas(const No *raiz)
+{
+    if (raiz == NULL) {
+        return 0; /* Arvore vazia nao tem folhas. */
+    }
+    if (raiz->esquerdo == NULL && raiz->direito == NULL) {
+        return 1; /* Uma folha conta a si mesma. */
+    }
+    return contar_folhas(raiz->esquerdo) + contar_folhas(raiz->direito);
+}
+
+int altura(const No *raiz)
+{
+    if (raiz == NULL) {
+        return -1; /* Faz a altura de uma folha ser zero. */
+    }
+    int esquerda = altura(raiz->esquerdo);
+    int direita = altura(raiz->direito);
+    return 1 + (esquerda > direita ? esquerda : direita);
+}
+
+/* Imprime os resultados e retorna 1 quando todos estao corretos. */
+int conferir(const char *nome, const No *raiz,
+             size_t nos_esperados, size_t folhas_esperadas,
+             int altura_esperada)
+{
+    size_t nos = contar_nos(raiz);
+    size_t folhas = contar_folhas(raiz);
+    int h = altura(raiz);
+    int correto = nos == nos_esperados && folhas == folhas_esperadas &&
+                  h == altura_esperada;
+
+    printf("%s: nos = %zu, folhas = %zu, altura = %d [%s]\n",
+           nome, nos, folhas, h, correto ? "OK" : "ERRO");
+    if (!correto) {
+        fprintf(stderr, "Esperado: nos = %zu, folhas = %zu, altura = %d\n",
+                nos_esperados, folhas_esperadas, altura_esperada);
+    }
+    return correto;
+}
+
+int main(void)
+{
+    No nos[] = {
+        {1, NULL, NULL}, {2, NULL, NULL}, {3, NULL, NULL},
+        {4, NULL, NULL}, {5, NULL, NULL}, {6, NULL, NULL}
+    };
+    No unico = {1, NULL, NULL};
+    int falhas = 0;
+
+    nos[0].esquerdo = &nos[1];
+    nos[0].direito = &nos[2];
+    nos[1].esquerdo = &nos[3];
+    nos[2].esquerdo = &nos[4];
+    nos[2].direito = &nos[5];
+
+    // Todos os testes sao executados, mesmo se algum falhar.
+    falhas += !conferir("Arvore de seis nos", &nos[0], 6, 3, 2);
+    falhas += !conferir("Arvore vazia", NULL, 0, 0, -1);
+    falhas += !conferir("Arvore com um no", &unico, 1, 1, 0);
+
+    if (falhas != 0) {
+        return 1;
+    }
+    printf("Todos os resultados conferem.\n");
+    return 0;
+}
+FIM_CODIGO_C

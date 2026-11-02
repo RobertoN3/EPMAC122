@@ -50,7 +50,11 @@ Propriedades desejadas:
 Exemplos:
 - Método da divisão, para inteiros: h(k) = k mod M. Escolhe-se M primo e
   longe de potências de 2; com M = 100, por exemplo, só os dois últimos
-  dígitos importariam, e chaves com o mesmo final colidiriam sempre.
+  dígitos importariam, e chaves com o mesmo final colidiriam sempre (com M
+  potência de 2, só os bits menos significativos). Um M primo evita
+  regularidades ligadas a fatores pequenos das chaves, mas não garante
+  distribuição uniforme: chaves que diferem por múltiplos de M sempre
+  colidem. A escolha depende dos dados esperados.
 - Método da multiplicação: h(k) = parte inteira de M · frac(k · A), com
   0 < A < 1 (Knuth sugere A = (sqrt(5) - 1)/2 ~ 0,618).
 - Para cadeias de caracteres: tratar a cadeia como um número em uma base B,
@@ -140,7 +144,11 @@ lentas demais para tabelas de espalhamento comuns.
 ## Histórico
 
 Hans Peter Luhn, pesquisador da IBM, descreveu em um memorando interno de
-1953 a ideia de espalhar as chaves em "baldes" e encadear as colisões. Na
+janeiro de 1953 a ideia de espalhar as chaves em "baldes" e encadear as
+colisões; é Knuth (volume 3, seção 6.4) quem aponta esse memorando como a
+provável origem do espalhamento. Os campos Autores e Data desta página
+registram essa origem histórica, e não a autoria da função de Horner usada
+no exemplo. Na
 mesma época, Gene Amdahl, Elaine McGraw e Arthur Samuel usaram endereçamento
 aberto com sondagem linear em um montador do IBM 701. A primeira descrição
 publicada é de Arnold Dumey (1956), e o termo "hashing" se popularizou na
