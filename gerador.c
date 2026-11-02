@@ -3,6 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <errno.h>
+#include <sys/stat.h>
+#ifdef _WIN32
+#include <direct.h>
+#endif
 #include "slug.h"
 #include "layout.h"
 
@@ -521,6 +526,15 @@ int main(void) {
     closedir(d);
 
     montar_categorias();
+    /* cria a pasta de saída, se ainda não existir */
+#ifdef _WIN32
+    if (_mkdir(PASTA_SAIDA) && errno != EEXIST) {
+#else
+    if (mkdir(PASTA_SAIDA, 0777) && errno != EEXIST) {
+#endif
+        perror(PASTA_SAIDA);
+        return 1;
+    }
     copiar_estilo(PASTA_SAIDA);
     gerar_index();
     for (int c = 0; c < NUM_CAT; c++) gerar_categoria(c);
