@@ -65,7 +65,7 @@ importa.
 ## A ordenação de cada passada: Counting Sort
 
 Para ordenar por um único dígito, que só assume b valores (0 a b-1), usa-se
-a ordenação por contagem (counting sort), que é estável e linear:
+a [[ordenacao_contagem|ordenação por contagem]] (counting sort), que é estável e linear:
 
 1) Contar: cont[d] = quantos números têm o dígito d.
 2) Acumular: transformar as contagens em posições iniciais. Depois de

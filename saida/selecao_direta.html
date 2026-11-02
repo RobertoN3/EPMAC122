@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seleção direta | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Seleção direta</h1><a class="botao botao-sec" href="selecao_direta_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#m%C3%A9todo-guloso">Método guloso</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação por seleção direta</dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A seleção direta (selection sort) é talvez o método de ordenação mais intuitivo. É o que fazemos ao ordenar cartas na mesa: procuramos a menor carta e a colocamos na primeira posição; depois procuramos a menor entre as que sobraram e a colocamos na segunda posição; e assim por diante.</p>
+<p>Para ordenar v[0..n-1]:</p>
+<pre>  para i de 0 até n-2:
+      menor &lt;- índice do menor elemento de v[i..n-1]
+      troque v[i] com v[menor]
+</pre>
+<p>No passo i, o vetor está dividido em duas partes:</p>
+<ul><li>v[0..i-1]: a parte já ordenada, com os i menores elementos do vetor, cada um em sua posição definitiva;</li>
+<li>v[i..n-1]: a parte ainda não ordenada.</li></ul>
+<p>O passo seleciona o menor elemento da parte não ordenada e o leva para a fronteira, aumentando a parte ordenada em uma posição.</p>
+<h2>Seleção direta como método guloso</h2>
+<p>O algoritmo se encaixa perfeitamente no <a href="metodo_guloso.html">método guloso</a>:</p>
+<ul><li>candidatos: os elementos de v[i..n-1], ainda não posicionados;</li>
+<li>função critério: &quot;o menor elemento restante&quot;;</li>
+<li>decisão: colocar esse elemento na próxima posição livre, v[i];</li>
+<li>a decisão é definitiva: v[i] nunca mais será alterado.</li></ul>
+<p>É o &quot;espelho&quot; da <a href="bubblesort.html">ordenação bolha</a>: a bolha fixa, a cada passada, o MAIOR elemento restante no FIM do vetor; a seleção fixa o MENOR elemento restante no INÍCIO. A diferença é a forma de levar o elemento até lá: a bolha faz uma série de trocas entre vizinhos, enquanto a seleção primeiro localiza o elemento e depois faz uma única troca.</p>
+<h2>Exemplo</h2>
+<p>v = (29, 10, 14, 37, 13, 5)</p>
+<pre>  i = 0: menor de v[0..5] é 5 (posição 5)   -&gt; (5, 10, 14, 37, 13, 29)
+  i = 1: menor de v[1..5] é 10 (posição 1)  -&gt; (5, 10, 14, 37, 13, 29)
+  i = 2: menor de v[2..5] é 13 (posição 4)  -&gt; (5, 10, 13, 37, 14, 29)
+  i = 3: menor de v[3..5] é 14 (posição 4)  -&gt; (5, 10, 13, 14, 37, 29)
+  i = 4: menor de v[4..5] é 29 (posição 5)  -&gt; (5, 10, 13, 14, 29, 37)
+</pre>
+<p>Note que, no passo i = 1, o elemento já estava no lugar e a &quot;troca&quot; é de v[1] com ele mesmo.</p>
+<h2>Correção: o invariante</h2>
+<p>Um invariante é uma propriedade que vale no início de cada iteração de um laço. Ele é a ferramenta para provar que o laço faz o que deve. Para a seleção direta, no início de cada iteração (para cada valor de i):</p>
+<pre>  (a) v[0..i-1] está em ordem crescente; e
+  (b) todo elemento de v[0..i-1] é menor ou igual a todo elemento de
+      v[i..n-1].
+</pre>
+<ul><li>No início (i = 0), a parte v[0..-1] é vazia e (a) e (b) valem trivialmente.</li>
+<li>Se valem no início do passo i, o passo coloca em v[i] o menor elemento de v[i..n-1]. Por (b), ele é maior ou igual a todos de v[0..i-1], então v[0..i] continua ordenado; e, por ser o menor do resto, é menor ou igual a todos de v[i+1..n-1]. Logo (a) e (b) valem para i+1.</li>
+<li>O laço termina com i = n-1. Por (a), v[0..n-2] está ordenado e, por (b), v[n-1] é maior ou igual a todos eles: o vetor inteiro está ordenado.</li></ul>
+<p>O laço interno, que procura o menor, tem seu próprio invariante: no início de cada iteração com índice j, v[menor] é o menor elemento de v[i..j-1].</p>
+<h2>Análise</h2>
+<ul><li>Comparações: no passo i, encontrar o menor de v[i..n-1] exige n-1-i comparações. Total: (n-1) + (n-2) + ... + 1 = n(n-1)/2. Esse número é o mesmo em TODOS os casos: a seleção direta não aproveita uma eventual ordenação prévia do vetor. É O(n²) no melhor, no pior e no caso médio.</li>
+<li>Trocas: exatamente uma por passo, no máximo n-1. É o método elementar que menos movimenta os dados, o que é uma vantagem quando cada elemento é um <a href="registros.html">registro</a> grande e mover custa caro (ou quando escrever na memória é caro, como em memórias flash).</li>
+<li>Memória extra: O(1).</li></ul>
+<p>Comparação com os outros métodos elementares:</p>
+<ul><li>a <a href="insertionsort.html">inserção direta</a> faz, em média, cerca de n²/4 comparações e é O(n) para vetores já ordenados, mas faz até n²/2 movimentações;</li>
+<li>a bolha também é O(n²), mas faz muito mais trocas;</li>
+<li>na prática, a inserção direta costuma ser a mais rápida das três.</li></ul>
+<h2>Estabilidade</h2>
+<p>A versão com trocas apresentada acima NÃO é <a href="ordenacao.html">estável</a>.</p>
+<p>A busca do menor, usando comparação estrita (v[j] &lt; v[menor]), sempre escolhe o PRIMEIRO entre os elementos empatados como menores; isso, sozinho, seria compatível com a estabilidade. O problema é a troca: o elemento que estava em v[i] é levado para a posição antiga do menor, que pode ficar DEPOIS de um outro elemento com a mesma chave que ele, invertendo a ordem relativa dos dois.</p>
+<p>Contraexemplo: sejam 2a e 2b dois elementos de chave 2 (a e b indicam a ordem original) e o vetor (2a, 2b, 1).</p>
+<ul><li>i = 0: o menor é 1, na posição 2; troca v[0] com v[2] -&gt; (1, 2b, 2a).</li>
+<li>i = 1: o menor de (2b, 2a) é 2b (o primeiro dos empatados); nada muda.</li></ul>
+<p>Resultado: (1, 2b, 2a). Os dois elementos de chave 2 trocaram de ordem relativa: o método não é estável.</p>
+<p>Como torná-la estável: em vez de trocar, retira-se o menor da sua posição e desloca-se todo o trecho v[i..menor-1] uma posição para a direita, inserindo o menor em v[i]. Assim os demais elementos mantêm sua ordem relativa. O custo é perder a principal vantagem do método (poucas movimentações), que passam a ser O(n²). Em <a href="listas_encadeadas.html">listas encadeadas</a> esse deslocamento não é necessário, e a seleção estável é natural.</p>
+<h2>Variações</h2>
+<ul><li>Seleção bidirecional: em cada passada encontra o menor e o maior, colocando-os nas duas pontas; reduz o número de passadas pela metade.</li>
+<li><a href="heapsort.html">Heap Sort</a>: usa a mesma ideia de &quot;selecionar o máximo e colocá-lo no lugar&quot;, mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma seleção direta com uma estrutura de dados melhor.</li></ul>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo ordena o vetor do exemplo desta página por seleção direta, com o invariante indicado em um comentário.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Algoritmos de ordenação estáveis (seleção direta). MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li>
+<li>FEOFILOFF, P. Ordenação: algoritmos elementares. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.3 (Sorting by selection).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 6.2 (Selection sort).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Exercício 2.2-2 e seção 2.1 (invariantes de laço).</li>
+<li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 2 (Ordenação).</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="selecao_direta_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

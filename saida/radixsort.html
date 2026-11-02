@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação digital (Radix Sort) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação digital (Radix Sort)</h1><a class="botao botao-sec" href="radixsort_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação digital (Radix Sort)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#herman-hollerith">Herman Hollerith</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1887">1887</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-n%C3%BAmeros-inteiros-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente-sem-comparar-os-elementos-entre-si">Problema</a></dt><dd class="texto">Dado um vetor de números inteiros, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a> sem comparar os elementos entre si</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge Sort, <a href="quicksort.html">Quick Sort</a>, <a href="heapsort.html">Heap Sort</a>) obtêm informação apenas COMPARANDO pares de elementos. Para eles vale um limite inferior: no pior caso precisam de pelo menos da ordem de n log n comparações.</p>
+<p>O Radix Sort (ordenação digital, ou ordenação pela base) escapa desse limite porque nunca compara dois elementos. Ele olha para a ESTRUTURA das chaves: cada número é visto como uma sequência de dígitos em uma base b (radix, em latim, &quot;raiz&quot;, é o nome da base de um sistema de numeração). Os números são distribuídos em b &quot;baldes&quot; de acordo com um dígito, depois com outro, e assim por diante.</p>
+<p>Funciona para inteiros, para cadeias de caracteres (cada caractere é um &quot;dígito&quot; na base 256) e para qualquer chave que possa ser decomposta em partes de tamanho limitado, como datas (ano, mês, dia).</p>
+<h2>Radix Sort LSD (do dígito menos significativo)</h2>
+<p>A versão mais usada processa os dígitos da DIREITA para a ESQUERDA:</p>
+<pre>  para cada posição de dígito, das unidades até a mais significativa:
+      ordene o vetor, de forma ESTÁVEL, apenas por esse dígito
+</pre>
+<p>Exemplo com v = (170, 45, 75, 90, 802, 24, 2, 66), base 10, três dígitos:</p>
+<pre>  pelas unidades:   (170, 90, 802, 2, 24, 45, 75, 66)
+  pelas dezenas:    (802, 2, 24, 45, 66, 170, 75, 90)
+  pelas centenas:   (2, 24, 45, 66, 75, 90, 170, 802)
+</pre>
+<p>Note, na passada das dezenas, que 802 e 2 têm o mesmo dígito (0) e 802 vem antes porque já vinha antes; na passada das centenas, 2, 24, ..., 90 têm todos centena 0 e ficam na ordem deixada pela passada anterior, que já os havia ordenado pelos dois últimos dígitos.</p>
+<h2>Por que funciona: o papel da estabilidade</h2>
+<p>Invariante: depois de processar os k dígitos menos significativos, o vetor está ordenado pelo número formado por esses k dígitos.</p>
+<p>Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES ficam na ordem certa, pois a passada os ordena por esse dígito. Dois números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos anteriores; isso só é garantido se a passada for <a href="ordenacao.html">ESTÁVEL</a>, preservando a ordem que eles já tinham. Sem estabilidade, o trabalho das passadas anteriores seria perdido.</p>
+<p>É a mesma técnica de ordenar por várias chaves (ordena-se primeiro pela chave menos importante e depois, de forma estável, pela mais importante), e um ótimo exemplo de por que a estabilidade de um algoritmo de ordenação importa.</p>
+<h2>A ordenação de cada passada: Counting Sort</h2>
+<p>Para ordenar por um único dígito, que só assume b valores (0 a b-1), usa-se a <a href="ordenacao_contagem.html">ordenação por contagem</a> (counting sort), que é estável e linear:</p>
+<ol><li>Contar: cont[d] = quantos números têm o dígito d.</li>
+<li>Acumular: transformar as contagens em posições iniciais. Depois de cont[d] += cont[d-1] para d = 1, ..., b-1, cont[d] é o número de elementos com dígito &lt;= d, ou seja, a posição logo após o último lugar reservado para o dígito d.</li>
+<li>Distribuir: percorrer o vetor de TRÁS para a FRENTE e colocar cada número na posição cont[d] - 1 de um vetor auxiliar, decrementando cont[d]. Percorrer de trás para a frente é o que garante a estabilidade.</li>
+<li>Copiar o vetor auxiliar de volta.</li></ol>
+<p>Custo: O(n + b) por passada.</p>
+<h2>Análise</h2>
+<p>Com n números de d dígitos na base b:</p>
+<ul><li>tempo: d passadas de O(n + b), total O(d (n + b));</li>
+<li>memória extra: O(n + b) (vetor auxiliar e contadores);</li>
+<li>estável.</li></ul>
+<p>Se d é constante e b = O(n), o Radix Sort é LINEAR, O(n), mais rápido que qualquer ordenação por comparação. Por exemplo, para ordenar um milhão de inteiros de 32 bits pode-se usar base b = 256 (um byte por &quot;dígito&quot;): bastam d = 4 passadas, cada uma linear.</p>
+<p>Escolha da base: uma base maior diminui o número de passadas (d), mas aumenta o vetor de contadores (b). Em computadores, usa-se uma potência de 2 (2^8 ou 2^16), porque extrair um &quot;dígito&quot; é só deslocar bits e aplicar uma máscara, muito mais rápido que dividir por 10.</p>
+<p>Limitações:</p>
+<ul><li>só se aplica a chaves que se decompõem em dígitos; para ordenar por uma função de comparação arbitrária, não serve;</li>
+<li>se as chaves forem muito longas (d grande), o custo cresce;</li>
+<li>precisa de memória extra e, para números negativos ou reais, exige adaptações (por exemplo, inverter o bit de sinal);</li>
+<li>em vetores pequenos, o custo fixo dos contadores não compensa.</li></ul>
+<h2>Radix Sort MSD (do dígito mais significativo)</h2>
+<p>A outra variante começa pelo dígito MAIS significativo, à esquerda: distribui os números em b baldes pelo primeiro dígito e depois ordena cada balde recursivamente pelo dígito seguinte. É como ordenar fichas de uma biblioteca primeiro pela letra inicial, depois cada monte pela segunda letra, e assim por diante. Vantagens: não precisa examinar todos os dígitos (pode parar quando o balde tem um elemento só) e funciona naturalmente com cadeias de tamanhos diferentes, em ordem alfabética. É a base de algoritmos muito rápidos para ordenar cadeias de caracteres.</p>
+<h2>Métodos de ordenação por distribuição</h2>
+<ul><li>Counting Sort: para inteiros em uma faixa pequena [0, k), O(n + k).</li>
+<li>Bucket Sort: para números reais distribuídos uniformemente em [0, 1); distribui em n baldes, ordena cada balde (por inserção) e concatena. Tempo esperado O(n).</li>
+<li>Radix Sort: aplica o Counting Sort dígito a dígito, permitindo chaves de faixa muito maior.</li></ul>
+<h2>Histórico</h2>
+<p>Herman Hollerith desenvolveu na década de 1880 um sistema de cartões perfurados para processar estatísticas: foi testado em 1887 nas estatísticas de mortalidade de Baltimore e usado no censo dos Estados Unidos de 1890. O sistema separava os cartões em compartimentos de acordo com o valor perfurado em uma coluna, e as classificadoras automáticas que vieram depois (a partir de 1901) faziam o mesmo mecanicamente. Ordenar por um número de vários dígitos era feito passando o maço pela máquina uma vez por coluna, da menos significativa para a mais significativa, empilhando os compartimentos em ordem a cada vez: exatamente o Radix Sort LSD. A empresa de Hollerith deu origem à IBM (nome adotado em 1924), e classificadoras de cartões desse tipo foram usadas até a década de 1970. Em computadores, o método foi programado por Harold H. Seward em 1954, no MIT, que também descreveu o Counting Sort.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa o Radix Sort LSD em base 10, usando Counting Sort estável em cada passada, para o vetor do exemplo desta página, imprimindo o vetor depois de cada dígito.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.5 (Sorting by distribution), com histórico.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 8 (Ordenação em tempo linear: limites inferiores, counting sort, radix sort, bucket sort).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 10 (Radix Sorting).</li>
+<li>FEOFILOFF, P. Ordenação digital (radix sort). https://www.ime.usp.br/~pf/algoritmos/aulas/radix.html</li>
+<li>SEWARD, H. H. Information sorting in the application of electronic digital computers to business operations. Dissertação de mestrado, MIT, Report R-232, 1954.</li>
+<li>Wikipedia. Radix sort. https://en.wikipedia.org/wiki/Radix_sort</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="radixsort_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

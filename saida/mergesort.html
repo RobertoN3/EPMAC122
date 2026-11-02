@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação por fusão (Merge Sort) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação por fusão (Merge Sort)</h1><a class="botao botao-sec" href="mergesort_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#divis%C3%A3o-e-conquista">Divisão e conquista</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação por fusão (Merge Sort)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#john-von-neumann">John von Neumann</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1945">1945</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A ordenação por fusão (merge sort, também chamada ordenação por intercalação) se apoia em uma observação simples: é fácil juntar dois vetores que JÁ estão ordenados em um só vetor ordenado. Então, para ordenar um vetor:</p>
+<ol><li>divide-se o vetor ao meio;</li>
+<li>ordena-se cada metade, recursivamente, pelo mesmo método;</li>
+<li>intercalam-se (fundem-se) as duas metades ordenadas.</li></ol>
+<p>Um vetor com 0 ou 1 elemento já está ordenado e é o caso base da <a href="recursao.html">recursão</a>.</p>
+<p>É o exemplo clássico da técnica de <a href="divisao_conquista.html">divisão e conquista</a>, e a página dessa técnica traz a análise geral. Aqui o foco está nos detalhes do algoritmo, nas suas variações e nos seus usos.</p>
+<h2>A intercalação</h2>
+<p>Problema: dados dois trechos ordenados, v[ini..meio] e v[meio+1..fim], produzir v[ini..fim] ordenado.</p>
+<p>Algoritmo, com um vetor auxiliar aux:</p>
+<ul><li>mantenha um índice i no início do primeiro trecho e um j no início do segundo;</li>
+<li>enquanto os dois trechos tiverem elementos: compare v[i] com v[j], copie o menor para aux e avance o índice correspondente;</li>
+<li>quando um dos trechos acabar, copie o que sobrou do outro;</li>
+<li>copie aux de volta para v[ini..fim].</li></ul>
+<p>Exemplo: intercalar (3, 27, 38, 43) e (9, 10, 82):</p>
+<pre>  3 &lt; 9  -&gt; 3;   27 &gt; 9 -&gt; 9;   27 &gt; 10 -&gt; 10;   27 &lt; 82 -&gt; 27;
+  38 &lt; 82 -&gt; 38;  43 &lt; 82 -&gt; 43;  primeiro trecho acabou -&gt; 82
+  resultado: (3, 9, 10, 27, 38, 43, 82)
+</pre>
+<p>Cada comparação coloca um elemento no lugar definitivo, então intercalar trechos com n elementos no total faz no máximo n-1 comparações e n cópias: O(n). O preço é o vetor auxiliar, de tamanho n.</p>
+<p><a href="ordenacao.html">Estabilidade</a>: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que veio da metade ESQUERDA (comparação v[i] &lt;= v[j]). Assim, elementos iguais mantêm a ordem original e o Merge Sort é estável. Usar &lt; no lugar de &lt;= destruiria essa propriedade.</p>
+<h2>Versão recursiva (de cima para baixo)</h2>
+<pre>  mergesort(v, ini, fim):
+      se ini &lt; fim:
+          meio &lt;- (ini + fim) / 2
+          mergesort(v, ini, meio)
+          mergesort(v, meio+1, fim)
+          intercala(v, ini, meio, fim)
+</pre>
+<p>Análise: T(n) = 2T(n/2) + O(n), cuja solução é O(n log n). A <a href="arvores.html">árvore</a> de recursão tem cerca de log2(n) níveis, e em cada nível as intercalações somadas processam todos os n elementos. O número de comparações fica entre (n/2) log2 n e n log2 n, aproximadamente: é muito próximo do limite inferior de log2(n!) ~ n log2 n - 1,44n para qualquer ordenação por comparação.</p>
+<p>O tempo é O(n log n) em TODOS os casos (melhor, médio e pior): o Merge Sort não tem &quot;entradas ruins&quot;, ao contrário do <a href="quicksort.html">Quick Sort</a>. Essa previsibilidade é uma de suas principais virtudes.</p>
+<h2>Versão iterativa (de baixo para cima)</h2>
+<p>Também é possível dispensar a recursão. Observa-se que a recursão acaba intercalando trechos de tamanho 1, depois de tamanho 2, 4, 8... Então:</p>
+<pre>  para largura = 1, 2, 4, 8, ... enquanto largura &lt; n:
+      para cada par de trechos consecutivos de tamanho largura:
+          intercale os dois trechos
+</pre>
+<p>Na primeira rodada, intercalam-se os pares (v[0], v[1]), (v[2], v[3]), ...; na segunda, os blocos de 2 já ordenados formam blocos de 4; e assim por diante. São cerca de log2(n) rodadas, cada uma O(n). Essa versão não usa a <a href="pilhas.html">pilha</a> de recursão e é a base da ordenação externa.</p>
+<h2>Memória</h2>
+<p>A principal desvantagem do Merge Sort em vetores é o espaço extra O(n) para a intercalação. Melhorias comuns:</p>
+<ul><li>alocar o vetor auxiliar uma única vez, e não a cada chamada;</li>
+<li>alternar os papéis de v e aux a cada nível, evitando a cópia de volta;</li>
+<li>não intercalar se v[meio] &lt;= v[meio+1] (as metades já estão em ordem relativa), o que torna o algoritmo O(n) para vetores já ordenados;</li>
+<li>usar <a href="insertionsort.html">inserção direta</a> para trechos pequenos.</li></ul>
+<p>Existem intercalações &quot;in place&quot;, com memória O(1), mas são complicadas e mais lentas na prática.</p>
+<h2>Onde o Merge Sort brilha</h2>
+<ul><li><a href="listas_encadeadas.html">Listas encadeadas</a>: a intercalação de duas listas ordenadas é feita apenas mudando <a href="ponteiros.html">ponteiros</a>, sem memória extra e sem acesso direto. O Merge Sort é o método preferido para ordenar listas.</li>
+<li>Ordenação externa: quando os dados não cabem na memória principal (estão em disco ou, antigamente, em fitas magnéticas), ordenam-se pedaços que cabem na memória e depois intercalam-se esses pedaços, lendo cada um de forma sequencial. É assim que bancos de dados ordenam tabelas gigantes.</li>
+<li>Quando a estabilidade é necessária e quando se precisa de garantia de pior caso O(n log n).</li>
+<li>Paralelismo: as duas metades podem ser ordenadas ao mesmo tempo por processadores diferentes.</li>
+<li>Contagem de inversões: uma pequena modificação da intercalação conta, em O(n log n), quantos pares estão fora de ordem.</li></ul>
+<p>Bibliotecas modernas usam variantes adaptativas: o Timsort (Tim Peters, 2002), padrão em Python e no Arrays.sort de objetos em Java, procura trechos já ordenados (&quot;runs&quot;) nos dados e os intercala de forma inteligente, sendo muito rápido em dados reais.</p>
+<h2>Merge Sort x Quick Sort x Heap Sort</h2>
+<ul><li>Merge Sort: O(n log n) garantido, estável, mas usa O(n) de memória extra.</li>
+<li>Quick Sort: O(n log n) em média e, em geral, o mais rápido na prática em vetores; O(n²) no pior caso; não é estável; memória O(log n).</li>
+<li><a href="heapsort.html">Heap Sort</a>: O(n log n) garantido, memória O(1), mas não é estável e costuma ser mais lento por acessar a memória de forma espalhada.</li></ul>
+<h2>Histórico</h2>
+<p>John von Neumann escreveu um programa de ordenação por intercalação em 1945 para o EDVAC, um dos primeiros computadores de programa armazenado; o manuscrito, analisado por Knuth em 1970, é considerado um dos primeiros programas escritos para um computador desse tipo. A intercalação já era uma operação usual nas máquinas de cartões perfurados, e a ordenação externa por intercalação de fitas foi intensamente estudada nas décadas de 1950 e 1960.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa a versão iterativa (de baixo para cima) do Merge Sort, intercalando blocos de tamanho 1, 2, 4, ..., com um vetor auxiliar alocado uma única vez. A versão recursiva está na página da técnica de divisão e conquista.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seções 5.2.4 (Sorting by merging) e 5.4 (External sorting).</li>
+<li>KNUTH, D. E. Von Neumann's first computer program. ACM Computing Surveys, v. 2, n. 4, p. 247-260, 1970.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 2.3.</li>
+<li>FEOFILOFF, P. Mergesort. https://www.ime.usp.br/~pf/algoritmos/aulas/mrgsrt.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 8 (Merging and Mergesort).</li>
+<li>PETERS, T. Timsort: description (listsort.txt). Código-fonte do CPython, 2002. https://github.com/python/cpython/blob/main/Objects/listsort.txt</li>
+<li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="mergesort_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

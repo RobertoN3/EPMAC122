@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recursão | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Recursão</h1><a class="botao botao-sec" href="recursao_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Torres de Hanói recursivo</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#%C3%89douard-lucas">Édouard Lucas</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1883">1883</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a><a class="chip f-conceitos" href="conceitos.html#indu%C3%A7%C3%A3o">Indução</a></dd>
+<dt class="f-problema"><a href="problema.html#dados-n-discos-de-tamanhos-distintos-empilhados-na-haste-a-mov%C3%AA-los-para-a-haste-c-usando-b-como-auxiliar-um-disco-por-vez-e-sem-nunca-colocar-um-disco-maior-sobre-um-menor">Problema</a></dt><dd class="texto">Dados n discos de tamanhos distintos empilhados na haste A, movê-los para a haste C usando B como auxiliar, um disco por vez e sem nunca colocar um disco maior sobre um menor</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A recursividade (ou recorrência) é a ideia de um processo definido a partir de si próprio. Ela aparece em muitos lugares fora da computação:</p>
+<ul><li>em matemática, nas definições por recorrência, como o fatorial (0! = 1 e n! = n · (n-1)!) e a sequência de Fibonacci;</li>
+<li>em gramáticas: &quot;uma expressão é um número, ou uma expressão seguida de um operador e de outra expressão&quot;;</li>
+<li>em figuras: um fractal é uma figura que contém cópias menores de si mesma; uma câmera filmando a própria tela produz imagens dentro de imagens;</li>
+<li>até em siglas, como GNU, que significa &quot;GNU's Not Unix&quot;.</li></ul>
+<p>Em programação, uma função recursiva é uma função que chama a si mesma, direta ou indiretamente (f chama g, que chama f). Um algoritmo recursivo resolve uma instância de um problema reduzindo-a a instâncias menores do MESMO problema.</p>
+<h2>Os dois ingredientes indispensáveis</h2>
+<p>1. Base da recursão (caso de parada): uma ou mais instâncias pequenas o bastante para serem resolvidas diretamente, sem nova chamada. Sem a base, a função chama a si mesma indefinidamente, até esgotar a memória.</p>
+<p>2. Passo recursivo (redução): a instância é transformada em uma ou mais instâncias MENORES, e a solução delas é usada para montar a solução da original. &quot;Menor&quot; deve significar que, depois de um número finito de reduções, chega-se sempre à base.</p>
+<p>Exemplo: fatorial.</p>
+<pre>  fat(0) = 1                    (base)
+  fat(n) = n * fat(n-1), n &gt; 0  (passo)
+</pre>
+<h2>Recursão e indução matemática</h2>
+<p>A forma de pensar recursivamente é a mesma da prova por indução. Para escrever o passo recursivo, SUPÕE-SE que a função já sabe resolver as instâncias menores (é a hipótese de indução) e pergunta-se apenas: &quot;como uso essa resposta para resolver a instância atual?&quot;. Não é preciso, nem recomendável, tentar acompanhar mentalmente todas as chamadas.</p>
+<p>Da mesma forma, prova-se que uma função recursiva está correta por indução: mostra-se que ela acerta na base e que, se acertar nas instâncias menores, também acerta na atual. Para provar que ela termina, mostra-se que alguma quantidade inteira não negativa (por exemplo, n) diminui a cada chamada.</p>
+<h2>Como o computador executa: a pilha de execução</h2>
+<p>Cada chamada de função cria um novo <a href="registros.html">registro</a> de ativação (ou contexto), com seus parâmetros, variáveis locais e o endereço de retorno. Esses contextos são guardados em uma <a href="pilhas.html">pilha</a>: a chamada mais recente fica no topo.</p>
+<p>Execução de fat(3):</p>
+<pre>  fat(3) precisa de fat(2)      pilha: fat(3)
+  fat(2) precisa de fat(1)      pilha: fat(3) fat(2)
+  fat(1) precisa de fat(0)      pilha: fat(3) fat(2) fat(1)
+  fat(0) devolve 1              pilha: fat(3) fat(2) fat(1) fat(0)
+  fat(1) devolve 1 * 1 = 1      (fat(0) foi desempilhada)
+  fat(2) devolve 2 * 1 = 2
+  fat(3) devolve 3 * 2 = 6
+</pre>
+<p>Cada chamada pendente &quot;espera&quot; a resposta da seguinte. Consequências:</p>
+<ul><li>uma recursão de profundidade n usa memória O(n) na pilha;</li>
+<li>recursão profunda demais (ou sem base) esgota a pilha, erro conhecido como estouro de pilha (stack overflow);</li>
+<li>todo algoritmo recursivo pode ser reescrito de forma iterativa usando uma pilha explícita, e é isso que o compilador faz por baixo.</li></ul>
+<h2>Exemplo principal: Torres de Hanói</h2>
+<p>São três hastes, A, B e C. Na haste A há n discos de tamanhos diferentes, empilhados do maior (embaixo) para o menor (em cima). O objetivo é levar todos para a haste C, obedecendo às regras:</p>
+<ul><li>mover um disco por vez, sempre o do topo de uma haste;</li>
+<li>nunca colocar um disco sobre outro menor.</li></ul>
+<p>Pensar iterativamente nesse problema é difícil. Pensar recursivamente é simples. Para mover os n discos de A para C, o maior disco precisa, em algum momento, sair de A e ir direto para C; para isso, os n-1 discos menores têm de estar todos em B. Logo:</p>
+<pre>  hanoi(n, A, C, B):
+      se n == 1: mova o disco de A para C
+      senão:
+          hanoi(n-1, A, B, C)    # leva os n-1 menores para B
+          mova o disco n de A para C
+          hanoi(n-1, B, C, A)    # traz os n-1 menores para cima dele
+</pre>
+<p>Pela hipótese de indução, a chamada hanoi(n-1, ...) sabe mover n-1 discos respeitando as regras; como os discos que ela move são todos menores que os que ficam parados, as regras nunca são violadas.</p>
+<p>Número de movimentos: M(1) = 1 e M(n) = 2 M(n-1) + 1, cuja solução é M(n) = 2^n - 1. Pode-se provar que esse é o mínimo possível. Para n = 3 são 7 movimentos; para n = 20, mais de um milhão.</p>
+<p>A lenda que acompanha o jogo diz que, em um templo, monges movem 64 discos de ouro e que o mundo acabará quando terminarem. Mesmo a um movimento por segundo, 2^64 - 1 movimentos levariam cerca de 585 bilhões de anos.</p>
+<h2>Recursão x iteração: cuidado com a eficiência</h2>
+<p>Algoritmos recursivos costumam ser mais curtos, mais claros e mais fáceis de provar corretos. Mas a elegância não garante eficiência.</p>
+<p>Exemplo: Fibonacci.</p>
+<pre>  fib(0) = 0, fib(1) = 1, fib(n) = fib(n-1) + fib(n-2)
+</pre>
+<p>A tradução direta para uma função recursiva faz duas chamadas por nível, e as mesmas instâncias são recalculadas um número enorme de vezes: fib(n-2) é calculado duas vezes, fib(n-3) três vezes, fib(n-4) cinco vezes... O total de chamadas cresce exponencialmente (aproximadamente 1,618^n). Uma versão iterativa, que guarda os dois últimos valores, faz apenas n passos. Medindo o tempo com a função clock(), a diferença é dramática já para n perto de 40. A <a href="programacao_dinamica.html">programação dinâmica</a> é a técnica que transforma recursões assim em algoritmos eficientes.</p>
+<p>Outro custo é a própria chamada de função (empilhar e desempilhar contextos). Quando a chamada recursiva é a última operação da função (recursão de cauda), muitos compiladores a transformam em um laço.</p>
+<h2>Tipos de recursão</h2>
+<ul><li>Linear: uma chamada recursiva por execução (fatorial, busca em lista).</li>
+<li>Múltipla ou em <a href="arvores.html">árvore</a>: duas ou mais chamadas (Fibonacci, Hanói, Merge Sort, percursos em árvores binárias).</li>
+<li>Mútua (indireta): f chama g e g chama f (por exemplo, par(n) e impar(n); análise de expressões aritméticas).</li>
+<li>De cauda: a chamada recursiva é a última coisa que a função faz.</li></ul>
+<h2>Onde a recursão aparece na disciplina</h2>
+<ul><li>Técnicas de projeto: <a href="divisao_conquista.html">divisão e conquista</a> (<a href="mergesort.html">Merge Sort</a>, <a href="quicksort.html">Quick Sort</a>, busca binária) e <a href="tentativa_erro.html">tentativa e erro</a> (backtracking).</li>
+<li>Estruturas recursivas: uma <a href="listas_encadeadas.html">lista encadeada</a> é vazia ou é uma célula seguida de uma lista; uma árvore é vazia ou é uma raiz ligada a subárvores. Os algoritmos sobre elas são naturalmente recursivos.</li>
+<li>Geração de objetos combinatórios: todos os números binários com k bits, todas as permutações, todos os subconjuntos.</li>
+<li>Análise de expressões aritméticas segundo uma gramática recursiva.</li></ul>
+<h2>Histórico</h2>
+<p>As definições por recorrência são antigas na matemática (Fibonacci, 1202; indução matemática formalizada por Peano e Dedekind no século XIX). A teoria das funções recursivas, base da computabilidade, foi desenvolvida por Gödel, Kleene e Church na década de 1930. Nas linguagens de programação, a recursão tornou-se comum com LISP (John McCarthy, 1958) e ALGOL 60. O jogo das Torres de Hanói foi publicado pelo matemático francês Édouard Lucas em 1883, sob o pseudônimo &quot;N. Claus de Siam&quot; (um anagrama de &quot;Lucas d'Amiens&quot;).</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa o fatorial recursivo e as Torres de Hanói, imprimindo os 7 movimentos necessários para n = 3.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html</li>
+<li>FEOFILOFF, P. Recursão e algoritmos recursivos. https://www.ime.usp.br/~pf/algoritmos/aulas/recu.html</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 2 (Recursão).</li>
+<li>ROBERTS, E. Thinking Recursively. New York: John Wiley &amp; Sons, 1986.</li>
+<li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 3 (Algoritmos recursivos).</li>
+<li>GRAHAM, R. L.; KNUTH, D. E.; PATASHNIK, O. Matemática Concreta. 2. ed. Rio de Janeiro: LTC, 1995. Capítulo 1 (Problemas recorrentes; Torre de Hanói).</li>
+<li>Wikipedia. Tower of Hanoi. https://en.wikipedia.org/wiki/Tower_of_Hanoi</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="recursao_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

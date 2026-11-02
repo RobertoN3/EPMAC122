@@ -35,7 +35,7 @@ static const int   CAT_MULTI[NUM_CAT]  = {1, 0, 1, 1, 1, 0};
    (NULL = sem página explicativa). Mantido igual à tabela do formato_txt.md. */
 static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
     {"Árvores", "arvores"},                 {"Hash", "hash"},
-    {"Árvore espalhada mínima", "kruskal"}, {"Invariante", NULL},
+    {"Árvore espalhada mínima", "kruskal"}, {"Invariante", "mdc_euclides"},
     {"Busca binária", "busca_binaria"},     {"Listas encadeadas", "listas_encadeadas"},
     {"Caminho mínimo", "dijkstra"},         {"Memorização", "programacao_dinamica"},
     {"Conjuntos disjuntos", "kruskal"},     {"Ordenação", "ordenacao"},
@@ -44,7 +44,9 @@ static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
     {"Filas", "filas"},                     {"Registros", "registros"},
     {"Fila de prioridade", "heapsort"},     {"Recursão", "recursao"},
     {"Grafos", "grafos"},                   {"Subestrutura ótima", "programacao_dinamica"},
-    {"Vetores", NULL},
+    {"Vetores", NULL},                      {"Matrizes", "imagens_pbm"},
+    {"Busca sequencial", "busca_sequencial"}, {"Indução", "inducao"},
+    {"Representação de conjuntos", "conjuntos"}, {"Autômatos finitos", "automatos"},
 };
 #define N_VOCAB ((int)(sizeof VOCABULARIO / sizeof VOCABULARIO[0]))
 

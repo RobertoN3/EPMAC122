@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação rápida (Quick Sort) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação rápida (Quick Sort)</h1><a class="botao botao-sec" href="quicksort_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#divis%C3%A3o-e-conquista">Divisão e conquista</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação rápida (Quick Sort)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#tony-hoare">Tony Hoare</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1959">1959</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>O Quick Sort (ordenação rápida) é, em geral, o algoritmo de ordenação por comparação mais rápido na prática, e por isso é a base de muitas funções de bibliotecas. Como o <a href="mergesort.html">Merge Sort</a>, usa <a href="divisao_conquista.html">divisão e conquista</a>, mas de um jeito &quot;invertido&quot;:</p>
+<ul><li>no Merge Sort, a divisão é trivial (cortar ao meio) e o trabalho está na COMBINAÇÃO (intercalar);</li>
+<li>no Quick Sort, o trabalho está na DIVISÃO (particionar), e a combinação é trivial: não há nada a fazer.</li></ul>
+<p>Para ordenar v[ini..fim]:</p>
+<ol><li>Escolha um elemento do trecho, o pivô.</li>
+<li>Particione: rearranje o trecho de modo que fiquem à esquerda do pivô apenas elementos menores ou iguais a ele, e à direita apenas elementos maiores ou iguais. O pivô fica, então, na sua posição definitiva p.</li>
+<li>Ordene recursivamente v[ini..p-1] e v[p+1..fim].</li></ol>
+<p>Como tudo o que está à esquerda é menor e tudo o que está à direita é maior, depois das chamadas <a href="recursao.html">recursivas</a> o trecho inteiro está ordenado.</p>
+<h2>A partição (esquema de Lomuto)</h2>
+<p>Uma forma simples de particionar, com o pivô x = v[fim]:</p>
+<pre>  i &lt;- ini - 1
+  para j de ini até fim-1:
+      se v[j] &lt;= x:
+          i &lt;- i + 1
+          troque v[i] e v[j]
+  troque v[i+1] e v[fim]     (coloca o pivô entre as duas partes)
+  devolva i + 1
+</pre>
+<p>Invariante: durante o laço, v[ini..i] contém elementos &lt;= x, v[i+1..j-1] contém elementos &gt; x e v[j..fim-1] ainda não foi examinado. A partição faz exatamente n-1 comparações em um trecho de n elementos: O(n).</p>
+<p>Exemplo: v = (7, 2, 1, 6, 8, 5, 3, 4), pivô 4.</p>
+<pre>  7 &gt; 4: fica; 2 &lt;= 4: vai para a esquerda; 1 &lt;= 4: vai; 6, 8, 5 &gt; 4:
+  ficam; 3 &lt;= 4: vai.  Resultado parcial: (2, 1, 3, 6, 8, 5, 7, 4)
+  pivô vai para a posição 3: (2, 1, 3, 4, 8, 5, 7, 6)
+  Agora ordenam-se (2, 1, 3) e (8, 5, 7, 6) separadamente.
+</pre>
+<h2>O esquema original de Hoare</h2>
+<p>Na partição de Hoare, dois índices partem das pontas e caminham um em direção ao outro: o da esquerda avança enquanto encontra elementos menores que o pivô; o da direita recua enquanto encontra elementos maiores. Quando ambos param, os dois elementos estão do lado errado e são trocados. O processo continua até os índices se cruzarem. Faz, em média, três vezes menos trocas que o esquema de Lomuto e lida melhor com elementos repetidos, mas é mais sutil de programar corretamente.</p>
+<h2>Análise</h2>
+<p>O desempenho depende de quão equilibradas são as partições.</p>
+<ul><li>Melhor caso: o pivô é sempre a mediana, e o vetor é dividido ao meio. T(n) = 2T(n/2) + O(n) = O(n log n).</li>
+<li>Pior caso: o pivô é sempre o menor ou o maior elemento; uma das partes fica vazia e a outra com n-1 elementos. T(n) = T(n-1) + O(n) = O(n²), com cerca de n²/2 comparações. Com o pivô escolhido como o último elemento, isso acontece justamente quando o vetor JÁ está ordenado (ou em ordem inversa), situação muito comum na prática.</li>
+<li>Caso médio: com todas as ordens igualmente prováveis (ou com pivô aleatório), o número esperado de comparações é cerca de 2n ln n ~ 1,39 n log2 n: O(n log n), apenas 39% acima do melhor caso. Intuição: mesmo uma divisão desequilibrada, como 10% / 90%, gera uma recursão de profundidade O(log n); só divisões extremamente ruins, repetidas muitas vezes, levam ao caso quadrático.</li></ul>
+<p>Por que é rápido na prática, se o Merge Sort tem a mesma ordem? O laço interno da partição é muito simples (comparar com o pivô, que fica em um registrador, e avançar), acessa a memória de forma sequencial (bom uso da cache) e o algoritmo ordena no próprio vetor, sem vetor auxiliar.</p>
+<p>Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a <a href="pilhas.html">pilha</a> de recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a O(log n).</p>
+<p><a href="ordenacao.html">Estabilidade</a>: a partição faz trocas entre posições distantes e pode inverter a ordem de elementos iguais. O Quick Sort NÃO é estável.</p>
+<h2>Escolha do pivô</h2>
+<ul><li>Primeiro ou último elemento: simples, mas quadrático para vetores já ordenados.</li>
+<li>Pivô aleatório: sorteia-se uma posição do trecho. Nenhuma entrada fixa é ruim; o tempo esperado é O(n log n) para qualquer entrada (algoritmo aleatorizado).</li>
+<li>Mediana de três: usa-se a mediana entre o primeiro, o elemento do meio e o último. Barato e muito eficaz contra vetores ordenados.</li>
+<li>Mediana das medianas (Blum, Floyd, Pratt, Rivest e Tarjan, 1973): garante O(n log n) no pior caso, mas com constantes altas; raramente usada.</li></ul>
+<h2>Melhorias usadas na prática</h2>
+<ul><li>Trechos pequenos (menos de 10 a 20 elementos) são ordenados com inserção direta, que é mais rápida para eles.</li>
+<li>Partição em três partes (menores, iguais e maiores que o pivô; problema da &quot;bandeira holandesa&quot; de Dijkstra): vetores com muitos elementos repetidos passam a ser ordenados rapidamente.</li>
+<li>Dual-pivot Quick Sort (Yaroslavskiy, 2009): usa dois pivôs e três partes; é o algoritmo usado pelo Java para tipos primitivos.</li>
+<li>Introsort (Musser, 1997): começa como Quick Sort e, se a recursão ficar profunda demais (sinal de partições ruins), troca para <a href="heapsort.html">Heap Sort</a>. Garante O(n log n) no pior caso; é o std::sort de muitas implementações de C++.</li></ul>
+<h2>Quick Select</h2>
+<p>A partição também resolve o problema da seleção: encontrar o k-ésimo menor elemento (por exemplo, a mediana) sem ordenar o vetor inteiro. Depois de particionar, se o pivô ficou na posição k, achamos; senão, continua-se apenas na parte que contém a posição k. O tempo esperado é O(n). O algoritmo foi publicado pelo próprio Hoare, com o nome &quot;Find&quot;.</p>
+<h2>Histórico</h2>
+<p>Tony Hoare (Charles Antony Richard Hoare) inventou o Quick Sort em 1959, quando era estudante visitante na Universidade Estatal de Moscou. Ele trabalhava em um projeto de tradução automática do russo para o inglês e precisava ordenar as palavras de cada frase antes de procurá-las em um dicionário guardado em fita magnética. Ao voltar à Inglaterra, implementou o algoritmo em ALGOL 60, aproveitando a recursão, e o publicou em 1961 (Algorithm 64, nas Communications of the ACM) e, com análise detalhada, em 1962, no Computer Journal. Robert Sedgewick fez, em sua tese de 1975, a análise mais completa do algoritmo e de suas variações. Hoare recebeu o prêmio Turing em 1980 e é também conhecido pela lógica de Hoare, para provar programas corretos, e pela linguagem CSP, para programação concorrente.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa o Quick Sort com a partição de Lomuto, usando como pivô o elemento do meio do trecho (trocado para o fim antes da partição), o que evita o pior caso com vetores já ordenados.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>HOARE, C. A. R. Algorithm 64: Quicksort. Communications of the ACM, v. 4, n. 7, p. 321, 1961.</li>
+<li>HOARE, C. A. R. Quicksort. The Computer Journal, v. 5, n. 1, p. 10-16, 1962.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 7 (Quicksort) e capítulo 9 (Medianas e estatísticas de ordem).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 7 (Quicksort).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.2 (Quicksort).</li>
+<li>FEOFILOFF, P. Quicksort. https://www.ime.usp.br/~pf/algoritmos/aulas/quick.html</li>
+<li>BENTLEY, J. L.; McILROY, M. D. Engineering a sort function. Software: Practice and Experience, v. 23, n. 11, p. 1249-1265, 1993.</li>
+<li>MUSSER, D. R. Introspective sorting and selection algorithms. Software: Practice and Experience, v. 27, n. 8, p. 983-993, 1997.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="quicksort_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

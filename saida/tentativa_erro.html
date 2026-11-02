@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tentativa e erro (backtracking) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Tentativa e erro (backtracking)</h1><a class="botao botao-sec" href="tentativa_erro_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#tentativa-e-erro">Tentativa e erro</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Backtracking para o problema das N rainhas</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#max-bezzel">Max Bezzel</a><a class="chip f-autores" href="autores.html#niklaus-wirth">Niklaus Wirth</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1848">1848</a><a class="chip f-data" href="data.html#1971">1971</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-inteiro-n-posicionar-n-rainhas-em-um-tabuleiro-n-x-n-de-modo-que-nenhuma-ataque-outra-mesma-linha-coluna-ou-diagonal">Problema</a></dt><dd class="texto">Dado um inteiro N, posicionar N rainhas em um tabuleiro N x N de modo que nenhuma ataque outra (mesma linha, coluna ou diagonal)</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Muitos problemas pedem uma configuração que satisfaça um conjunto de restrições: preencher um Sudoku, achar a saída de um labirinto, escolher números que somem um valor dado, posicionar peças em um tabuleiro. Em geral não se conhece uma fórmula ou uma regra gulosa que leve diretamente à resposta. A saída é experimentar.</p>
+<p>Na técnica de tentativa e erro (em inglês, backtracking, &quot;voltar atrás&quot;) a solução é construída passo a passo, uma decisão de cada vez. Em cada passo o algoritmo tenta, uma a uma, todas as possibilidades para a próxima decisão:</p>
+<ul><li>se uma possibilidade é compatível com as decisões já tomadas, o algoritmo a adota provisoriamente e avança para o passo seguinte;</li>
+<li>se, em algum passo, nenhuma possibilidade serve, o algoritmo volta (retrocede) ao passo anterior, desfaz a decisão tomada ali e tenta a próxima alternativa.</li></ul>
+<p>O processo termina quando uma tentativa produz uma solução completa, ou, se o objetivo é listar ou contar todas as soluções, quando todas as possibilidades se esgotam.</p>
+<p>É exatamente o que fazemos ao percorrer um labirinto marcando o caminho com giz: seguimos por um corredor até um beco sem saída, voltamos até a última bifurcação e tentamos o próximo corredor.</p>
+<h2>Esquema geral</h2>
+<pre>  tenta(solucao parcial s):
+      se s é uma solução completa:
+          registre/imprima s; (e pare, se basta uma)
+          retorne
+      para cada candidato c para o próximo passo:
+          se c é compatível com s:
+              acrescente c a s
+              tenta(s)
+              remova c de s      &lt;- &quot;voltar atrás&quot;
+</pre>
+<p>A forma <a href="recursao.html">recursiva</a> é a mais natural. A <a href="pilhas.html">pilha</a> de execução guarda, automaticamente, as decisões de cada nível e o ponto em que cada laço parou; &quot;desfazer&quot; uma escolha é simplesmente retornar da chamada.</p>
+<h2>A árvore de busca</h2>
+<p>As escolhas possíveis formam uma <a href="arvores.html">árvore</a>, chamada árvore de busca (ou árvore de estados):</p>
+<ul><li>a raiz é a solução vazia, sem nenhuma decisão tomada;</li>
+<li>cada nó é uma solução parcial;</li>
+<li>os filhos de um nó são as maneiras de estender a solução com mais uma decisão;</li>
+<li>as folhas de profundidade máxima são as soluções completas candidatas.</li></ul>
+<p>O backtracking percorre essa árvore em profundidade (como a busca em profundidade em <a href="grafos.html">grafos</a>). Sua força está na PODA: assim que uma solução parcial viola alguma restrição, toda a subárvore abaixo dela é descartada sem ser visitada. É isso que diferencia o backtracking da força bruta, que geraria todas as configurações completas para só depois testá-las.</p>
+<h2>Exemplo principal: o problema das N rainhas</h2>
+<p>Uma rainha do xadrez ataca qualquer peça na mesma linha, na mesma coluna ou em uma das duas diagonais. O problema pede para colocar N rainhas em um tabuleiro N x N sem que nenhuma ataque outra.</p>
+<p>Força bruta ingênua: escolher N casas entre as N² casas do tabuleiro. Para N = 8 são C(64, 8) = 4 426 165 368 configurações, a maioria absurda.</p>
+<p>Primeira redução: como duas rainhas não podem estar na mesma linha, haverá exatamente uma rainha por linha. Basta decidir, para cada linha, a coluna da sua rainha: 8^8 = 16 777 216 configurações. Exigindo colunas distintas, sobram as permutações: 8! = 40 320.</p>
+<p>Backtracking: coloca-se uma rainha por linha, de cima para baixo. Na linha lin tenta-se cada coluna c = 0, 1, ..., N-1. A rainha só é colocada em (lin, c) se nenhuma rainha das linhas anteriores estiver:</p>
+<ul><li>na mesma coluna: col[i] == c;</li>
+<li>na mesma diagonal: |col[i] - c| == lin - i (a distância entre as colunas é igual à distância entre as linhas).</li></ul>
+<p>Se houver lugar, chama-se recursivamente a linha lin+1. Se nenhuma coluna servir, a chamada retorna e a linha anterior passa a tentar sua próxima coluna. Para N = 8 o algoritmo visita apenas cerca de dois mil nós da árvore de busca e encontra as 92 soluções (12 essencialmente diferentes, a menos de rotações e reflexões).</p>
+<p>Exemplo de retrocesso com N = 4 (colunas numeradas de 0 a 3):</p>
+<ul><li>linha 0, coluna 0;</li>
+<li>linha 1: colunas 0 e 1 são atacadas; coluna 2 serve;</li>
+<li>linha 2: todas as colunas são atacadas -&gt; volta à linha 1;</li>
+<li>linha 1, coluna 3;</li>
+<li>linha 2, coluna 1;</li>
+<li>linha 3: todas atacadas -&gt; volta à linha 2, que não tem mais opções -&gt; volta à linha 1, que também não -&gt; volta à linha 0;</li>
+<li>linha 0, coluna 1; linha 1, coluna 3; linha 2, coluna 0; linha 3, coluna 2: solução (1, 3, 0, 2).</li></ul>
+<h2>Complexidade</h2>
+<p>No pior caso o backtracking é exponencial, pois o número de nós da árvore de busca pode crescer exponencialmente com o tamanho da entrada. Muitos dos problemas atacados com essa técnica são NP-completos (como a soma de subconjuntos, a coloração de grafos e a satisfatibilidade), e para eles não se conhece algoritmo polinomial.</p>
+<p>Na prática, o desempenho depende muito da qualidade da poda. Técnicas para podar mais cedo:</p>
+<ul><li>ordenar os candidatos, tentando primeiro os mais promissores;</li>
+<li>escolher primeiro a variável mais restrita (no Sudoku, a casa com menos opções);</li>
+<li>propagar restrições, eliminando opções que já se sabe impossíveis;</li>
+<li>branch and bound (ramificar e limitar), em problemas de otimização: descartar um ramo quando um limite mostra que ele não pode superar a melhor solução já encontrada.</li></ul>
+<h2>Outras aplicações</h2>
+<ul><li>Sudoku e quebra-cabeças lógicos;</li>
+<li>labirintos e caminhos em grafos;</li>
+<li>gerar todas as permutações, combinações e subconjuntos de um conjunto;</li>
+<li>soma de subconjuntos: escolher números de um conjunto cuja soma seja S;</li>
+<li>coloração de mapas e grafos com k cores;</li>
+<li>passeio do cavalo no tabuleiro de xadrez;</li>
+<li>análise sintática de expressões regulares e a linguagem Prolog, cujo mecanismo de execução é baseado em backtracking.</li></ul>
+<h2>Histórico</h2>
+<p>O problema das oito rainhas foi proposto pelo enxadrista Max Bezzel em 1848; Franz Nauck publicou as 92 soluções em 1850, e Gauss se interessou pelo problema na mesma época. O termo &quot;backtrack&quot; é atribuído ao matemático D. H. Lehmer, na década de 1950. R. J. Walker descreveu o método de forma algorítmica em 1960, e S. Golomb e L. Baumert o sistematizaram em 1965. Edsger Dijkstra usou as oito rainhas como exemplo em suas &quot;Notes on Structured Programming&quot; (1970), e Niklaus Wirth, em 1971, para ilustrar o &quot;desenvolvimento por refinamentos sucessivos&quot;.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo resolve as N rainhas com backtracking recursivo: imprime a primeira solução encontrada e conta todas as soluções para N = 8.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 3 (Algoritmos recursivos: retrocesso, oito rainhas).</li>
+<li>WIRTH, N. Program development by stepwise refinement. Communications of the ACM, v. 14, n. 4, p. 221-227, 1971.</li>
+<li>GOLOMB, S. W.; BAUMERT, L. D. Backtrack programming. Journal of the ACM, v. 12, n. 4, p. 516-524, 1965.</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 4B: Combinatorial Algorithms, Part 2. Boston: Addison-Wesley, 2022. Seção 7.2.2 (Backtrack programming).</li>
+<li>SKIENA, S. S. The Algorithm Design Manual. 2. ed. London: Springer, 2008. Capítulo 7 (Combinatorial Search and Heuristic Methods).</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.</li>
+<li>Wikipedia. Backtracking. https://en.wikipedia.org/wiki/Backtracking</li>
+<li>Wikipedia. Eight queens puzzle. https://en.wikipedia.org/wiki/Eight_queens_puzzle</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="tentativa_erro_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

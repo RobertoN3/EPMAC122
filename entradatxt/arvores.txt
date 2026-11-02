@@ -45,8 +45,8 @@ Em estruturas de dados escolhe-se um vértice especial, a raiz, e
 Uma árvore é uma estrutura [[recursao|RECURSIVA]]: ou é vazia, ou é uma raiz ligada a
 uma sequência de subárvores, que também são árvores. Por isso quase todos os
 algoritmos sobre árvores são recursivos e podem ser provados corretos por
-indução na altura. A página [[algoritmos_arvores|algoritmos recursivos em
-árvores]] mostra três exemplos (contar nós, contar folhas e calcular a
+indução na altura. A página
+[[algoritmos_arvores|algoritmos recursivos em árvores]] mostra três exemplos (contar nós, contar folhas e calcular a
 altura), com os casos base escritos explicitamente.
 
 ## Árvores binárias

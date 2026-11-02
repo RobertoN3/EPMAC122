@@ -55,8 +55,8 @@ depende de ninguém que falte e, portanto, pode ser colocada agora.
 ```
 
 Não é preciso apagar fisicamente as arestas: basta diminuir os graus de
-entrada em um vetor separado, preservando as [[listas_encadeadas|listas de
-adjacência]] originais. A estrutura que guarda as fontes disponíveis é uma
+entrada em um vetor separado, preservando as
+[[listas_encadeadas|listas de adjacência]] originais. A estrutura que guarda as fontes disponíveis é uma
 [[filas|fila]], mas uma pilha também funcionaria: só mudaria qual das
 ordenações válidas é produzida.
 

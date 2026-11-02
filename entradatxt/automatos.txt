@@ -1,0 +1,200 @@
+2. Algoritmo: Reconhecimento de números e identificadores com autômato finito
+3. Autores: Stephen C. Kleene, Michael O. Rabin, Dana Scott
+4. Data: 1956, 1959
+5. Conceitos: Autômatos finitos, Matrizes, Vetores
+6. Problema: Dada uma cadeia de caracteres, decidir se ela é um número inteiro, um número real ou um identificador da linguagem C, examinando cada caractere uma única vez
+7. Titulo: Autômatos de estado finito
+
+## Ideia geral
+
+Um autômato de estado finito (AEF) é uma máquina muito simples: ela tem uma
+quantidade finita de ESTADOS e, a cada símbolo que lê, passa de um estado
+para outro de acordo com uma regra fixa. Não tem outra memória além do
+estado em que está.
+
+Exemplos do dia a dia:
+- uma catraca: estados "travada" e "liberada"; o símbolo "moeda" libera, o
+  símbolo "empurrão" trava de novo;
+- um semáforo, um elevador, uma máquina de venda de bilhetes;
+- a fechadura de um cofre, que só abre depois de uma sequência certa de
+  números.
+
+Em computação, o uso mais importante é reconhecer padrões em textos: decidir
+se uma cadeia é um número, um nome de variável, um endereço de e-mail. É
+assim que um compilador começa a ler um programa, na etapa chamada análise
+léxica. Este tema foi estudado na disciplina na semana 6, com o simulador
+iCG.
+
+## Definição
+
+Um autômato finito determinístico é uma quíntupla M = (Q, Z, d, q0, F):
+
+- Q: o conjunto finito de estados;
+- Z: o alfabeto, o conjunto de símbolos que podem ser lidos;
+- d: Q x Z -> Q, a função de transição: d(q, a) é o estado para onde a
+  máquina vai quando está em q e lê o símbolo a;
+- q0: o estado inicial;
+- F: o conjunto dos estados finais (de aceitação), contido em Q.
+
+Para ler uma cadeia a1 a2 ... an, a máquina começa em q0 e aplica d a cada
+símbolo, da esquerda para a direita. A cadeia é ACEITA se o estado em que a
+máquina termina pertence a F; caso contrário, é rejeitada.
+"Determinístico" quer dizer que, para cada estado e cada símbolo, há
+exatamente um próximo estado.
+
+## Exemplo: números e identificadores
+
+Vamos reconhecer três tipos de cadeia:
+- inteiro: sinal opcional (+ ou -) seguido de um ou mais dígitos: 42, -17;
+- real: um inteiro, um ponto e um ou mais dígitos: 3.14, -0.5;
+- identificador da linguagem C: letra ou _, seguida de letras, dígitos ou
+  _: x1, _soma.
+
+Para a tabela não ter um estado por caractere, agrupam-se os símbolos em
+classes: DIGITO, LETRA (inclui _), SINAL (+ e -), PONTO e OUTRO. Estados:
+INICIO, SINAL, INTEIRO, PONTO, REAL, IDENT e ERRO. Os finais são INTEIRO,
+REAL e IDENT.
+
+```
+  estado     DIGITO    LETRA   SINAL   PONTO   OUTRO
+  INICIO     INTEIRO   IDENT   SINAL   ERRO    ERRO
+  SINAL      INTEIRO   ERRO    ERRO    ERRO    ERRO
+  INTEIRO    INTEIRO   ERRO    ERRO    PONTO   ERRO
+  PONTO      REAL      ERRO    ERRO    ERRO    ERRO
+  REAL       REAL      ERRO    ERRO    ERRO    ERRO
+  IDENT      IDENT     IDENT   ERRO    ERRO    ERRO
+  ERRO       ERRO      ERRO    ERRO    ERRO    ERRO
+```
+
+Lendo "-3.14": INICIO -(-)-> SINAL -(3)-> INTEIRO -(.)-> PONTO -(1)-> REAL
+-(4)-> REAL. Terminou em REAL: é um número real. Já "2." termina em PONTO,
+que não é final, e "2x" cai em ERRO ao ler o x: as duas são rejeitadas. O
+estado ERRO é um "poço": dele não se sai, e o restante da cadeia não muda a
+resposta.
+
+## Implementação em C
+
+A forma mais direta é guardar d numa matriz delta[estado][classe] e fazer
+um único laço:
+
+```
+  q <- INICIO
+  para cada caractere c da cadeia:
+      q <- delta[q][classe(c)]
+  aceita se q é final
+```
+
+Cada caractere custa uma consulta à matriz: O(1). Reconhecer uma cadeia de
+tamanho n custa O(n), lendo cada caractere uma só vez, sem voltar atrás.
+Outra forma comum é um switch sobre o estado atual dentro do laço, que é
+como costumam ser escritos os analisadores léxicos feitos à mão.
+
+## Analisadores léxicos
+
+Um compilador não lê o programa caractere por caractere na hora de entendê-
+lo: antes, um analisador léxico agrupa os caracteres em itens léxicos
+(tokens): palavras reservadas, identificadores, números, cadeias,
+operadores, comentários. Cada tipo de item é reconhecido por um autômato.
+O simulador iCG, estudado na disciplina, tem o seu analisador léxico no
+arquivo AnaLex.java.
+
+O filtro de cores deste EP, o colorir.c, é um analisador léxico escrito à
+mão nesse estilo. Ao ler um "/*", ele entra num estado "dentro de
+comentário" e só sai ao encontrar "*/"; ao ler uma aspa, entra no estado
+"dentro de cadeia" e trata a barra invertida como início de uma sequência
+de escape; uma letra inicia um identificador, que no fim é comparado com
+as listas de tipos e comandos.
+
+## O que um autômato finito não consegue fazer
+
+Como a única memória é o estado, um AEF não consegue contar além de um
+limite fixo. Por exemplo, nenhum AEF reconhece exatamente as cadeias de
+parênteses balanceados, como "(())()": seria preciso lembrar quantos
+parênteses estão abertos, e esse número pode ser qualquer um. Para isso é
+preciso uma [[pilhas|pilha]], e a máquina com pilha é o autômato de pilha,
+base da análise sintática dos compiladores. Os padrões que um AEF reconhece
+são exatamente os descritos por expressões regulares, as mesmas usadas em
+ferramentas de busca de texto como o grep.
+
+## Histórico
+
+Warren McCulloch e Walter Pitts propuseram em 1943 um modelo de neurônio
+que se comporta como uma máquina de estados finitos. Stephen C. Kleene
+mostrou, em 1956, que as linguagens reconhecidas por essas máquinas são
+exatamente as descritas por expressões regulares. Em 1959, Michael O. Rabin
+e Dana Scott definiram os autômatos finitos não determinísticos e provaram
+que eles reconhecem as mesmas linguagens que os determinísticos; o trabalho
+lhes rendeu o prêmio Turing de 1976.
+
+## Sobre o código
+
+O programa implementa o autômato da tabela como uma matriz de transições,
+mostra os estados percorridos ao ler "-3.14" e classifica uma lista de
+cadeias como inteiro, real, identificador ou rejeitada.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Material de MAC0122, semana 6 (autômatos de estado finito; iCG). IME-USP, e-Disciplinas, 2026.
+- BRANDÃO, L. O. iCG: Computador Gaveteiro interativo. https://www.matematica.br/icg e código em https://github.com/leonidasbrandao/icg-java
+- HOPCROFT, J. E.; MOTWANI, R.; ULLMAN, J. D. Introdução à teoria de autômatos, linguagens e computação. Rio de Janeiro: Elsevier, 2002. Capítulo 2.
+- SIPSER, M. Introdução à teoria da computação. 2. ed. São Paulo: Cengage Learning, 2007. Capítulo 1 (Linguagens regulares).
+- AHO, A. V.; LAM, M. S.; SETHI, R.; ULLMAN, J. D. Compiladores: princípios, técnicas e ferramentas. 2. ed. São Paulo: Pearson, 2008. Capítulo 3 (Análise léxica).
+- RABIN, M. O.; SCOTT, D. Finite automata and their decision problems. IBM Journal of Research and Development, v. 3, n. 2, p. 114-125, 1959.
+- Wikipedia. Autômato finito determinístico. https://pt.wikipedia.org/wiki/Autômato_finito_determinístico
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#include <ctype.h>
+
+enum { INICIO, SINAL, INTEIRO, PONTO, REAL, IDENT, ERRO, N_ESTADOS };
+enum { C_DIGITO, C_LETRA, C_SINAL, C_PONTO, C_OUTRO, N_CLASSES };
+
+const char *nome_estado[N_ESTADOS] =
+  {"INICIO", "SINAL", "INTEIRO", "PONTO", "REAL", "IDENT", "ERRO"};
+
+/* função de transição d: delta[estado][classe do caractere] */
+const int delta[N_ESTADOS][N_CLASSES] = {
+  /*            DIGITO   LETRA  SINAL  PONTO  OUTRO */
+  /* INICIO  */ {INTEIRO, IDENT, SINAL, ERRO,  ERRO},
+  /* SINAL   */ {INTEIRO, ERRO,  ERRO,  ERRO,  ERRO},
+  /* INTEIRO */ {INTEIRO, ERRO,  ERRO,  PONTO, ERRO},
+  /* PONTO   */ {REAL,    ERRO,  ERRO,  ERRO,  ERRO},
+  /* REAL    */ {REAL,    ERRO,  ERRO,  ERRO,  ERRO},
+  /* IDENT   */ {IDENT,   IDENT, ERRO,  ERRO,  ERRO},
+  /* ERRO    */ {ERRO,    ERRO,  ERRO,  ERRO,  ERRO}
+};
+
+int classe(char c) {
+  if (isdigit((unsigned char)c)) return C_DIGITO;
+  if (isalpha((unsigned char)c) || c == '_') return C_LETRA;
+  if (c == '+' || c == '-') return C_SINAL;
+  if (c == '.') return C_PONTO;
+  return C_OUTRO;
+}
+
+/* roda o autômato; se mostrar != 0, imprime os estados percorridos */
+int reconhece(const char *s, int mostrar) {
+  int q = INICIO;
+  if (mostrar) printf("%s", nome_estado[q]);
+  for (; *s; s++) {
+    q = delta[q][classe(*s)];        /* uma consulta por caractere: O(1) */
+    if (mostrar) printf(" -(%c)-> %s", *s, nome_estado[q]);
+  }
+  if (mostrar) printf("\n");
+  return q;
+}
+
+int main(void) {
+  const char *testes[] = {"42", "-17", "3.14", "+2.", "x1", "_soma",
+                          "2x", "--3", "", "a.b", ".5"};
+  int i, q;
+  reconhece("-3.14", 1);
+  printf("\n");
+  for (i = 0; i < 11; i++) {
+    q = reconhece(testes[i], 0);
+    printf("%-8s %s\n", testes[i][0] ? testes[i] : "(vazia)",
+           q == INTEIRO ? "inteiro" : q == REAL ? "real" :
+           q == IDENT ? "identificador" : "rejeitada");
+  }
+  return 0;
+}
+FIM_CODIGO_C

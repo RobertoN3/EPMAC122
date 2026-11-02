@@ -1,0 +1,485 @@
+COMO COMPILAR E RODAR OS CÓDIGOS C
+==================================
+
+Estes arquivos são gerados pelo colorir.c a partir dos TXT de entradatxt/:
+cada código C fica entre as linhas INICIO_CODIGO_C e FIM_CODIGO_C do TXT, e
+o arquivo .c tem exatamente o mesmo texto. Cada programa é um único
+arquivo .c e não lê arquivos auxiliares nem a entrada padrão: os dados de
+exemplo estão no próprio código, na função main.
+
+Todos compilam sem avisos com as opções abaixo (gcc em Linux, macOS ou
+Windows com MinGW). No Windows, o programa gerado se chama nome.exe e roda
+com nome.exe em vez de ./nome.
+
+Exemplo, para o algoritmo de Kruskal (na pasta onde está kruskal.c):
+
+    gcc -Wall -Wextra -pedantic -std=c99 -o kruskal kruskal.c
+    ./kruskal
+
+OS TRÊS PROGRAMAS DO EP (geram o site)
+--------------------------------------
+Na pasta do repositório, onde estão também slug.h, layout.h e estilo.css
+(incluídos ou copiados pelos programas) e a pasta entradatxt/ com os TXT:
+
+    gcc -Wall -Wextra -pedantic -std=c99 -o gerador gerador.c
+    gcc -Wall -Wextra -pedantic -std=c99 -o gerador_conteudo gerador_conteudo.c
+    gcc -Wall -Wextra -pedantic -std=c99 -o colorir colorir.c
+    ./gerador
+    ./gerador_conteudo
+    ./colorir
+
+gerador gera index.html e as seis páginas indexadoras; gerador_conteudo,
+uma página de explicação por TXT; colorir, uma página com o código C
+colorido por TXT, e também os arquivos .c e este COMO_COMPILAR.txt em
+saida/codigos/. Os três escrevem em saida/; o site começa em
+saida/index.html. O colorir também funciona como filtro para qualquer
+arquivo C: ./colorir -f < programa.c > programa.html
+
+
+OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (38 programas)
+------------------------------------------------
+
+------------------------------------------------------------------------
+Árvore binária de busca (ABB)
+  Arquivo:  abb.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o abb abb.c
+  Rodar:    ./abb
+  O que faz:
+    O programa de exemplo insere as chaves do exemplo com inserção
+    recursiva, lista em ordem com o percurso in-ordem, busca uma chave
+    presente e uma ausente com busca iterativa, remove a raiz (caso de dois
+    filhos) e uma folha, lista de novo e libera a memória em pós-ordem.
+  Explicação no site: abb.html
+
+------------------------------------------------------------------------
+Algoritmos recursivos em árvores
+  Arquivo:  algoritmos_arvores.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o algoritmos_arvores algoritmos_arvores.c
+  Rodar:    ./algoritmos_arvores
+  O que faz:
+    O programa representa a árvore com registros ligados por ponteiros,
+    usando NULL para a subárvore vazia. Ele calcula as três propriedades
+    para a árvore de seis nós do exemplo, para a árvore vazia e para uma
+    árvore de um só nó, e confere os resultados esperados: (6, 3, 2), (0,
+    0, -1) e (1, 1, 0), na ordem nós, folhas e altura. As funções recebem
+    ponteiros para nós constantes e não alteram a árvore. Os nós são
+    variáveis locais ligadas no main, sem alocação dinâmica.
+  Explicação no site: algoritmos_arvores.html
+
+------------------------------------------------------------------------
+Árvores
+  Arquivo:  arvores.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o arvores arvores.c
+  Rodar:    ./arvores
+  O que faz:
+    O programa de exemplo monta, com registros ligados por ponteiros, a
+    árvore da expressão (2 + 3) * 4 e a percorre recursivamente em
+    pré-ordem, in-ordem e pós-ordem. Em seguida calcula, também por
+    recursão, a altura da árvore, o número de nós e o valor da
+    expressão (um percurso em pós-ordem), e libera a memória.
+  Explicação no site: arvores.html
+
+------------------------------------------------------------------------
+Autômatos de estado finito
+  Arquivo:  automatos.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o automatos automatos.c
+  Rodar:    ./automatos
+  O que faz:
+    O programa implementa o autômato da tabela como uma matriz de
+    transições, mostra os estados percorridos ao ler "-3.14" e classifica
+    uma lista de cadeias como inteiro, real, identificador ou rejeitada.
+  Explicação no site: automatos.html
+
+------------------------------------------------------------------------
+Busca em largura (BFS)
+  Arquivo:  bfs.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o bfs bfs.c
+  Rodar:    ./bfs
+  O que faz:
+    O programa de exemplo representa o grafo do exemplo por matriz de
+    adjacência, executa a busca em largura a partir do vértice 0 com uma
+    fila em vetor e imprime, para cada vértice, a distância e o caminho
+    mínimo (-1 para o vértice isolado, que não é alcançável).
+  Explicação no site: bfs.html
+
+------------------------------------------------------------------------
+Ordenação bolha (Bubble Sort)
+  Arquivo:  bubblesort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o bubblesort bubblesort.c
+  Rodar:    ./bubblesort
+  O que faz:
+    O programa de exemplo implementa a ordenação bolha com parada
+    antecipada e conta o número de trocas realizadas, que é igual ao
+    número de inversões do vetor original.
+  Explicação no site: bubblesort.html
+
+------------------------------------------------------------------------
+Busca binária
+  Arquivo:  busca_binaria.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o busca_binaria busca_binaria.c
+  Rodar:    ./busca_binaria
+  O que faz:
+    O programa de exemplo implementa a busca binária iterativa (com o
+    cálculo do meio que evita estouro) e a recursiva, e as testa com os
+    dois exemplos desta página.
+  Explicação no site: busca_binaria.html
+
+------------------------------------------------------------------------
+Busca sequencial e busca com sentinela
+  Arquivo:  busca_sequencial.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o busca_sequencial busca_sequencial.c
+  Rodar:    ./busca_sequencial
+  O que faz:
+    O programa implementa as duas buscas sobre o vetor do exemplo, procura
+    um valor do meio, o primeiro e um ausente, e imprime a posição
+    devolvida e o número de comparações de cada método.
+  Explicação no site: busca_sequencial.html
+
+------------------------------------------------------------------------
+Representação de conjuntos
+  Arquivo:  conjuntos.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o conjuntos conjuntos.c
+  Rodar:    ./conjuntos
+  O que faz:
+    O programa representa conjuntos de inteiros de 0 a 63 das duas formas,
+    executa as mesmas operações em cada uma, calcula a união e a
+    interseção de dois conjuntos com o vetor de bits e usa um vetor de
+    bits para encontrar os primos até 100 pelo crivo de Eratóstenes.
+  Explicação no site: conjuntos.html
+
+------------------------------------------------------------------------
+Algoritmo de Dijkstra
+  Arquivo:  dijkstra.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o dijkstra dijkstra.c
+  Rodar:    ./dijkstra
+  O que faz:
+    O programa de exemplo implementa o algoritmo de Dijkstra com matriz de
+    adjacência e busca linear do vértice de menor estimativa (versão
+    O(n²)), para o grafo do exemplo desta página, imprimindo as
+    distâncias e os pais.
+  Explicação no site: dijkstra.html
+
+------------------------------------------------------------------------
+Divisão e conquista
+  Arquivo:  divisao_conquista.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o divisao_conquista divisao_conquista.c
+  Rodar:    ./divisao_conquista
+  O que faz:
+    O programa de exemplo implementa o Merge Sort recursivo com a
+    intercalação em vetor auxiliar alocado dinamicamente, marcando nos
+    comentários as fases de dividir, conquistar e combinar.
+  Explicação no site: divisao_conquista.html
+
+------------------------------------------------------------------------
+Eficiência de algoritmos
+  Arquivo:  eficiencia.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o eficiencia eficiencia.c -lm
+  Rodar:    ./eficiencia
+  Usa math.h: no Linux, o -lm no fim do comando liga a biblioteca
+  matemática.
+  O que faz:
+    O programa de exemplo implementa a versão eficiente do cosseno pela
+    série de Taylor e compara o resultado com a função cos da biblioteca
+    math.h.
+  Explicação no site: eficiencia.html
+
+------------------------------------------------------------------------
+Estabilidade em algoritmos de ordenação
+  Arquivo:  estabilidade.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o estabilidade estabilidade.c
+  Rodar:    ./estabilidade
+  O que faz:
+    O programa ordena duas cópias do mesmo vetor de registros (nome e
+    nota), comparando só a nota: uma com a inserção direta estável e
+    outra com a seleção direta com trocas. O nome serve para observar a
+    ordem relativa de Ana e Bruno, que empatam, nas duas saídas.
+  Explicação no site: estabilidade.html
+
+------------------------------------------------------------------------
+Filas
+  Arquivo:  filas.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o filas filas.c
+  Rodar:    ./filas
+  O que faz:
+    O programa de exemplo implementa uma fila circular de tamanho 5 em um
+    vetor, guardando o número de elementos para distinguir fila cheia de
+    vazia, e mostra os índices dando a volta no vetor.
+  Explicação no site: filas.html
+
+------------------------------------------------------------------------
+Grafos
+  Arquivo:  grafos.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o grafos grafos.c
+  Rodar:    ./grafos
+  O que faz:
+    O programa de exemplo monta o mesmo grafo do exemplo acima nas duas
+    representações: uma matriz de adjacência (vetor de vetores) e um
+    vetor de listas de adjacência (registros ligados por ponteiros,
+    alocados com malloc). Em seguida imprime as duas e libera a memória das
+    listas. Os percursos estão nas páginas bfs e dijkstra.
+  Explicação no site: grafos.html
+
+------------------------------------------------------------------------
+Hash e espalhamento
+  Arquivo:  hash.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o hash hash.c
+  Rodar:    ./hash
+  O que faz:
+    O programa de exemplo implementa uma tabela de espalhamento com
+    encadeamento para chaves do tipo cadeia de caracteres, usando o método
+    de Horner com base 31 e uma tabela de tamanho primo (13).
+  Explicação no site: hash.html
+
+------------------------------------------------------------------------
+Ordenação por heap (Heapsort)
+  Arquivo:  heapsort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o heapsort heapsort.c
+  Rodar:    ./heapsort
+  O que faz:
+    O programa de exemplo implementa a descida (sift-down) de forma
+    iterativa, constrói o heap de baixo para cima e ordena o vetor do
+    exemplo, imprimindo o heap construído e o vetor final.
+  Explicação no site: heapsort.html
+
+------------------------------------------------------------------------
+Imagens simples: PBM, PGM e PPM
+  Arquivo:  imagens_pbm.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o imagens_pbm imagens_pbm.c
+  Rodar:    ./imagens_pbm
+  O que faz:
+    O programa monta, em matrizes, a palavra MAC do material da disciplina
+    (em PBM), um degradê de cinza e o seu negativo (em PGM) e uma pequena
+    imagem colorida (em PPM), e grava os quatro arquivos (mac.pbm,
+    degrade.pgm, negativo.pgm e cores.ppm) na pasta onde é executado.
+  Explicação no site: imagens_pbm.html
+
+------------------------------------------------------------------------
+Indução finita
+  Arquivo:  inducao.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o inducao inducao.c
+  Rodar:    ./inducao
+  O que faz:
+    O programa não prova nada: ele confere, para n de 0 a 20, a fórmula da
+    soma dos n primeiros naturais (calculada por um laço e por uma função
+    recursiva) e a fórmula 2^n - 1 dos movimentos das Torres de Hanói
+    (contados pela própria recursão), e imprime uma tabela.
+  Explicação no site: inducao.html
+
+------------------------------------------------------------------------
+Inserção direta (Insertion Sort)
+  Arquivo:  insertionsort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o insertionsort insertionsort.c
+  Rodar:    ./insertionsort
+  O que faz:
+    O programa de exemplo implementa a inserção direta, para o vetor do
+    exemplo desta página, imprimindo o vetor ao final de cada passo para
+    mostrar a parte ordenada crescendo.
+  Explicação no site: insertionsort.html
+
+------------------------------------------------------------------------
+Algoritmo de Kruskal
+  Arquivo:  kruskal.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o kruskal kruskal.c
+  Rodar:    ./kruskal
+  O que faz:
+    O programa de exemplo implementa o algoritmo de Kruskal com ordenação
+    das arestas pela função qsort e union-find com compressão de
+    caminhos, para o grafo do exemplo desta página, imprimindo as arestas
+    escolhidas e o peso total (14).
+  Explicação no site: kruskal.html
+
+------------------------------------------------------------------------
+Listas encadeadas
+  Arquivo:  listas_encadeadas.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o listas_encadeadas listas_encadeadas.c
+  Rodar:    ./listas_encadeadas
+  O que faz:
+    O programa de exemplo implementa uma lista encadeada com
+    célula-cabeça, com inserção após uma célula, busca da célula
+    anterior a x, remoção e impressão recursiva, liberando toda a
+    memória ao final.
+  Explicação no site: listas_encadeadas.html
+
+------------------------------------------------------------------------
+MDC e algoritmo de Euclides
+  Arquivo:  mdc_euclides.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o mdc_euclides mdc_euclides.c
+  Rodar:    ./mdc_euclides
+  O que faz:
+    O programa mostra as divisões de mdc(1071, 462), compara o número de
+    passos da solução ingênua com o do algoritmo de Euclides em três
+    pares (incluindo dois números de Fibonacci consecutivos), confere a
+    versão recursiva e calcula um mínimo múltiplo comum.
+  Explicação no site: mdc_euclides.html
+
+------------------------------------------------------------------------
+Ordenação por fusão (Merge Sort)
+  Arquivo:  mergesort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o mergesort mergesort.c
+  Rodar:    ./mergesort
+  O que faz:
+    O programa de exemplo implementa a versão iterativa (de baixo para
+    cima) do Merge Sort, intercalando blocos de tamanho 1, 2, 4, ..., com um
+    vetor auxiliar alocado uma única vez. A versão recursiva está na
+    página da técnica de divisão e conquista.
+  Explicação no site: mergesort.html
+
+------------------------------------------------------------------------
+Método guloso
+  Arquivo:  metodo_guloso.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o metodo_guloso metodo_guloso.c
+  Rodar:    ./metodo_guloso
+  O que faz:
+    O programa de exemplo implementa a ordenação bolha com a parada
+    antecipada quando nenhuma troca acontece, destacando nos comentários
+    onde ocorre a escolha gulosa (o maior elemento restante chegando a
+    v[fim]).
+  Explicação no site: metodo_guloso.html
+
+------------------------------------------------------------------------
+Algoritmos de ordenação
+  Arquivo:  ordenacao.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ordenacao ordenacao.c
+  Rodar:    ./ordenacao
+  O que faz:
+    O programa de exemplo demonstra a estabilidade: ordena pares por
+    inserção direta (estável), primeiro pela chave secundária e depois
+    pela primária, imprimindo as três listas do exemplo desta página.
+  Explicação no site: ordenacao.html
+
+------------------------------------------------------------------------
+Ordenação por contagem (frequências)
+  Arquivo:  ordenacao_contagem.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ordenacao_contagem ordenacao_contagem.c
+  Rodar:    ./ordenacao_contagem
+  O que faz:
+    O programa ordena o vetor do exemplo por contagem (com o truque do
+    índice deslocado do material da disciplina) e depois ordena uma lista
+    de nomes com a bolha sobre um vetor de ordem, mostrando que o vetor de
+    nomes original não é alterado.
+  Explicação no site: ordenacao_contagem.html
+
+------------------------------------------------------------------------
+Ordenação topológica
+  Arquivo:  ordenacao_topologica.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ordenacao_topologica ordenacao_topologica.c
+  Rodar:    ./ordenacao_topologica
+  O que faz:
+    O programa monta o grafo G2 em listas de adjacência, a partir de um
+    vetor de pares (origem, destino), e executa o algoritmo de Kahn. No
+    teste acíclico, confere se cada aresta vai de uma posição anterior
+    para uma posterior na sequência obtida. No teste com o ciclo
+    2->3->4->2, mostra a sequência parcial e informa o ciclo. Os vértices
+    usam índices de 0 a n-1 internamente e são impressos com rótulos de 1
+    a n.
+  Explicação no site: ordenacao_topologica.html
+
+------------------------------------------------------------------------
+Pilhas
+  Arquivo:  pilhas.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o pilhas pilhas.c
+  Rodar:    ./pilhas
+  O que faz:
+    O programa de exemplo implementa uma pilha de caracteres em vetor e a
+    usa para verificar se três cadeias têm parênteses, colchetes e chaves
+    balanceados.
+  Explicação no site: pilhas.html
+
+------------------------------------------------------------------------
+Ponteiros e endereços
+  Arquivo:  ponteiros.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ponteiros ponteiros.c
+  Rodar:    ./ponteiros
+  O que faz:
+    O programa de exemplo altera uma variável através de um ponteiro,
+    troca duas variáveis passando seus endereços, e cria com malloc um
+    vetor cujo tamanho é dado em tempo de execução, acessado com
+    aritmética de ponteiros.
+  Explicação no site: ponteiros.html
+
+------------------------------------------------------------------------
+Algoritmo de Prim
+  Arquivo:  prim.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o prim prim.c
+  Rodar:    ./prim
+  O que faz:
+    O programa de exemplo implementa a versão O(n²) com matriz de
+    adjacência e o vetor custo, para o grafo do exemplo desta página,
+    imprimindo as arestas escolhidas e o peso total (14).
+  Explicação no site: prim.html
+
+------------------------------------------------------------------------
+Programação dinâmica
+  Arquivo:  programacao_dinamica.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o programacao_dinamica programacao_dinamica.c
+  Rodar:    ./programacao_dinamica
+  O que faz:
+    O programa de exemplo calcula Fibonacci de baixo para cima e resolve a
+    mochila binária preenchendo a tabela M[i][c] com a recorrência acima,
+    para o mesmo exemplo da tabela mostrada nesta página.
+  Explicação no site: programacao_dinamica.html
+
+------------------------------------------------------------------------
+Ordenação rápida (Quick Sort)
+  Arquivo:  quicksort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o quicksort quicksort.c
+  Rodar:    ./quicksort
+  O que faz:
+    O programa de exemplo implementa o Quick Sort com a partição de
+    Lomuto, usando como pivô o elemento do meio do trecho (trocado para o
+    fim antes da partição), o que evita o pior caso com vetores já
+    ordenados.
+  Explicação no site: quicksort.html
+
+------------------------------------------------------------------------
+Ordenação digital (Radix Sort)
+  Arquivo:  radixsort.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o radixsort radixsort.c
+  Rodar:    ./radixsort
+  O que faz:
+    O programa de exemplo implementa o Radix Sort LSD em base 10, usando
+    Counting Sort estável em cada passada, para o vetor do exemplo desta
+    página, imprimindo o vetor depois de cada dígito.
+  Explicação no site: radixsort.html
+
+------------------------------------------------------------------------
+Recursão
+  Arquivo:  recursao.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o recursao recursao.c
+  Rodar:    ./recursao
+  O que faz:
+    O programa de exemplo implementa o fatorial recursivo e as Torres de
+    Hanói, imprimindo os 7 movimentos necessários para n = 3.
+  Explicação no site: recursao.html
+
+------------------------------------------------------------------------
+Registros (structs)
+  Arquivo:  registros.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o registros registros.c
+  Rodar:    ./registros
+  O que faz:
+    O programa de exemplo define o registro Aluno, altera a nota de um aluno
+    passando um ponteiro para o registro e ordena a turma por nota (em ordem
+    decrescente) com inserção direta, que é estável.
+  Explicação no site: registros.html
+
+------------------------------------------------------------------------
+Seleção direta
+  Arquivo:  selecao_direta.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o selecao_direta selecao_direta.c
+  Rodar:    ./selecao_direta
+  O que faz:
+    O programa de exemplo ordena o vetor do exemplo desta página por
+    seleção direta, com o invariante indicado em um comentário.
+  Explicação no site: selecao_direta.html
+
+------------------------------------------------------------------------
+Tentativa e erro (backtracking)
+  Arquivo:  tentativa_erro.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o tentativa_erro tentativa_erro.c
+  Rodar:    ./tentativa_erro
+  O que faz:
+    O programa de exemplo resolve as N rainhas com backtracking recursivo:
+    imprime a primeira solução encontrada e conta todas as soluções para
+    N = 8.
+  Explicação no site: tentativa_erro.html

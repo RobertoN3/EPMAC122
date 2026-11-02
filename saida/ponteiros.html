@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ponteiros e endereços | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ponteiros e endereços</h1><a class="botao botao-sec" href="ponteiros_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A memória do computador pode ser vista como um enorme vetor de bytes. Cada byte tem um número de ordem, o seu endereço. Toda variável de um programa ocupa alguns bytes consecutivos (em geral, um char ocupa 1 byte, um int 4 e um double 8), e o endereço da variável é o endereço do primeiro desses bytes.</p>
+<p>Um ponteiro (ou apontador) é uma variável cujo valor é um endereço. Dizemos que o ponteiro &quot;aponta&quot; para a variável que está naquele endereço. É como a diferença entre uma casa e o seu endereço escrito em um papel: com o papel na mão, podemos ir até a casa e mudar o que há dentro dela.</p>
+<p>Ponteiros estão no coração da linguagem C. Sem eles não seria possível:</p>
+<ul><li>uma função alterar variáveis de quem a chamou;</li>
+<li>passar vetores grandes para funções sem copiá-los;</li>
+<li>criar estruturas cujo tamanho só se conhece durante a execução;</li>
+<li>ligar dados entre si, formando <a href="listas_encadeadas.html">listas encadeadas</a>, <a href="arvores.html">árvores</a> e <a href="grafos.html">grafos</a>.</li></ul>
+<h2>Operadores &amp; e *</h2>
+<ul><li>&amp;x é o endereço da variável x (&quot;endereço de x&quot;).</li>
+<li>*p é o conteúdo da posição para onde p aponta (&quot;o que está apontado por p&quot;). Essa operação chama-se desreferência (ou indireção).</li></ul>
+<p>Declaração: int *p; declara p como um ponteiro para int. O tipo apontado importa: diz quantos bytes ler e como interpretá-los, e é usado na aritmética de ponteiros.</p>
+<p>Exemplo:</p>
+<pre>  int x = 1;
+  int *p;
+  p = &amp;x;      // p aponta para x
+  *p = 10;     // o mesmo que x = 10
+  printf(&quot;%d&quot;, x);    // imprime 10
+</pre>
+<p>Depois de p = &amp;x, a expressão *p é um outro nome (um apelido) para x.</p>
+<p>Atenção para os dois usos do asterisco: na declaração (int *p) ele indica que p é um ponteiro; em uma expressão (*p = 10) ele faz a desreferência.</p>
+<h2>O ponteiro NULL e os erros comuns</h2>
+<p>NULL é um valor especial, definido em stdio.h e stdlib.h, que não aponta para nenhuma variável válida. É usado para indicar &quot;nenhum&quot;: o fim de uma lista encadeada, uma subárvore vazia, uma busca sem sucesso, uma falha do malloc.</p>
+<p>Erros clássicos com ponteiros:</p>
+<ul><li>desreferenciar NULL: o programa costuma ser abortado (segmentation fault);</li>
+<li>usar um ponteiro não inicializado: ele contém lixo e aponta para um lugar qualquer da memória;</li>
+<li>ponteiro pendente (dangling): continuar usando um ponteiro depois de liberar com free a memória para onde ele aponta, ou devolver o endereço de uma variável local de uma função que já terminou;</li>
+<li>vazamento de memória: perder o último ponteiro para um bloco alocado sem liberá-lo.</li></ul>
+<h2>Passagem de parâmetros por referência</h2>
+<p>Em C, os argumentos são sempre passados por valor: a função recebe CÓPIAS dos valores. Por isso esta função não funciona:</p>
+<pre>  void trocaErrada(int a, int b) { int aux = a; a = b; b = aux; }
+</pre>
+<p>Ela troca as cópias, e as variáveis de quem chamou ficam intactas. A solução é passar os ENDEREÇOS das variáveis:</p>
+<pre>  void troca(int *a, int *b) { int aux = *a; *a = *b; *b = aux; }
+  ...
+  troca(&amp;x, &amp;y);
+</pre>
+<p>A função recebe cópias dos endereços, mas, desreferenciando-os, chega às variáveis originais. É por isso que scanf(&quot;%d&quot;, &amp;n) precisa do &amp;: scanf precisa saber ONDE guardar o número lido. Passar endereços também é a forma de uma função &quot;devolver&quot; mais de um resultado.</p>
+<h2>Ponteiros e vetores</h2>
+<p>Em C, ponteiros e vetores estão intimamente ligados:</p>
+<ul><li>o nome de um vetor, em quase todas as expressões, é convertido em um ponteiro para seu primeiro elemento: v equivale a &amp;v[0];</li>
+<li>somar um inteiro i a um ponteiro p o avança i ELEMENTOS (não i bytes): se p aponta para v[0], então p + i aponta para v[i]. É a aritmética de ponteiros, e é por isso que o tipo apontado importa;</li>
+<li>v[i] é, por definição, *(v + i).</li></ul>
+<p>Consequências:</p>
+<ul><li>uma função declarada como f(int v[], int n) recebe, na verdade, um ponteiro (int *v). O vetor não é copiado, e a função pode alterar o vetor original, como fazem todas as funções de ordenação;</li>
+<li>dentro da função não há como saber o tamanho do vetor; por isso ele é passado separadamente (n). Cuidado com sizeof: aplicado ao próprio vetor (int v[10]; sizeof v), dá o tamanho do vetor inteiro, pois aí o nome NÃO é convertido em ponteiro; aplicado a um parâmetro declarado como int v[], dá o tamanho de um ponteiro;</li>
+<li>pode-se formar o ponteiro para a posição logo DEPOIS do último elemento (v + n) e usá-lo como limite de um percurso, como em for (p = v; p != v + n; p++), mas nunca desreferenciá-lo. Comparar ou subtrair ponteiros só faz sentido entre posições do mesmo vetor;</li>
+<li>cadeias de caracteres são vetores de char terminados por '\0', e manipulá-las é, em grande parte, manipular ponteiros.</li></ul>
+<h2>Alocação dinâmica de memória</h2>
+<p>Variáveis comuns têm tamanho fixado ao escrever o programa. Quando o tamanho só é conhecido durante a execução (quantos números o usuário vai digitar?), usa-se alocação dinâmica, com funções de stdlib.h:</p>
+<ul><li>malloc(n): reserva um bloco de n bytes e devolve seu endereço, ou NULL se não houver memória. Usa-se com sizeof: v = malloc(n * sizeof(int));</li>
+<li>calloc(n, tam): como malloc, mas zera o bloco;</li>
+<li>realloc(p, n): muda o tamanho de um bloco (pode movê-lo de lugar);</li>
+<li>free(p): devolve o bloco ao sistema. Todo bloco alocado deve ser liberado exatamente uma vez.</li></ul>
+<p>Os blocos alocados dinamicamente ficam em uma área chamada heap (que não tem relação com a estrutura de dados heap) e existem até serem liberados, independentemente da função que os criou. É assim que são criadas as células de listas encadeadas e os nós de árvores.</p>
+<h2>Ponteiros para registros</h2>
+<p>Se p aponta para uma struct, o campo nota dessa struct é (*p).nota. Como isso é muito usado, C oferece a abreviação p-&gt;nota. Os parênteses em (*p).nota são necessários porque o ponto tem precedência maior que o asterisco.</p>
+<h2>Outros usos</h2>
+<ul><li>ponteiros para ponteiros (int **pp), usados, por exemplo, em matrizes alocadas dinamicamente e para uma função alterar um ponteiro de quem a chamou;</li>
+<li>ponteiros para funções, como o parâmetro de comparação da função qsort, que permite ordenar qualquer tipo de dado;</li>
+<li>o ponteiro genérico void *, devolvido por malloc, que pode ser convertido para qualquer outro tipo de ponteiro.</li></ul>
+<h2>Histórico</h2>
+<p>O uso de endereços indiretos é tão antigo quanto os computadores de programa armazenado. Harold Lawson é creditado por introduzir, em 1964, a variável ponteiro em uma linguagem de alto nível (PL/I), e recebeu por isso o prêmio IEEE Computer Pioneer em 2000. A linguagem C, criada por Dennis Ritchie no Bell Labs por volta de 1972 para escrever o sistema Unix, herdou de BCPL e B a ideia de que vetores e ponteiros são intimamente ligados, e tornou os ponteiros uma ferramenta central da programação de sistemas.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo altera uma variável através de um ponteiro, troca duas variáveis passando seus endereços, e cria com malloc um vetor cujo tamanho é dado em tempo de execução, acessado com aritmética de ponteiros.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Endereços e ponteiros. https://users.ime.usp.br/~pf/algoritmos/aulas/pont.html</li>
+<li>FEOFILOFF, P. Alocação dinâmica de memória. https://www.ime.usp.br/~pf/algoritmos/aulas/aloca.html</li>
+<li>KERNIGHAN, B. W.; RITCHIE, D. M. C: a linguagem de programação padrão ANSI. Rio de Janeiro: Campus, 1989. Capítulo 5 (Apontadores e vetores).</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Apêndices sobre ponteiros e alocação dinâmica.</li>
+<li>KING, K. N. C Programming: a modern approach. 2. ed. New York: W. W. Norton, 2008. Capítulos 11, 12 e 17.</li>
+<li>RITCHIE, D. M. The development of the C language. ACM SIGPLAN Notices, v. 28, n. 3, p. 201-208, 1993.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="ponteiros_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filas | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Filas</h1><a class="botao botao-sec" href="filas_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Fila circular em vetor</dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#filas">Filas</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#listas-encadeadas">Listas encadeadas</a><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-sequ%C3%AAncia-de-chegadas-e-atendimentos-atender-os-elementos-na-ordem-em-que-chegaram-o-primeiro-a-entrar-%C3%A9-o-primeiro-a-sair-com-inser%C3%A7%C3%A3o-e-remo%C3%A7%C3%A3o-em-tempo-constante">Problema</a></dt><dd class="texto">Dada uma sequência de chegadas e atendimentos, atender os elementos na ordem em que chegaram (o primeiro a entrar é o primeiro a sair), com inserção e remoção em tempo constante</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma fila é uma sequência de elementos em que as inserções são feitas em uma extremidade (o fim) e as remoções na outra (o início). O primeiro elemento inserido é o primeiro a ser removido: a política é FIFO (first in, first out, &quot;primeiro a entrar, primeiro a sair&quot;).</p>
+<p>É exatamente o comportamento de uma fila de banco ou de supermercado: quem chega vai para o fim, e é atendido quem está no começo. Enquanto a <a href="pilhas.html">pilha</a> &quot;inverte&quot; a ordem de chegada, a fila a preserva. Por isso filas aparecem sempre que é preciso atender pedidos de forma justa, na ordem em que chegaram.</p>
+<h2>Operações</h2>
+<ul><li>insere(x) (enqueue): coloca x no fim da fila;</li>
+<li>remove() (dequeue): retira o elemento do início e o devolve;</li>
+<li>primeiro() (front): consulta o início sem remover;</li>
+<li>vazia() e cheia().</li></ul>
+<p>Todas devem custar O(1).</p>
+<h2>Implementação em vetor: a primeira tentativa</h2>
+<p>Usa-se um vetor f[0..N-1] e dois índices:</p>
+<ul><li>ini: posição do primeiro elemento da fila;</li>
+<li>fim: primeira posição livre depois do último elemento.</li></ul>
+<p>A fila ocupa f[ini..fim-1] e está vazia quando ini == fim.</p>
+<ul><li>insere(x): f[fim] = x; fim = fim + 1;</li>
+<li>remove(): x = f[ini]; ini = ini + 1; devolve x.</li></ul>
+<p>Problema: os dois índices só aumentam. A fila &quot;anda&quot; para a direita dentro do vetor, e depois de N inserções fim chega a N, mesmo que quase todos os elementos já tenham sido removidos e o início do vetor esteja livre. Deslocar todos os elementos para o começo a cada remoção resolveria, mas custaria O(n) por operação.</p>
+<h2>Fila circular</h2>
+<p>A solução é tratar o vetor como se fosse circular: depois da última posição, N-1, vem de novo a posição 0. Os índices avançam &quot;módulo N&quot;:</p>
+<pre>  fim = (fim + 1) % N
+  ini = (ini + 1) % N
+</pre>
+<p>Assim o espaço liberado no começo do vetor é reaproveitado, e todas as operações continuam O(1).</p>
+<p>Detalhe sutil: com essa convenção, ini == fim acontece tanto com a fila vazia quanto com a fila cheia. Há duas soluções usuais:</p>
+<ul><li>guardar também o número de elementos (tam): vazia se tam == 0, cheia se tam == N;</li>
+<li>deixar sempre uma posição vazia: a fila é considerada cheia quando (fim + 1) % N == ini, e comporta no máximo N-1 elementos.</li></ul>
+<p>Exemplo com N = 5 (os índices dão a volta):</p>
+<pre>  insere 10, 20, 30, 40     f = [10 20 30 40 _ ]   ini=0 fim=4 tam=4
+  remove -&gt; 10, remove -&gt; 20 f = [_  _  30 40 _ ]   ini=2 fim=4 tam=2
+  insere 50, 60, 70          f = [60 70 30 40 50]   ini=2 fim=2 tam=5
+  insere 80                  recusado: fila cheia
+  remove tudo                30 40 50 60 70, na ordem de chegada
+</pre>
+<p>Essa estrutura também é chamada buffer circular (ring buffer) e é usada em drivers de dispositivos, placas de som e rede e na comunicação entre processos: um lado (produtor) insere no fim, o outro (consumidor) remove do início, sem que nada precise ser deslocado.</p>
+<h2>Implementação em lista encadeada</h2>
+<p>Mantêm-se dois <a href="ponteiros.html">ponteiros</a>: um para a primeira célula (de onde se remove) e outro para a última (onde se insere).</p>
+<ul><li>insere(x): cria uma célula com x e prox = NULL; se a fila está vazia, ela vira a primeira e a última; senão, ultima-&gt;prox = nova e a última passa a ser a nova;</li>
+<li>remove(): guarda o conteúdo da primeira célula, avança o ponteiro do início e libera a célula; se a fila ficou vazia, a última também vira NULL.</li></ul>
+<p>Não há limite fixo de tamanho. Uma variação elegante usa uma lista circular com um único ponteiro para a última célula (cuja prox é a primeira).</p>
+<h2>Aplicações</h2>
+<ul><li><a href="bfs.html">Busca em largura</a> em <a href="grafos.html">grafos</a>: a fila garante que os vértices sejam visitados em ordem de distância à origem, e por isso a BFS calcula menores caminhos em número de arestas. Também é usada no percurso por níveis de <a href="arvores.html">árvores</a>.</li>
+<li>Sistemas operacionais: fila de processos prontos para usar a CPU (o escalonamento &quot;round robin&quot; atende cada processo por um tempo e o devolve ao fim da fila), filas de impressão, filas de requisições de disco.</li>
+<li>Redes: pacotes aguardando transmissão em roteadores.</li>
+<li>Servidores e sistemas distribuídos: filas de mensagens entre serviços.</li>
+<li>Simulação de sistemas de atendimento (bancos, pedágios, centrais telefônicas), estudados pela teoria das filas.</li></ul>
+<h2>Variações</h2>
+<ul><li>Deque (double-ended queue): permite inserir e remover nas duas extremidades; generaliza a pilha e a fila.</li>
+<li><a href="heapsort.html">Fila de prioridade</a>: cada elemento tem uma prioridade e sai primeiro o de maior (ou menor) prioridade, independentemente da ordem de chegada. É implementada eficientemente com um heap, com inserção e remoção em O(log n), e é usada nos <a href="dijkstra.html">algoritmos de Dijkstra</a>, de <a href="prim.html">Prim</a>, no Heap Sort e no código de Huffman.</li></ul>
+<h2>Histórico</h2>
+<p>A teoria das filas (teoria matemática dos sistemas de espera) começou com o engenheiro dinamarquês Agner Krarup Erlang, que em 1909 estudou o número de linhas necessárias em uma central telefônica. Em computação, filas aparecem desde os primeiros sistemas operacionais e são tratadas, junto com pilhas e deques, na seção 2.2.1 de &quot;The Art of Computer Programming&quot; de Knuth.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa uma fila circular de tamanho 5 em um vetor, guardando o número de elementos para distinguir fila cheia de vazia, e mostra os índices dando a volta no vetor.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Filas. https://www.ime.usp.br/~pf/algoritmos/aulas/fila.html</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 5 (Filas).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.1 (Pilhas e filas) e capítulo 6 (Heapsort e filas de prioridade).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.1 (Stacks, queues, and deques).</li>
+<li>TANENBAUM, A. S.; BOS, H. Sistemas Operacionais Modernos. 4. ed. São Paulo: Pearson, 2016. Capítulo 2 (escalonamento).</li>
+<li>Wikipedia. Circular buffer. https://en.wikipedia.org/wiki/Circular_buffer</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="filas_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

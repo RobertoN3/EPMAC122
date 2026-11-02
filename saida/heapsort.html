@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação por heap (Heapsort) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação por heap (Heapsort)</h1><a class="botao botao-sec" href="heapsort_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#m%C3%A9todo-guloso">Método guloso</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação por heap (Heapsort)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#j-w-j-williams">J. W. J. Williams</a><a class="chip f-autores" href="autores.html#robert-w-floyd">Robert W. Floyd</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1964">1964</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#fila-de-prioridade">Fila de prioridade</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>O Heapsort é a <a href="selecao_direta.html">seleção direta</a> com uma estrutura de dados melhor. Na seleção direta, a cada passo procura-se o maior elemento da parte ainda não ordenada e ele é levado para o fim; essa procura custa O(n), e o total fica O(n²). O Heapsort organiza a parte não ordenada como um heap, uma <a href="arvores.html">árvore binária</a> em que o maior elemento está sempre na raiz. Retirar o maior e reorganizar o heap custa só O(log n), e o total cai para O(n log n), sem memória extra.</p>
+<p>Como na seleção direta, cada passo escolhe o maior elemento restante (a função critério) e o fixa definitivamente no fim do vetor. Por isso o algoritmo é classificado aqui como <a href="metodo_guloso.html">método guloso</a>.</p>
+<h2>O heap</h2>
+<p>Um heap (de máximo) é uma árvore binária quase completa, com todos os níveis cheios exceto talvez o último, preenchido da esquerda para a direita, em que cada pai é maior ou igual a seus filhos. Consequência: o maior elemento está na raiz.</p>
+<p>Uma árvore quase completa cabe num vetor, sem <a href="ponteiros.html">ponteiros</a>. Com índices a partir de 0:</p>
+<ul><li>a raiz fica em v[0];</li>
+<li>os filhos de v[i] ficam em v[2i+1] e v[2i+2];</li>
+<li>o pai de v[i] fica em v[(i-1)/2].</li></ul>
+<p>Exemplo: o vetor (37, 29, 14, 10, 13, 5) é um heap. Visto como árvore:</p>
+<pre>            37
+          /    \
+        29      14
+       /  \    /
+     10   13  5
+</pre>
+<h2>A operação básica: descer (sift-down)</h2>
+<p>Suponha que as duas subárvores de v[i] já sejam heaps, mas v[i] talvez seja menor que algum filho. Para consertar, troca-se v[i] com o MAIOR dos filhos e repete-se a partir da posição do filho, até que v[i] seja maior ou igual aos filhos ou chegue a uma folha. Cada troca desce um nível, então o custo é O(log n).</p>
+<h2>O algoritmo</h2>
+<ol><li>Construção do heap: para i de n/2 - 1 até 0, desça v[i]. As posições de n/2 em diante são folhas e já são heaps sozinhas; processando de baixo para cima, as subárvores de cada nó já são heaps quando ele é tratado.</li>
+<li>Ordenação: para fim de n-1 até 1, troque v[0] (o maior) com v[fim] e desça v[0] no heap v[0..fim-1].</li></ol>
+<p>Invariante da fase 2: v[0..fim] é um heap e v[fim+1..n-1] contém os maiores elementos do vetor, em ordem crescente. Quando fim chega a 0, o vetor está ordenado.</p>
+<h2>Exemplo</h2>
+<p>v = (29, 10, 14, 37, 13, 5), o mesmo da página da seleção direta.</p>
+<pre>  construção do heap (i de 2 até 0):
+    i = 2: 14 já é maior que o filho 5      (29, 10, 14, 37, 13, 5)
+    i = 1: 10 desce, troca com 37           (29, 37, 14, 10, 13, 5)
+    i = 0: 29 desce, troca com 37           (37, 29, 14, 10, 13, 5)
+
+  ordenação (raiz vai para o fim; o novo v[0] desce):
+    37 para o fim, 5 desce                  (29, 13, 14, 10, 5 | 37)
+    29 para o fim, 5 desce                  (14, 13, 5, 10 | 29, 37)
+    14 para o fim, 10 desce                 (13, 10, 5 | 14, 29, 37)
+    13 para o fim, 5 desce                  (10, 5 | 13, 14, 29, 37)
+    10 para o fim                           (5 | 10, 13, 14, 29, 37)
+</pre>
+<h2>Análise</h2>
+<ul><li>Construção: parece custar O(n log n), mas a maioria dos nós está perto das folhas e desce pouco. Somando, o custo é O(n) (Floyd, 1964).</li>
+<li>Ordenação: n-1 descidas de O(log n) cada, ou seja, O(n log n).</li>
+<li>Total: O(n log n) no pior caso, no caso médio e no melhor caso.</li>
+<li>Memória extra: O(1). A ordenação é feita no próprio vetor.</li></ul>
+<p>Comparação com as outras ordenações O(n log n) da disciplina:</p>
+<ul><li><a href="mergesort.html">Merge Sort</a>: também O(n log n) no pior caso, mas usa O(n) de memória extra; em compensação é estável.</li>
+<li><a href="quicksort.html">Quick Sort</a>: em geral mais rápido na prática (acessos à memória mais sequenciais), mas O(n²) no pior caso. A introsort, usada em bibliotecas de C++, começa com Quick Sort e passa para Heapsort se a <a href="recursao.html">recursão</a> ficar funda demais.</li></ul>
+<h2>Estabilidade</h2>
+<p>O Heapsort não é estável: as trocas entre posições distantes podem inverter a ordem de elementos iguais. Exemplo: em (2a, 2b, 1), a construção não muda nada, e a primeira troca leva 2a para o fim, depois de 2b. Veja <a href="ordenacao.html">ordenação</a>.</p>
+<h2>Fila de prioridade</h2>
+<p>O heap é útil além da ordenação. Uma fila de prioridade guarda elementos com prioridades e permite inserir e retirar o de maior prioridade. Com um heap em vetor:</p>
+<ul><li>retirar o máximo: troca-se a raiz com o último, diminui-se o tamanho e desce-se a nova raiz: O(log n);</li>
+<li>inserir: coloca-se o novo elemento no fim e faz-se ele SUBIR, trocando com o pai enquanto for maior: O(log n);</li>
+<li>consultar o máximo: O(1).</li></ul>
+<p>Filas de prioridade aparecem nos algoritmos de <a href="dijkstra.html">Dijkstra</a> e de <a href="prim.html">Prim</a> (com heap de mínimo), no escalonamento de processos de um sistema operacional e em simulações de eventos, em que o próximo evento a acontecer é sempre o de menor horário.</p>
+<h2>Histórico</h2>
+<p>O Heapsort foi publicado por J. W. J. Williams em 1964, na seção de algoritmos das Communications of the ACM, junto com a estrutura de heap. No mesmo ano, Robert W. Floyd publicou uma versão melhorada (&quot;Treesort 3&quot;) com a construção do heap de baixo para cima em tempo linear, que é a usada até hoje.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa a descida (sift-down) de forma iterativa, constrói o heap de baixo para cima e ordena o vetor do exemplo, imprimindo o heap construído e o vetor final.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>WILLIAMS, J. W. J. Algorithm 232: Heapsort. Communications of the ACM, v. 7, n. 6, p. 347-348, 1964.</li>
+<li>FLOYD, R. W. Algorithm 245: Treesort 3. Communications of the ACM, v. 7, n. 12, p. 701, 1964.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 6 (Ordenação por heap).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 9 (Priority Queues and Heapsort).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.3 (Sorting by selection).</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="heapsort_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

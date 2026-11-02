@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indução finita | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Indução finita</h1><a class="botao botao-sec" href="inducao_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#indu%C3%A7%C3%A3o">Indução</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Imagine uma fila infinita de peças de dominó em pé. Para ter certeza de que todas vão cair, bastam duas coisas: a primeira peça cai, e toda peça que cai derruba a seguinte. Ninguém precisa olhar as peças uma a uma.</p>
+<p>A indução finita (ou indução matemática) é esse raciocínio, aplicado a afirmações sobre números naturais. É a ferramenta usada para provar que um algoritmo <a href="recursao.html">recursivo</a> está certo, que um laço mantém o seu <a href="mdc_euclides.html">invariante</a> e que uma recorrência, como a do <a href="mergesort.html">Merge Sort</a>, tem a solução que dizemos que tem. Por isso aparece logo no começo da disciplina, junto com a recursividade.</p>
+<h2>O princípio</h2>
+<p>Seja P(n) uma afirmação que depende de um natural n (por exemplo, &quot;1 + 2 + ... + n = n(n+1)/2&quot;). Para provar que P(n) vale para todo n &gt;= n0, basta provar:</p>
+<ol><li>Base: P(n0) é verdadeira.</li>
+<li>Passo: para todo k &gt;= n0, se P(k) é verdadeira, então P(k+1) também é.</li></ol>
+<p>No passo, a suposição &quot;P(k) é verdadeira&quot; chama-se hipótese de indução. Não é uma suposição sobre o que queremos provar para todos os n: é só o &quot;dominó anterior&quot; que usamos para derrubar o seguinte.</p>
+<h2>Exemplo 1: a soma dos n primeiros naturais</h2>
+<p>P(n): 0 + 1 + 2 + ... + n = n(n+1)/2.</p>
+<ul><li>Base (n = 0): a soma é 0 e 0·1/2 = 0.</li>
+<li>Passo: suponha que 0 + 1 + ... + k = k(k+1)/2. Então</li></ul>
+<pre>  0 + 1 + ... + k + (k+1) = k(k+1)/2 + (k+1)       (hipótese de indução)
+                          = (k+1)(k/2 + 1)
+                          = (k+1)(k+2)/2
+</pre>
+<p>que é exatamente P(k+1). Logo a fórmula vale para todo n &gt;= 0. Ela diz, por exemplo, que a soma de 1 a 100 é 5050, e explica por que dois laços aninhados como os da <a href="bubblesort.html">bolha</a> fazem n(n-1)/2 comparações.</p>
+<h2>Exemplo 2: as Torres de Hanói</h2>
+<p>Seja M(n) o número de movimentos que a solução recursiva das <a href="recursao.html">Torres de Hanói</a> faz para n discos: M(1) = 1 e M(n) = 2·M(n-1) + 1 (move n-1 discos, o maior, e n-1 discos de novo).</p>
+<p>P(n): M(n) = 2^n - 1.</p>
+<ul><li>Base (n = 1): M(1) = 1 = 2^1 - 1.</li>
+<li>Passo: se M(k) = 2^k - 1, então M(k+1) = 2(2^k - 1) + 1 = 2^(k+1) - 1.</li></ul>
+<p>Também por indução prova-se que ninguém consegue fazer com menos: para mover o maior disco, os outros n-1 precisam estar todos numa haste só, o que exige pelo menos M(n-1) movimentos antes e outros M(n-1) depois. A apostila do LEM recomendada na disciplina usa o jogo justamente para ensinar indução.</p>
+<h2>Indução forte</h2>
+<p>Às vezes o passo precisa de mais do que o caso anterior. Na indução forte, a hipótese é que P(n0), P(n0+1), ..., P(k) são todas verdadeiras, e com isso prova-se P(k+1). As duas formas são equivalentes, mas a forte é mais cômoda quando o problema se reduz a casos bem menores, e não só ao anterior.</p>
+<p>Exemplo: todo inteiro n &gt;= 2 é primo ou produto de primos. Se k+1 é primo, acabou; senão, k+1 = a·b com 2 &lt;= a, b &lt;= k, e pela hipótese a e b já são produtos de primos.</p>
+<p>Em algoritmos, a indução forte prova a correção da divisão e conquista: o <a href="mergesort.html">Merge Sort</a> e a <a href="busca_binaria.html">busca binária</a> reduzem o problema a metades, e não ao tamanho anterior.</p>
+<h2>Indução e algoritmos</h2>
+<ul><li>Recursão: para provar que uma função recursiva está certa, prova-se o caso base e, supondo que as chamadas recursivas (com entradas menores) acertam, que a combinação acerta. É indução sobre o tamanho da entrada. Ver <a href="recursao.html">recursão</a> e <a href="algoritmos_arvores.html">algoritmos recursivos em árvores</a>.</li>
+<li>Laços: provar um invariante (inicialização, manutenção, término) é indução sobre o número de iterações. Ver o <a href="mdc_euclides.html">algoritmo de Euclides</a>.</li>
+<li>Recorrências: para mostrar que o Merge Sort, com T(n) = 2T(n/2) + n, faz no máximo c·n·log n operações, supõe-se a desigualdade para n/2 e prova-se para n.</li>
+<li>Terminação: um laço termina se alguma quantidade natural diminui a cada passo; isso é o princípio da boa ordem, equivalente à indução.</li></ul>
+<h2>Um erro clássico</h2>
+<p>A &quot;prova&quot; de que todos os cavalos têm a mesma cor: P(n) diz que em todo grupo de n cavalos todos têm a mesma cor. A base P(1) vale. No passo, tira-se um cavalo de um grupo de k+1 (sobram k, da mesma cor), depois tira-se outro (sobram k, da mesma cor), e como os dois grupos têm cavalos em comum, todos têm a mesma cor.</p>
+<p>O erro está no passo de 1 para 2: com k+1 = 2 cavalos, os dois grupos de k = 1 não têm nenhum cavalo em comum, e o argumento não se aplica. Lição: o passo precisa valer para TODO k &gt;= n0, inclusive o primeiro. Testar a fórmula em alguns casos, como faz o programa desta página, ajuda a encontrar erros, mas não substitui a prova.</p>
+<h2>Histórico</h2>
+<p>Raciocínios por indução aparecem em textos de matemáticos árabes e europeus medievais; costuma-se citar Francesco Maurolico (1575) e Blaise Pascal, que o usou de forma explícita no &quot;Tratado do triângulo aritmético&quot; (publicado em 1665). O nome &quot;indução matemática&quot; é atribuído a Augustus De Morgan (1838), e o princípio virou axioma dos números naturais com Giuseppe Peano (1889).</p>
+<h2>Sobre o código</h2>
+<p>O programa não prova nada: ele confere, para n de 0 a 20, a fórmula da soma dos n primeiros naturais (calculada por um laço e por uma função recursiva) e a fórmula 2^n - 1 dos movimentos das Torres de Hanói (contados pela própria recursão), e imprime uma tabela.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>IME-USP, Laboratório de Ensino de Matemática (LEM). Apostila sobre as Torres de Hanói (explicações sobre indução). https://www.ime.usp.br/lem/ens-mat/apostila_lem_hanoi_2021_2001_10.pdf</li>
+<li>IME-USP, Laboratório de Ensino de Matemática (LEM). Apostilas. https://www.ime.usp.br/lem/apostilas.html</li>
+<li>BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html</li>
+<li>GRAHAM, R. L.; KNUTH, D. E.; PATASHNIK, O. Matemática Concreta. 2. ed. Rio de Janeiro: LTC, 1995. Capítulo 1 (Problemas recorrentes).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 1.2.1 (Mathematical induction).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 4.3 (método de substituição) e apêndice A.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="inducao_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

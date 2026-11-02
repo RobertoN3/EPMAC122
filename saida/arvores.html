@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Árvores | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Árvores</h1><a class="botao botao-sec" href="arvores_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#arthur-cayley">Arthur Cayley</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1857">1857</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a><a class="chip f-conceitos" href="conceitos.html#filas">Filas</a><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Árvores são as estruturas não lineares mais importantes da computação. Elas representam hierarquias: a organização de pastas e arquivos em um disco, o organograma de uma empresa, a árvore genealógica de uma família, os capítulos, seções e subseções de um livro, a estrutura de uma página HTML (DOM), a estrutura de uma expressão aritmética.</p>
+<h2>Árvores como grafos</h2>
+<p>Em teoria dos <a href="grafos.html">grafos</a>, uma árvore é um grafo conexo e sem ciclos. Para um grafo T com n vértices, as afirmações abaixo são equivalentes (qualquer uma pode servir de definição):</p>
+<ul><li>T é conexo e não tem ciclos;</li>
+<li>T é conexo e tem exatamente n-1 arestas;</li>
+<li>T não tem ciclos e tem exatamente n-1 arestas;</li>
+<li>entre dois vértices quaisquer de T existe um único caminho;</li>
+<li>T é conexo, mas deixa de ser se qualquer aresta for removida (é &quot;minimamente conexo&quot;);</li>
+<li>T não tem ciclos, mas qualquer aresta nova cria um ciclo.</li></ul>
+<p>Essas propriedades explicam o papel das árvores em grafos: uma árvore é a forma mais econômica de manter todos os vértices ligados. Daí o problema da árvore espalhada mínima (<a href="kruskal.html">algoritmo de Kruskal</a>).</p>
+<h2>Árvores enraizadas: vocabulário</h2>
+<p>Em estruturas de dados escolhe-se um vértice especial, a raiz, e &quot;pendura-se&quot; a árvore a partir dela. Termos usados:</p>
+<ul><li>pai e filhos: cada nó, exceto a raiz, tem exatamente um pai; os nós diretamente abaixo de um nó são seus filhos;</li>
+<li>irmãos: nós com o mesmo pai;</li>
+<li>ancestrais e descendentes: os nós no caminho até a raiz e os nós abaixo;</li>
+<li>folha (nó externo): nó sem filhos; nó interno: nó com pelo menos um filho;</li>
+<li>profundidade (nível) de um nó: número de arestas da raiz até ele; a raiz tem profundidade 0;</li>
+<li>altura da árvore: maior profundidade de uma folha;</li>
+<li>subárvore de x: x junto com todos os seus descendentes.</li></ul>
+<p>Uma árvore é uma estrutura <a href="recursao.html">RECURSIVA</a>: ou é vazia, ou é uma raiz ligada a uma sequência de subárvores, que também são árvores. Por isso quase todos os algoritmos sobre árvores são recursivos e podem ser provados corretos por indução na altura. A página <a href="algoritmos_arvores.html">algoritmos recursivos em árvores</a> mostra três exemplos (contar nós, contar folhas e calcular a altura), com os casos base escritos explicitamente.</p>
+<h2>Árvores binárias</h2>
+<p>Em uma árvore binária cada nó tem no máximo dois filhos, chamados esquerdo e direito (a distinção importa: um nó só com filho esquerdo é diferente de um nó só com filho direito). Em C, cada nó é um <a href="registros.html">registro</a> (struct) com a informação e dois <a href="ponteiros.html">ponteiros</a>, esq e dir; o valor NULL representa a subárvore vazia.</p>
+<p>Fatos importantes:</p>
+<ul><li>o nível k tem no máximo 2^k nós;</li>
+<li>uma árvore binária de altura h tem no máximo 2^(h+1) - 1 nós;</li>
+<li>portanto, uma árvore binária com n nós tem altura pelo menos log2(n+1) - 1, ou seja, no mínimo da ordem de log n. Essa altura mínima é atingida pelas árvores &quot;cheias&quot; ou &quot;quase completas&quot;;</li>
+<li>no outro extremo, a altura pode chegar a n-1 (árvore degenerada, que parece uma lista). Em resumo, para uma árvore binária não vazia com n nós e altura h: h + 1 &lt;= n &lt;= 2^(h+1) - 1.</li></ul>
+<p>O material da disciplina chama uma árvore binária de completamente balanceada quando, em todo nó, as subárvores esquerda e direita têm a mesma quantidade de nós. É uma condição mais forte do que ter alturas próximas, e implica que todos os níveis estão cheios. Com altura h, uma árvore assim tem 2^k nós no nível k, 2^h folhas e n = 1 + 2 + ... + 2^h = 2^(h+1) - 1 nós no total. (O heap do <a href="heapsort.html">Heap Sort</a> usa uma condição mais fraca, a de árvore completa: todos os níveis cheios, exceto talvez o último, preenchido da esquerda para a direita.)</p>
+<p>Outra relação do material: em qualquer árvore binária, n0 = n2 + 1, em que n0 é o número de folhas (nós sem filhos) e n2 o número de nós com dois filhos. Prova: sejam n1 os nós com um filho. Contando as arestas pelos filhos, há n1 + 2·n2 arestas; contando de outro modo, uma árvore com n = n0 + n1 + n2 nós tem n - 1 arestas. Igualando, n1 + 2·n2 = n0 + n1 + n2 - 1, ou seja, n0 = n2 + 1. (Aqui o &quot;grau&quot; de um nó é o número de FILHOS, e não o número de arestas que tocam o nó, como em grafos.)</p>
+<h2>Representações</h2>
+<ol><li>Com <a href="ponteiros.html">ponteiros</a>: cada nó é um registro com o valor e dois ponteiros, esq e dir; NULL indica filho ausente. Usa memória proporcional ao número de nós, qualquer que seja a forma da árvore. É a representação usada na maioria dos algoritmos.</li></ol>
+<ol><li>Em vetor: seguindo a convenção do material, a raiz fica no índice 0, e os filhos do nó de índice i ficam em 2i + 1 (esquerdo) e 2i + 2 (direito); para i &gt; 0, o pai fica em (i - 1) / 2, com divisão inteira. Achar pai e filhos custa O(1) e não é preciso guardar ponteiros. A desvantagem é o desperdício em árvores esparsas: as posições dos filhos ausentes ficam vazias (e é preciso marcá-las como vazias de algum modo), e uma cadeia de filhos direitos até a profundidade h já chega ao índice 2^(h+1) - 2. Para árvores completas, como o heap, a representação é perfeita: não há buracos.</li></ol>
+<ol><li>Listas generalizadas: a hierarquia é escrita com parênteses aninhados, cada nó seguido de suas subárvores. A árvore com raiz 1, filhos 2 e 3, o nó 2 com o filho 4 e o nó 3 com os filhos 5 e 6 fica (1 (2 (4)) (3 (5) (6))). Para árvores binárias é preciso ainda indicar as posições vazias, pois &quot;(2 (4))&quot; sozinho não diz se 4 é filho esquerdo ou direito.</li></ol>
+<ol><li>Filho-irmão: cada nó guarda um ponteiro para o PRIMEIRO filho e outro para o PRÓXIMO IRMÃO. Com apenas dois ponteiros por nó, representa árvores com qualquer número de filhos (como a árvore de pastas de um disco). Os ponteiros têm significado diferente dos ponteiros esq e dir de uma árvore binária, e não devem ser confundidos.</li></ol>
+<h2>Percursos (varreduras)</h2>
+<p>Percorrer uma árvore é visitar todos os seus nós. Para árvores binárias há três percursos recursivos clássicos, que diferem apenas no momento em que a raiz é visitada:</p>
+<ul><li>pré-ordem: raiz, subárvore esquerda, subárvore direita;</li>
+<li>in-ordem (ordem simétrica): esquerda, raiz, direita;</li>
+<li>pós-ordem: esquerda, direita, raiz.</li></ul>
+<p>Todos custam O(n). Há ainda o percurso em largura (por níveis), que visita a raiz, depois os nós de profundidade 1, depois os de profundidade 2, e usa uma <a href="filas.html">FILA</a>, exatamente como a <a href="bfs.html">busca em largura</a> em grafos.</p>
+<p>Exemplo: na árvore da expressão (2 + 3) * 4, com * na raiz, + à esquerda e 4 à direita, os percursos dão:</p>
+<ul><li>pré-ordem: * + 2 3 4   (notação prefixa ou polonesa)</li>
+<li>in-ordem:  2 + 3 * 4   (notação infixa, sem os parênteses)</li>
+<li>pós-ordem: 2 3 + 4 *   (notação posfixa, avaliada com uma <a href="pilhas.html">pilha</a>)</li></ul>
+<p>Calcular o valor da expressão é um percurso em pós-ordem: primeiro os valores das subárvores, depois o operador da raiz.</p>
+<h2>Árvore binária de busca (ABB)</h2>
+<p>A aplicação mais importante das árvores binárias na disciplina é a <a href="abb.html">árvore binária de busca</a>: cada nó guarda uma chave, as chaves menores ficam na subárvore esquerda e as maiores na direita. Assim, buscar, inserir e remover custam um tempo proporcional à altura da árvore, e o percurso in-ordem lista as chaves em ordem crescente. Ela tem página própria.</p>
+<h2>Árvores balanceadas</h2>
+<p>Para garantir altura O(log n) no pior caso, as árvores balanceadas reorganizam a estrutura (por meio de &quot;rotações&quot;) durante as inserções e remoções:</p>
+<ul><li>árvores AVL (Adelson-Velsky e Landis, 1962): em cada nó, as alturas das duas subárvores diferem de no máximo 1;</li>
+<li>árvores rubro-negras (Guibas e Sedgewick, 1978, a partir de Bayer, 1972): usadas, por exemplo, no std::map de C++ e no TreeMap de Java;</li>
+<li>árvores B (Bayer e McCreight, 1970): nós com muitos filhos, usadas em bancos de dados e sistemas de arquivos, onde cada acesso ao disco é caro.</li></ul>
+<h2>Outras árvores na disciplina</h2>
+<ul><li>Heap: árvore binária quase completa, guardada em um vetor, em que cada pai é maior ou igual aos filhos. Base do Heap Sort e das <a href="heapsort.html">filas de prioridade</a>.</li>
+<li>Árvore espalhada mínima de um grafo (Kruskal, <a href="prim.html">Prim</a>).</li>
+<li>Árvore de caminhos mínimos (Dijkstra) e árvore de busca em largura.</li>
+<li>Árvore de recursão (análise de <a href="mergesort.html">Merge Sort</a>) e árvore de busca do <a href="tentativa_erro.html">backtracking</a>.</li>
+<li>Trie (árvore digital), para dicionários de palavras, e árvore de Huffman, para compressão.</li></ul>
+<h2>Histórico</h2>
+<p>O termo &quot;árvore&quot; foi usado pelo matemático Arthur Cayley em 1857, ao estudar isômeros químicos; ele também provou (1889) que há n^(n-2) árvores diferentes com n vértices rotulados. A árvore binária de busca foi inventada independentemente por vários grupos por volta de 1960 (Windley; Booth e Colin; Hibbard), e Knuth dedica a ela boa parte do volume 3 de &quot;The Art of Computer Programming&quot;.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo monta, com registros ligados por ponteiros, a árvore da expressão (2 + 3) * 4 e a percorre recursivamente em pré-ordem, in-ordem e pós-ordem. Em seguida calcula, também por recursão, a altura da árvore, o número de nós e o valor da expressão (um percurso em pós-ordem), e libera a memória.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Páginas 3 a 8 (definições, árvore completamente balanceada, n0 = n2 + 1 e representações). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf</li>
+<li>FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html</li>
+<li>FEOFILOFF, P. Árvores binárias de busca. https://www.ime.usp.br/~pf/algoritmos/aulas/binst.html</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulos 10.4, 12 (Árvores binárias de busca) e 13 (Árvores vermelho-preto).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.3 (Trees).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seções 6.2.2 e 6.2.3.</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulos 5 e 12.</li>
+<li>SZWARCFITER, J. L.; MARKENZON, L. Estruturas de Dados e seus Algoritmos. 3. ed. Rio de Janeiro: LTC, 2010.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="arvores_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>
