@@ -2,27 +2,27 @@
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Conceitos</title>
-<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}.botoes{display:flex;flex-wrap:wrap;gap:12px}.botao{display:inline-block;padding:14px 24px;background:#2b6cb0;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1rem}.botao:hover{background:#1e4e8c}details{margin:8px 0;border:1px solid #ccc;border-radius:8px;padding:8px 14px}summary{cursor:pointer;font-weight:600;font-size:1.05rem}ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}.exp{margin:8px 0 0;font-size:.95rem;color:#555}</style></head><body>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}a{color:#2b6cb0}.botoes{display:flex;flex-wrap:wrap;gap:12px}.botao{display:inline-block;padding:14px 24px;background:#2b6cb0;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1rem}.botao:hover{background:#1e4e8c}details{margin:8px 0;border:1px solid #ccc;border-radius:8px;padding:8px 14px}details:target{border-color:#2b6cb0;background:#f0f6ff}summary{cursor:pointer;font-weight:600;font-size:1.05rem}ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}.exp{margin:8px 0 0;font-size:.95rem;color:#555}</style></head><body>
 <p><a href="index.html">&larr; Início</a></p>
 <h1>Conceitos</h1>
-<details><summary>Busca binária <span class="n">(2)</span></summary>
+<details id="busca-binária"><summary>Busca binária <span class="n">(2)</span></summary>
 <p class="exp">Explicação: <a href="busca_binaria.html">Busca binária</a></p>
 <ul>
   <li><a href="busca_binaria.html">Busca binária</a></li>
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
 </ul></details>
-<details><summary>Caminho mínimo <span class="n">(2)</span></summary>
+<details id="caminho-mínimo"><summary>Caminho mínimo <span class="n">(2)</span></summary>
 <p class="exp">Explicação: <a href="dijkstra.html">Algoritmo de Dijkstra</a></p>
 <ul>
   <li><a href="dijkstra.html">Algoritmo de Dijkstra</a></li>
   <li><a href="bfs.html">Busca em largura (BFS)</a></li>
 </ul></details>
-<details><summary>Conjuntos disjuntos <span class="n">(1)</span></summary>
+<details id="conjuntos-disjuntos"><summary>Conjuntos disjuntos <span class="n">(1)</span></summary>
 <p class="exp">Explicação: <a href="kruskal.html">Algoritmo de Kruskal</a></p>
 <ul>
   <li><a href="kruskal.html">Algoritmo de Kruskal</a></li>
 </ul></details>
-<details><summary>Eficiência de algoritmos <span class="n">(5)</span></summary>
+<details id="eficiência-de-algoritmos"><summary>Eficiência de algoritmos <span class="n">(5)</span></summary>
 <p class="exp">Explicação: <a href="eficiencia.html">Eficiência de algoritmos</a></p>
 <ul>
   <li><a href="ordenacao.html">Algoritmos de ordenação</a></li>
@@ -31,7 +31,7 @@
   <li><a href="eficiencia.html">Eficiência de algoritmos</a></li>
   <li><a href="hash.html">Hash e espalhamento</a></li>
 </ul></details>
-<details><summary>Estabilidade <span class="n">(8)</span></summary>
+<details id="estabilidade"><summary>Estabilidade <span class="n">(8)</span></summary>
 <p class="exp">Explicação: <a href="estabilidade.html">Estabilidade em algoritmos de ordenação</a></p>
 <ul>
   <li><a href="ordenacao.html">Algoritmos de ordenação</a></li>
@@ -43,14 +43,14 @@
   <li><a href="registros.html">Registros (structs)</a></li>
   <li><a href="selecao_direta.html">Seleção direta</a></li>
 </ul></details>
-<details><summary>Fila de prioridade <span class="n">(3)</span></summary>
+<details id="fila-de-prioridade"><summary>Fila de prioridade <span class="n">(3)</span></summary>
 <p class="exp">Explicação: <a href="heapsort.html">Ordenação por heap (Heapsort)</a></p>
 <ul>
   <li><a href="dijkstra.html">Algoritmo de Dijkstra</a></li>
   <li><a href="prim.html">Algoritmo de Prim</a></li>
   <li><a href="heapsort.html">Ordenação por heap (Heapsort)</a></li>
 </ul></details>
-<details><summary>Filas <span class="n">(5)</span></summary>
+<details id="filas"><summary>Filas <span class="n">(5)</span></summary>
 <p class="exp">Explicação: <a href="filas.html">Filas</a></p>
 <ul>
   <li><a href="bfs.html">Busca em largura (BFS)</a></li>
@@ -59,7 +59,7 @@
   <li><a href="ordenacao_topologica.html">Ordenação topológica</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Grafos <span class="n">(9)</span></summary>
+<details id="grafos"><summary>Grafos <span class="n">(9)</span></summary>
 <p class="exp">Explicação: <a href="grafos.html">Grafos</a></p>
 <ul>
   <li><a href="dijkstra.html">Algoritmo de Dijkstra</a></li>
@@ -72,12 +72,12 @@
   <li><a href="ordenacao_topologica.html">Ordenação topológica</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Hash <span class="n">(1)</span></summary>
+<details id="hash"><summary>Hash <span class="n">(1)</span></summary>
 <p class="exp">Explicação: <a href="hash.html">Hash e espalhamento</a></p>
 <ul>
   <li><a href="hash.html">Hash e espalhamento</a></li>
 </ul></details>
-<details><summary>Invariante <span class="n">(9)</span></summary>
+<details id="invariante"><summary>Invariante <span class="n">(9)</span></summary>
 <ul>
   <li><a href="dijkstra.html">Algoritmo de Dijkstra</a></li>
   <li><a href="prim.html">Algoritmo de Prim</a></li>
@@ -89,7 +89,7 @@
   <li><a href="ordenacao_topologica.html">Ordenação topológica</a></li>
   <li><a href="selecao_direta.html">Seleção direta</a></li>
 </ul></details>
-<details><summary>Listas encadeadas <span class="n">(6)</span></summary>
+<details id="listas-encadeadas"><summary>Listas encadeadas <span class="n">(6)</span></summary>
 <p class="exp">Explicação: <a href="listas_encadeadas.html">Listas encadeadas</a></p>
 <ul>
   <li><a href="filas.html">Filas</a></li>
@@ -99,12 +99,12 @@
   <li><a href="ordenacao_topologica.html">Ordenação topológica</a></li>
   <li><a href="pilhas.html">Pilhas</a></li>
 </ul></details>
-<details><summary>Memorização <span class="n">(1)</span></summary>
+<details id="memorização"><summary>Memorização <span class="n">(1)</span></summary>
 <p class="exp">Explicação: <a href="programacao_dinamica.html">Programação dinâmica</a></p>
 <ul>
   <li><a href="programacao_dinamica.html">Programação dinâmica</a></li>
 </ul></details>
-<details><summary>Ordenação <span class="n">(15)</span></summary>
+<details id="ordenação"><summary>Ordenação <span class="n">(15)</span></summary>
 <p class="exp">Explicação: <a href="ordenacao.html">Algoritmos de ordenação</a></p>
 <ul>
   <li><a href="kruskal.html">Algoritmo de Kruskal</a></li>
@@ -123,7 +123,7 @@
   <li><a href="selecao_direta.html">Seleção direta</a></li>
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
 </ul></details>
-<details><summary>Pilhas <span class="n">(5)</span></summary>
+<details id="pilhas"><summary>Pilhas <span class="n">(5)</span></summary>
 <p class="exp">Explicação: <a href="pilhas.html">Pilhas</a></p>
 <ul>
   <li><a href="grafos.html">Grafos</a></li>
@@ -132,7 +132,7 @@
   <li><a href="tentativa_erro.html">Tentativa e erro (backtracking)</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Ponteiros <span class="n">(8)</span></summary>
+<details id="ponteiros"><summary>Ponteiros <span class="n">(8)</span></summary>
 <p class="exp">Explicação: <a href="ponteiros.html">Ponteiros e endereços</a></p>
 <ul>
   <li><a href="algoritmos_arvores.html">Algoritmos recursivos em árvores</a></li>
@@ -144,7 +144,7 @@
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Recursão <span class="n">(13)</span></summary>
+<details id="recursão"><summary>Recursão <span class="n">(13)</span></summary>
 <p class="exp">Explicação: <a href="recursao.html">Recursão</a></p>
 <ul>
   <li><a href="algoritmos_arvores.html">Algoritmos recursivos em árvores</a></li>
@@ -161,7 +161,7 @@
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Registros <span class="n">(8)</span></summary>
+<details id="registros"><summary>Registros <span class="n">(8)</span></summary>
 <p class="exp">Explicação: <a href="registros.html">Registros (structs)</a></p>
 <ul>
   <li><a href="algoritmos_arvores.html">Algoritmos recursivos em árvores</a></li>
@@ -173,13 +173,13 @@
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
-<details><summary>Subestrutura ótima <span class="n">(2)</span></summary>
+<details id="subestrutura-ótima"><summary>Subestrutura ótima <span class="n">(2)</span></summary>
 <p class="exp">Explicação: <a href="programacao_dinamica.html">Programação dinâmica</a></p>
 <ul>
   <li><a href="metodo_guloso.html">Método guloso</a></li>
   <li><a href="programacao_dinamica.html">Programação dinâmica</a></li>
 </ul></details>
-<details><summary>Vetores <span class="n">(19)</span></summary>
+<details id="vetores"><summary>Vetores <span class="n">(19)</span></summary>
 <ul>
   <li><a href="ordenacao.html">Algoritmos de ordenação</a></li>
   <li><a href="busca_binaria.html">Busca binária</a></li>
@@ -201,13 +201,13 @@
   <li><a href="registros.html">Registros (structs)</a></li>
   <li><a href="selecao_direta.html">Seleção direta</a></li>
 </ul></details>
-<details><summary>Árvore espalhada mínima <span class="n">(2)</span></summary>
+<details id="Árvore-espalhada-mínima"><summary>Árvore espalhada mínima <span class="n">(2)</span></summary>
 <p class="exp">Explicação: <a href="kruskal.html">Algoritmo de Kruskal</a></p>
 <ul>
   <li><a href="kruskal.html">Algoritmo de Kruskal</a></li>
   <li><a href="prim.html">Algoritmo de Prim</a></li>
 </ul></details>
-<details><summary>Árvores <span class="n">(7)</span></summary>
+<details id="Árvores"><summary>Árvores <span class="n">(7)</span></summary>
 <p class="exp">Explicação: <a href="arvores.html">Árvores</a></p>
 <ul>
   <li><a href="kruskal.html">Algoritmo de Kruskal</a></li>
@@ -218,4 +218,5 @@
   <li><a href="abb.html">Árvore binária de busca (ABB)</a></li>
   <li><a href="arvores.html">Árvores</a></li>
 </ul></details>
+<script>function abrir(){var e=location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){e.open=true;e.scrollIntoView();}}abrir();addEventListener('hashchange',abrir);</script>
 </body></html>

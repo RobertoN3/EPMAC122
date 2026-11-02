@@ -29,6 +29,13 @@ As regras de formato valem como estão em `documentacao/formato_txt.md`. O gerad
 - Avisa no terminal sobre conceitos fora do vocabulário e sobre `[[alvo]]` sem `alvo.txt`.
 - Linhas do cabeçalho podem ter até 4095 caracteres.
 
+# Ficha das páginas de conteúdo (feito)
+
+- `gerador_conteudo.c` mostra, logo abaixo do título, uma ficha com os campos 1 a 6 do cabeçalho que existirem no TXT.
+- Cada valor de Técnica, Autores, Data e Conceitos leva ao seu grupo na página indexadora correspondente (por exemplo, `tecnica.html#método-guloso`), e o grupo já abre expandido. O rótulo do campo leva à página indexadora inteira. Algoritmo é o assunto da própria página e fica sem link; no Problema, que pode ter `[[links]]`, quem leva ao índice é o rótulo.
+- As âncoras são criadas pelo `gerador.c` em cada `<details>` dos índices. Os dois programas incluem `slug.h`, que transforma o valor na âncora, para gerarem exatamente o mesmo texto. Por isso `slug.h` precisa estar na mesma pasta dos `.c` ao compilar.
+- As páginas de conteúdo quebram URLs longos, para não ficarem mais largas que a tela do celular.
+
 # colorir.c: filtro de código C (feito)
 
 Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODIGO_C`, grava `saida/<nome>_codigo.html`, a página que o link "Ver código em C" do `gerador_conteudo.c` espera. Um TXT com mais de um bloco gera uma página com "Programa 1", "Programa 2"... TXT sem código não gera página.

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <dirent.h>
+#include "slug.h"
 
 #define PASTA_ENTRADA "entradatxt"
 #define PASTA_SAIDA   "saida"
@@ -43,11 +44,13 @@ static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
 
 static const char *CSS =
     "body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}"
+    "a{color:#2b6cb0}"
     ".botoes{display:flex;flex-wrap:wrap;gap:12px}"
     ".botao{display:inline-block;padding:14px 24px;background:#2b6cb0;color:#fff;"
     "border-radius:8px;text-decoration:none;font-size:1.1rem}"
     ".botao:hover{background:#1e4e8c}"
     "details{margin:8px 0;border:1px solid #ccc;border-radius:8px;padding:8px 14px}"
+    "details:target{border-color:#2b6cb0;background:#f0f6ff}"
     "summary{cursor:pointer;font-weight:600;font-size:1.05rem}"
     "ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}"
     ".exp{margin:8px 0 0;font-size:.95rem;color:#555}";
@@ -374,7 +377,10 @@ static void gerar_categoria(int c) {
         Valor *v = &C->v[i];
         qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
 
-        fputs("<details><summary>", o);
+        /* id: âncora usada pela ficha das páginas de conteúdo (slug.h) */
+        fputs("<details id=\"", o);
+        escrever_slug(o, v->texto, 0);
+        fputs("\"><summary>", o);
         if (c == C_PROBLEMA) esc_links(o, v->texto);   /* [[alvo|texto]] vira link */
         else                 esc(o, v->texto);
         fprintf(o, " <span class=\"n\">(%d)</span></summary>\n", v->n);
@@ -403,6 +409,11 @@ static void gerar_categoria(int c) {
         }
         fputs("</ul></details>\n", o);
     }
+    /* chegando por um link com #âncora, abre e mostra o grupo correspondente */
+    fputs("<script>function abrir(){var e=location.hash&&document.getElementById("
+          "decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){"
+          "e.open=true;e.scrollIntoView();}}abrir();addEventListener('hashchange',abrir);"
+          "</script>\n", o);
     fputs("</body></html>\n", o);
     fclose(o);
 }
