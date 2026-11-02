@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Busca em largura (BFS) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Busca em largura (BFS)</h1><a class="botao botao-sec" href="bfs_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Busca em largura (BFS)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#edward-f-moore">Edward F. Moore</a><a class="chip f-autores" href="autores.html#c-y-lee">C. Y. Lee</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1959">1959</a><a class="chip f-data" href="data.html#1961">1961</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a><a class="chip f-conceitos" href="conceitos.html#filas">Filas</a><a class="chip f-conceitos" href="conceitos.html#caminho-m%C3%ADnimo">Caminho mínimo</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-grafos-grafo-e-um-v%C3%A9rtice-de-origem-s-determinar-quais-v%C3%A9rtices-s%C3%A3o-alcan%C3%A7%C3%A1veis-a-partir-de-s-e-o-menor-n%C3%BAmero-de-arestas-de-s-at%C3%A9-cada-um-deles">Problema</a></dt><dd class="texto">Dado um <a href="grafos.html">grafo</a> e um vértice de origem s, determinar quais vértices são alcançáveis a partir de s e o menor número de arestas de s até cada um deles</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A busca em largura (em inglês, breadth-first search, BFS) percorre um grafo em &quot;ondas&quot; a partir de uma origem s: primeiro s, depois todos os vizinhos de s (distância 1), depois os vizinhos desses que ainda não foram vistos (distância 2), e assim por diante. É como uma pedra jogada num lago: os círculos se afastam do centro um de cada vez.</p>
+<p>O que garante essa ordem é a estrutura usada para guardar os vértices que ainda serão examinados: uma <a href="filas.html">fila</a>. Como o primeiro a entrar na fila é o primeiro a sair, os vértices de distância 1 saem todos antes dos de distância 2, que saem todos antes dos de distância 3.</p>
+<h2>O algoritmo</h2>
+<pre>  para todo vértice v: dist[v] = -1 (não visitado); pai[v] = -1
+  dist[s] = 0
+  insira s na fila
+  enquanto a fila não estiver vazia:
+      u &lt;- remova o primeiro da fila
+      para cada vizinho v de u:
+          se dist[v] == -1:
+              dist[v] = dist[u] + 1
+              pai[v] = u
+              insira v no fim da fila
+</pre>
+<p>Ao final:</p>
+<ul><li>dist[v] é o menor número de arestas de s até v, ou -1 se v não é alcançável a partir de s;</li>
+<li>o vetor pai descreve, de trás para a frente, um caminho mínimo de s até cada vértice alcançável. Seguindo pai[v], pai[pai[v]], ... chega-se a s. Esses caminhos formam uma árvore enraizada em s, a árvore de busca em largura.</li></ul>
+<p>Um vértice é marcado (recebe dist) no momento em que ENTRA na fila, e não quando sai. Assim, nenhum vértice entra duas vezes.</p>
+<h2>Exemplo</h2>
+<p>Grafo não dirigido com vértices 0 a 6 e arestas 0-1, 0-2, 1-3, 2-3, 3-4 e 4-5. O vértice 6 é isolado. Busca a partir de s = 0:</p>
+<pre>  remove   vizinhos novos   fila depois       dist
+  -        -                [0]               0:0
+  0        1, 2             [1, 2]            1:1  2:1
+  1        3                [2, 3]            3:2
+  2        (3 já visto)     [3]
+  3        4                [4]               4:3
+  4        5                [5]               5:4
+  5        -                []
+</pre>
+<p>Resultado: dist = 0, 1, 1, 2, 3, 4 e -1 (o vértice 6 não é alcançável). O caminho mínimo até 5, lido pelo vetor pai de trás para a frente, é 5 &lt;- 4 &lt;- 3 &lt;- 1 &lt;- 0, ou seja, 0-1-3-4-5, com 4 arestas.</p>
+<h2>Por que funciona</h2>
+<p>Invariante: em qualquer momento, as distâncias dos vértices na fila, da frente para o fim, são não decrescentes e diferem no máximo de 1 entre o primeiro e o último. Ou seja, a fila tem alguns vértices de distância d seguidos de alguns de distância d+1.</p>
+<p>Com isso, os vértices são retirados da fila em ordem de distância. Quando um vértice v é visto pela primeira vez a partir de u, nenhum vértice mais próximo de s poderia tê-lo descoberto antes (já teria sido retirado da fila e examinado). Logo dist[u] + 1 é de fato a menor distância até v. A prova completa é por indução na distância.</p>
+<p>Atenção: isso vale para o NÚMERO de arestas. Se as arestas têm pesos diferentes, o caminho com menos arestas pode não ser o mais barato. Nesse caso usa-se o algoritmo de <a href="dijkstra.html">Dijkstra</a>, que troca a fila simples por uma <a href="heapsort.html">fila de prioridade</a> ordenada pela distância.</p>
+<h2>Complexidade</h2>
+<p>Cada vértice entra na fila no máximo uma vez e, ao sair, sua vizinhança é examinada uma vez.</p>
+<ul><li>Com listas de adjacência: O(n + m), linear no tamanho do grafo.</li>
+<li>Com matriz de adjacência: O(n²), pois examinar os vizinhos de um vértice custa O(n).</li></ul>
+<p>A memória extra é O(n): a fila e os vetores dist e pai. Veja <a href="eficiencia.html">eficiência de algoritmos</a>.</p>
+<h2>BFS x DFS</h2>
+<p>A busca em profundidade (DFS, descrita na página <a href="grafos.html">grafos</a>) tem exatamente a mesma estrutura, mas usa uma <a href="pilhas.html">pilha</a> (ou a <a href="recursao.html">recursão</a>) no lugar da fila. Ela visita os mesmos vértices, com o mesmo custo, mas em outra ordem e sem calcular distâncias mínimas. Trocar a estrutura de dados muda completamente o comportamento do algoritmo.</p>
+<h2>Aplicações</h2>
+<ul><li>Menor número de conexões entre duas pessoas em uma rede social.</li>
+<li>Menor número de movimentos em um quebra-cabeça (cubo mágico, jogo do 15) em que cada estado é um vértice e cada movimento é uma aresta.</li>
+<li>Roteamento em labirintos e em placas de circuito impresso.</li>
+<li>Verificar se um grafo é bipartido: pinta-se cada vértice com a paridade de sua distância e verifica-se se alguma aresta liga duas cores iguais.</li>
+<li>&quot;Balde de tinta&quot; em programas de desenho (flood fill).</li>
+<li>Percurso em largura (por níveis) de uma <a href="arvores.html">árvore</a>.</li></ul>
+<h2>Histórico</h2>
+<p>A ideia aparece na tese de Konrad Zuse de 1945, sobre a linguagem Plankalkül, publicada apenas em 1972. Edward F. Moore a publicou em 1959, para encontrar o caminho mais curto em labirintos, e C. Y. Lee a redescobriu em 1961, para rotear fios em circuitos, motivo pelo qual a técnica também é chamada de &quot;algoritmo de Lee&quot; na área de projeto de circuitos.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo representa o grafo do exemplo por matriz de adjacência, executa a busca em largura a partir do vértice 0 com uma fila em vetor e imprime, para cada vértice, a distância e o caminho mínimo (-1 para o vértice isolado, que não é alcançável).</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>MOORE, E. F. The shortest path through a maze. In: Proceedings of the International Symposium on the Theory of Switching. Cambridge: Harvard University Press, 1959. p. 285-292.</li>
+<li>LEE, C. Y. An algorithm for path connections and its applications. IRE Transactions on Electronic Computers, v. EC-10, n. 3, p. 346-365, 1961.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 22.2 (Busca em largura).</li>
+<li>SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Seção 18.7 (Breadth-first search).</li>
+<li>KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Seção 3.2.</li>
+<li>FEOFILOFF, P. Algoritmos para Grafos em C via Sedgewick. https://www.ime.usp.br/~pf/algoritmos_para_grafos/</li>
+<li>BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="bfs_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

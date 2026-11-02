@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação por contagem (frequências) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação por contagem (frequências)</h1><a class="botao botao-sec" href="ordenacao_contagem_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação por contagem (frequências)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#harold-h-seward">Harold H. Seward</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1954">1954</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#representa%C3%A7%C3%A3o-de-conjuntos">Representação de conjuntos</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-n-inteiros-todos-entre-0-e-u-1-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente-sem-comparar-os-elementos-entre-si">Problema</a></dt><dd class="texto">Dado um vetor de n inteiros, todos entre 0 e U-1, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a> sem comparar os elementos entre si</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Todos os métodos de <a href="ordenacao.html">ordenação</a> vistos até aqui comparam pares de elementos, e por isso nenhum deles consegue ser mais rápido que n log n no pior caso. A ordenação por contagem (counting sort, chamada no material da disciplina de ordenação por frequência) não compara elementos: ela CONTA quantas vezes cada valor aparece e usa essas contagens para calcular onde cada elemento deve ficar.</p>
+<p>O preço é uma hipótese sobre os dados: os valores precisam estar numa faixa pequena e conhecida, o &quot;universo&quot; {0, 1, ..., U-1}. Notas de 0 a 10, idades, letras de 'a' a 'z' e dígitos de 0 a 9 são bons exemplos.</p>
+<h2>A ideia em três passos</h2>
+<p>A contagem usa um vetor freq, com uma posição para cada valor possível, generalizando o &quot;vetor de bits&quot; usado para <a href="conjuntos.html">representar conjuntos</a>: em vez de 0 ou 1 (está ou não está), freq[x] guarda QUANTAS vezes x aparece.</p>
+<ol><li>Contar: percorrer o vetor e fazer freq[v[i]]++ para cada elemento.</li>
+<li>Acumular: transformar as contagens em posições. Depois de acumular, freq[x] é o número de elementos MENORES que x, ou seja, a posição onde deve ficar a primeira ocorrência de x.</li>
+<li>Distribuir: percorrer o vetor de novo, da esquerda para a direita, e copiar cada elemento v[i] para aux[freq[v[i]]], incrementando freq[v[i]] para que a próxima ocorrência do mesmo valor vá para a posição seguinte. Por fim, copiar aux de volta para v.</li></ol>
+<p>O material da disciplina usa um truque de índices: a frequência de x é anotada em freq[x+1]. Assim, depois da soma acumulada, freq[x] já é a soma das frequências dos valores menores que x, sem precisar de outro ajuste.</p>
+<h2>Exemplo</h2>
+<p>v = (3, 1, 4, 1, 5, 2, 3, 0), U = 6.</p>
+<pre>  valor x:                    0  1  2  3  4  5
+  1) frequências:             1  2  1  2  1  1
+  2) posição inicial de x:    0  1  3  4  6  7    (quantos são menores)
+  3) distribuindo v da esquerda para a direita:
+       3 -&gt; pos 4    1 -&gt; pos 1    4 -&gt; pos 6    1 -&gt; pos 2
+       5 -&gt; pos 7    2 -&gt; pos 3    3 -&gt; pos 5    0 -&gt; pos 0
+  resultado:  (0, 1, 1, 2, 3, 3, 4, 5)
+</pre>
+<h2>Análise</h2>
+<ul><li>Tempo: contar é O(n), acumular é O(U), distribuir e copiar de volta é O(n). Total: O(n + U). Se U não é muito maior que n, a ordenação é LINEAR, mais rápida que qualquer método por comparação.</li>
+<li>Memória: o vetor de frequências (U + 1 posições) e o vetor auxiliar (n posições): O(n + U).</li>
+<li>Estabilidade: os elementos são distribuídos na ordem em que aparecem no vetor original, e cada ocorrência de um valor vai para a posição seguinte à anterior. Elementos iguais mantêm a ordem relativa: o método é <a href="estabilidade.html">estável</a>.</li></ul>
+<p>Quando não usar: se U é enorme em relação a n (ordenar 100 números quaisquer de 32 bits exigiria um vetor de 4 bilhões de contadores), ou se as chaves não são inteiros pequenos. Nesse caso, ou se usa um método por comparação, ou o <a href="radixsort.html">Radix Sort</a>, que aplica a contagem dígito a dígito e por isso depende da estabilidade dela.</p>
+<p>No material da disciplina, o método é apresentado como exemplo do paradigma guloso: cada elemento é colocado diretamente na sua posição definitiva, sem voltar atrás.</p>
+<h2>Ordenando nomes com um vetor de ordem</h2>
+<p>Ao ordenar <a href="registros.html">registros</a> ou cadeias de caracteres, mover os dados custa caro: trocar dois nomes com strcpy copia todos os caracteres. Uma saída, também estudada na disciplina, é não mover os dados e ordenar um VETOR DE ORDEM: um vetor de índices ordem[0..n-1], inicialmente (0, 1, ..., n-1). O algoritmo de ordenação compara nome[ordem[i]] com nome[ordem[j]], mas troca apenas os índices ordem[i] e ordem[j]. No fim, a lista ordenada é nome[ordem[0]], nome[ordem[1]], ..., e o vetor original continua intacto.</p>
+<p>Vantagens:</p>
+<ul><li>cada troca move um inteiro, e não uma cadeia inteira;</li>
+<li>várias ordens diferentes do mesmo vetor podem coexistir (por nome, por idade...), cada uma com o seu vetor de ordem;</li>
+<li>é a mesma ideia de ordenar ponteiros em vez de registros.</li></ul>
+<p>Com a <a href="bubblesort.html">bolha</a>, o número de comparações continua O(n²), e cada comparação de cadeias custa até o comprimento L delas: O(n² · L). Já a ordenação por frequência, aplicada letra a letra (do último caractere para o primeiro, sempre de forma estável), ordena nomes em tempo proporcional a n · L, sem nenhuma comparação de cadeias: é o Radix Sort para cadeias.</p>
+<h2>Histórico</h2>
+<p>Harold H. Seward descreveu a ordenação por contagem em 1954, na sua dissertação de mestrado no MIT, junto com a versão do Radix Sort que usa contagem em cada dígito; a atribuição é de Knuth. A ideia de distribuir itens em compartimentos de acordo com o valor é mais antiga e vem das máquinas classificadoras de cartões perfurados.</p>
+<h2>Sobre o código</h2>
+<p>O programa ordena o vetor do exemplo por contagem (com o truque do índice deslocado do material da disciplina) e depois ordena uma lista de nomes com a bolha sobre um vetor de ordem, mostrando que o vetor de nomes original não é alterado.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Ordenação por frequência. MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/ordena_por_frequencia.html</li>
+<li>BRANDÃO, L. O. Comparação de métodos para ordenar nomes (bolha com vetor de ordem e ordenação por frequência). MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/ordena_string_compara_metodos.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2 (distribution counting) e 5.2.5.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 8.2 (Ordenação por contagem).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 6.10 (key-indexed counting) e capítulo 10 (Radix Sorting).</li>
+<li>FEOFILOFF, P. Ordenação digital. https://www.ime.usp.br/~pf/algoritmos/aulas/radix.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="ordenacao_contagem_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

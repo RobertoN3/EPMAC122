@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordenação topológica | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Ordenação topológica</h1><a class="botao botao-sec" href="ordenacao_topologica_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação topológica por remoção de fontes</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#arthur-b-kahn">Arthur B. Kahn</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1962">1962</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a><a class="chip f-conceitos" href="conceitos.html#filas">Filas</a><a class="chip f-conceitos" href="conceitos.html#listas-encadeadas">Listas encadeadas</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-grafos-grafo-dirigido-ac%C3%ADclico-determinar-uma-ordem-de-seus-v%C3%A9rtices-em-que-a-origem-de-cada-aresta-venha-antes-do-seu-destino">Problema</a></dt><dd class="texto">Dado um <a href="grafos.html">grafo</a> dirigido acíclico, determinar uma ordem de seus vértices em que a origem de cada aresta venha antes do seu destino</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma ordenação topológica de um <a href="grafos.html">grafo</a> dirigido é uma sequência que contém cada vértice exatamente uma vez e coloca a origem de cada aresta antes do seu destino: se existe a aresta u-&gt;v, então u aparece antes de v.</p>
+<p>A aplicação típica é ordenar tarefas com dependências. O material de grafos da disciplina usa o exemplo das dependências de compilação: se um arquivo precisa estar pronto antes de outro, representamos essa exigência por uma aresta do primeiro para o segundo. Outros exemplos:</p>
+<ul><li>disciplinas e seus pré-requisitos (em que ordem cursá-las?);</li>
+<li>etapas de uma obra (fundação antes das paredes, paredes antes do telhado);</li>
+<li>células de uma planilha que dependem de outras células;</li>
+<li>pacotes de software que dependem de outros pacotes.</li></ul>
+<p>A sequência resultante respeita todas as dependências, mas não precisa ordenar os rótulos numericamente. Em geral há várias ordenações topológicas válidas para o mesmo grafo.</p>
+<h2>Quando existe</h2>
+<p>Um grafo dirigido admite ordenação topológica exatamente quando não tem ciclos dirigidos. Um grafo assim é chamado grafo dirigido acíclico (em inglês, DAG, de directed acyclic graph).</p>
+<ul><li>Se houver um ciclo v1-&gt;v2-&gt;...-&gt;vk-&gt;v1, cada vértice do ciclo teria de vir antes do seguinte e, dando a volta, antes de si mesmo: impossível.</li>
+<li>Se não houver ciclo, o algoritmo abaixo constrói uma ordenação.</li></ul>
+<h2>O algoritmo de remoção de fontes (Kahn)</h2>
+<p>Uma fonte é um vértice com grau de entrada zero, isto é, sem arestas chegando nele vindas de vértices ainda não processados. Uma fonte não depende de ninguém que falte e, portanto, pode ser colocada agora.</p>
+<pre>  calcule o grau de entrada de cada vértice
+  insira na fila todas as fontes (grau de entrada 0)
+  enquanto a fila não estiver vazia:
+      u &lt;- remova o primeiro da fila
+      acrescente u ao fim da sequência
+      para cada aresta u-&gt;v:
+          diminua o grau de entrada de v
+          se ele chegou a 0: insira v na fila
+  se a sequência tem todos os vértices: ela é uma ordenação topológica
+  senão: o grafo tem um ciclo
+</pre>
+<p>Não é preciso apagar fisicamente as arestas: basta diminuir os graus de entrada em um vetor separado, preservando as <a href="listas_encadeadas.html">listas de adjacência</a> originais. A estrutura que guarda as fontes disponíveis é uma <a href="filas.html">fila</a>, mas uma pilha também funcionaria: só mudaria qual das ordenações válidas é produzida.</p>
+<h2>Exemplo</h2>
+<p>Usamos o grafo dirigido G2 do material de grafos da disciplina, com vértices 1, 2, 3 e 4 e arestas 1-&gt;2, 1-&gt;4, 2-&gt;3, 2-&gt;4 e 3-&gt;4. Lido como dependências de compilação, 1-&gt;2 significa que a tarefa 1 precisa preceder a tarefa 2.</p>
+<ul><li>Graus de entrada iniciais: 0, 1, 1 e 3. A fila começa com o vértice 1.</li>
+<li>Processa 1: os graus de 2 e 4 passam a 0 e 2; o vértice 2 entra na fila.</li>
+<li>Processa 2: os graus de 3 e 4 passam a 0 e 1; o vértice 3 entra na fila.</li>
+<li>Processa 3: o grau de 4 chega a 0; o vértice 4 entra na fila.</li>
+<li>Processa 4. A ordem obtida é 1, 2, 3, 4.</li></ul>
+<p>Se acrescentarmos a aresta 4-&gt;2, criamos o ciclo 2-&gt;3-&gt;4-&gt;2. O algoritmo processa o vértice 1, mas os demais ficam bloqueados (todos continuam com grau de entrada positivo) e a fila esvazia com apenas um dos quatro vértices processado: o ciclo é detectado.</p>
+<h2>Por que funciona</h2>
+<p>Invariante: os graus atualizados contam apenas as arestas que chegam de vértices ainda não processados.</p>
+<ul><li>Quando retiramos uma fonte u, todos os seus predecessores já foram processados e colocados na sequência. Colocar u na próxima posição não viola nenhuma dependência.</li>
+<li>Todo grafo dirigido acíclico não vazio tem pelo menos uma fonte. Se cada vértice tivesse um predecessor, poderíamos seguir predecessores indefinidamente; como o conjunto de vértices é finito, algum vértice se repetiria, formando um ciclo. Assim, enquanto restarem vértices de um grafo acíclico, sempre haverá uma fonte disponível, e o algoritmo processa todos.</li>
+<li>Se a fila esvaziar antes de processar todos os vértices, cada vértice restante tem ao menos uma aresta de entrada vinda de outro restante; o mesmo argumento de seguir predecessores mostra que existe um ciclo. Nem todo vértice que sobra precisa estar no ciclo: alguns podem apenas depender dele. A sequência parcial obtida não é uma ordenação do grafo inteiro.</li></ul>
+<p>Quando várias fontes coexistem, qualquer uma pode ser escolhida; por isso há, em geral, mais de uma ordenação válida.</p>
+<h2>Complexidade</h2>
+<p>Com n vértices e m arestas em listas de adjacência:</p>
+<ul><li>calcular os graus iniciais custa Theta(n + m);</li>
+<li>cada vértice entra na fila no máximo uma vez, e cada aresta é examinada no máximo uma vez;</li>
+<li>o tempo total é Theta(n + m), mesmo quando um ciclo interrompe o processamento;</li>
+<li>o espaço auxiliar é Theta(n), para os graus, a fila e a sequência.</li></ul>
+<h2>Outra forma: busca em profundidade</h2>
+<p>Também se obtém uma ordenação topológica com a busca em profundidade (DFS, descrita na página de <a href="grafos.html">grafos</a>): ao terminar a exploração de um vértice (quando todos os seus descendentes já foram visitados), ele é empilhado. No fim, a pilha lida do topo para a base é uma ordenação topológica. Esse método também custa Theta(n + m) e detecta ciclos quando encontra uma aresta para um vértice ainda &quot;em exploração&quot;.</p>
+<h2>Histórico</h2>
+<p>O método de remoção de fontes é conhecido como algoritmo de Kahn: Arthur B. Kahn o publicou em 1962, no artigo &quot;Topological sorting of large networks&quot;, motivado pelo planejamento de projetos com milhares de atividades interdependentes (redes PERT). Knuth apresenta o mesmo algoritmo no volume 1 de &quot;The Art of Computer Programming&quot; (seção 2.2.3).</p>
+<h2>Sobre o código</h2>
+<p>O programa monta o grafo G2 em listas de adjacência, a partir de um vetor de pares (origem, destino), e executa o algoritmo de Kahn. No teste acíclico, confere se cada aresta vai de uma posição anterior para uma posterior na sequência obtida. No teste com o ciclo 2-&gt;3-&gt;4-&gt;2, mostra a sequência parcial e informa o ciclo. Os vértices usam índices de 0 a n-1 internamente e são impressos com rótulos de 1 a n.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Páginas 1 e 2 (grafo G2, ordenação topológica e dependências de compilação). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf</li>
+<li>KAHN, A. B. Topological sorting of large networks. Communications of the ACM, v. 5, n. 11, p. 558-562, 1962.</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.3 (Topological sorting).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 22.4 (Ordenação topológica).</li>
+<li>SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 19 (Digraphs and DAGs).</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="ordenacao_topologica_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

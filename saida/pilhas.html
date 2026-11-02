@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pilhas | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Pilhas</h1><a class="botao botao-sec" href="pilhas_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#friedrich-l-bauer">Friedrich L. Bauer</a><a class="chip f-autores" href="autores.html#klaus-samelson">Klaus Samelson</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1957">1957</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#listas-encadeadas">Listas encadeadas</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-cadeia-com-par%C3%AAnteses-colchetes-e-chaves-decidir-se-ela-est%C3%A1-bem-formada-cada-s%C3%ADmbolo-de-abertura-fechado-pelo-s%C3%ADmbolo-correspondente-na-ordem-correta">Problema</a></dt><dd class="texto">Dada uma cadeia com parênteses, colchetes e chaves, decidir se ela está bem formada (cada símbolo de abertura fechado pelo símbolo correspondente, na ordem correta)</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma pilha é uma sequência de elementos em que todas as inserções e remoções são feitas na mesma extremidade, chamada topo. O último elemento inserido é sempre o primeiro a ser removido: a política é LIFO (last in, first out, &quot;último a entrar, primeiro a sair&quot;).</p>
+<p>A imagem usual é uma pilha de pratos: coloca-se um prato novo em cima e retira-se sempre o de cima; para pegar o prato de baixo, é preciso tirar antes todos os que estão sobre ele. Outros exemplos do dia a dia: o botão &quot;voltar&quot; do navegador, o &quot;desfazer&quot; (Ctrl+Z) de um editor, uma pilha de provas para corrigir.</p>
+<p>A pilha é um tipo abstrato de dados: o que a define são as operações e seu comportamento, não a forma como é guardada na memória.</p>
+<h2>Operações</h2>
+<ul><li>empilha(x) (push): coloca x no topo;</li>
+<li>desempilha() (pop): remove o elemento do topo e o devolve;</li>
+<li>topo() (top ou peek): devolve o elemento do topo sem removê-lo;</li>
+<li>vazia(): diz se a pilha não tem elementos;</li>
+<li>cheia(): em implementações de tamanho fixo, diz se não cabe mais nada.</li></ul>
+<p>Todas custam O(1). Desempilhar de uma pilha vazia é um erro (underflow), e empilhar em uma pilha cheia também (overflow); um programa correto testa essas situações antes.</p>
+<h2>Implementação em vetor</h2>
+<p>Usa-se um vetor p[0..MAX-1] e um inteiro t, o número de elementos.</p>
+<ul><li>A pilha está vazia quando t == 0 e cheia quando t == MAX.</li>
+<li>O topo é p[t-1].</li>
+<li>empilha(x): p[t] = x; t = t + 1;   (em C: p[t++] = x;)</li>
+<li>desempilha(): t = t - 1; devolve p[t];   (em C: return p[--t];)</li></ul>
+<p>É simples e muito rápida. A limitação é o tamanho fixo; pode-se contorná-la alocando o vetor com malloc e, quando ele encher, realocá-lo com o dobro do tamanho (realloc). Como as duplicações são cada vez mais raras, o custo médio por operação continua O(1) (custo amortizado).</p>
+<h2>Implementação em lista encadeada</h2>
+<p>O topo é a primeira célula da lista.</p>
+<ul><li>empilha(x): cria uma célula com x, que passa a apontar para o antigo topo e se torna o novo topo;</li>
+<li>desempilha(): guarda o conteúdo da primeira célula, faz o topo apontar para a segunda e libera a primeira com free.</li></ul>
+<p>Não há limite de tamanho além da memória disponível, mas cada elemento gasta memória extra com o <a href="ponteiros.html">ponteiro</a>.</p>
+<h2>Aplicação 1: parênteses balanceados</h2>
+<p>Uma cadeia como &quot;{a[i] = (x + y) * 2;}&quot; está bem formada se cada símbolo de abertura ( [ { é fechado pelo símbolo correspondente ) ] }, e se os pares se aninham corretamente: &quot;( [ ) ]&quot; está errado, embora tenha o mesmo número de aberturas e fechamentos de cada tipo.</p>
+<p>Algoritmo: percorre-se a cadeia da esquerda para a direita.</p>
+<ul><li>ao ler um símbolo de abertura, empilha-o;</li>
+<li>ao ler um símbolo de fechamento, desempilha; se a pilha estava vazia (fechou sem ter aberto) ou se o símbolo desempilhado não é o par correspondente, a cadeia está mal formada;</li>
+<li>os demais caracteres são ignorados;</li>
+<li>ao final, a cadeia está bem formada se e somente se a pilha estiver vazia (senão, algum símbolo foi aberto e não fechado).</li></ul>
+<p>A pilha é a estrutura certa porque o último símbolo aberto é o primeiro que precisa ser fechado. Custo: O(n) para uma cadeia de n caracteres. É exatamente o que um compilador faz para apontar erros como &quot;esperava ')'&quot;.</p>
+<h2>Aplicação 2: expressões em notação posfixa</h2>
+<p>Na notação posfixa (ou polonesa reversa), o operador vem depois dos operandos: (2 + 3) * 4 é escrita &quot;2 3 + 4 *&quot;. Ela não precisa de parênteses nem de regras de precedência, e é avaliada com uma pilha:</p>
+<ul><li>ao ler um número, empilha-o;</li>
+<li>ao ler um operador, desempilha os dois operandos, aplica o operador e empilha o resultado;</li>
+<li>no fim, o resultado é o único elemento da pilha.</li></ul>
+<pre>  lê 2:  pilha 2
+  lê 3:  pilha 2 3
+  lê +:  desempilha 3 e 2, empilha 5    -&gt; pilha 5
+  lê 4:  pilha 5 4
+  lê *:  desempilha 4 e 5, empilha 20   -&gt; pilha 20
+</pre>
+<p>A conversão de uma expressão infixa (a notação usual) para posfixa também usa uma pilha, de operadores (algoritmo &quot;shunting-yard&quot; de Dijkstra, 1961). Calculadoras HP clássicas e a linguagem PostScript funcionam em notação posfixa, e muitos compiladores geram código para máquinas de pilha (como a máquina virtual Java).</p>
+<h2>Aplicação 3: a pilha de execução e a recursão</h2>
+<p>Quando uma função é chamada, o computador empilha um <a href="registros.html">registro</a> de ativação com os parâmetros, as variáveis locais e o endereço para onde voltar; quando ela termina, o registro é desempilhado. Essa pilha de execução (call stack) é o que torna a <a href="recursao.html">recursão</a> possível: cada chamada recursiva tem seu próprio contexto, guardado sobre o contexto da chamada anterior.</p>
+<p>Consequências:</p>
+<ul><li>recursão profunda demais esgota essa pilha (stack overflow);</li>
+<li>qualquer algoritmo recursivo pode ser reescrito de forma iterativa com uma pilha explícita, que guarda o que a recursão guardaria.</li></ul>
+<h2>Outras aplicações</h2>
+<ul><li>desfazer (undo) e refazer em editores;</li>
+<li>voltar páginas no navegador;</li>
+<li>busca em profundidade em <a href="grafos.html">grafos</a> e <a href="tentativa_erro.html">backtracking</a> (a pilha guarda o caminho percorrido, para poder voltar);</li>
+<li>verificar se uma página HTML ou XML tem as marcas bem aninhadas;</li>
+<li>inverter uma sequência: empilhar tudo e desempilhar.</li></ul>
+<h2>Histórico</h2>
+<p>Alan Turing já descrevia, em 1946, um mecanismo de pilha para chamar sub-rotinas e voltar delas (com instruções que chamou de &quot;BURY&quot; e &quot;UNBURY&quot;). Em 1954-1955, Charles Hamblin propôs a notação polonesa reversa para computadores, inspirada na notação prefixa de Jan Łukasiewicz (1924). Friedrich L. Bauer e Klaus Samelson, na Alemanha, formularam o &quot;princípio da pilha&quot; (Kellerprinzip, de Keller, &quot;porão&quot;) para traduzir e avaliar expressões e o patentearam em 1957; a ideia foi fundamental no projeto da linguagem ALGOL 60. Bauer recebeu em 1988 o prêmio IEEE Computer Pioneer pela invenção.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa uma pilha de caracteres em vetor e a usa para verificar se três cadeias têm parênteses, colchetes e chaves balanceados.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Pilhas. https://www.ime.usp.br/~pf/algoritmos/aulas/pilha.html</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Capítulo 6 (Pilhas).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.1 (Pilhas e filas).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.2.1 (Stacks, queues, and deques).</li>
+<li>SAMELSON, K.; BAUER, F. L. Sequential formula translation. Communications of the ACM, v. 3, n. 2, p. 76-83, 1960.</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 4 (Abstract Data Types).</li>
+<li>Wikipedia. Stack (abstract data type). https://en.wikipedia.org/wiki/Stack_(abstract_data_type)</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="pilhas_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

@@ -1,6 +1,6 @@
 # Formato dos arquivos TXT
 
-Regras que os 31 TXT de `entradatxt/` seguem e que o gerador deve implementar.
+Regras que os 38 TXT de `entradatxt/` seguem e que o gerador deve implementar.
 
 ## Estrutura do arquivo
 
@@ -46,7 +46,7 @@ Só estes nomes, escritos exatamente assim. A coluna da direita é a página que
 | Conceito | Página explicativa | Conceito | Página explicativa |
 |---|---|---|---|
 | Árvores | arvores | Hash | hash |
-| Árvore espalhada mínima | kruskal | Invariante | (sem página) |
+| Árvore espalhada mínima | kruskal | Invariante | mdc_euclides |
 | Busca binária | busca_binaria | Listas encadeadas | listas_encadeadas |
 | Caminho mínimo | dijkstra | Memorização | programacao_dinamica |
 | Conjuntos disjuntos | kruskal | Ordenação | ordenacao |
@@ -55,7 +55,9 @@ Só estes nomes, escritos exatamente assim. A coluna da direita é a página que
 | Filas | filas | Registros | registros |
 | Fila de prioridade | heapsort | Recursão | recursao |
 | Grafos | grafos | Subestrutura ótima | programacao_dinamica |
-| Vetores | (sem página) | | |
+| Vetores | (sem página) | Matrizes | imagens_pbm |
+| Busca sequencial | busca_sequencial | Indução | inducao |
+| Representação de conjuntos | conjuntos | Autômatos finitos | automatos |
 
 ## Corpo
 
@@ -81,9 +83,9 @@ O texto vem quebrado em linhas de ~75 colunas, então o gerador **não** pode tr
 - O código C fica entre as linhas `INICIO_CODIGO_C` e `FIM_CODIGO_C`, depois das referências. Ele vai para uma página HTML separada e colorida. Um TXT pode ter mais de um bloco.
 - Todo código compila sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e roda.
 
-## Páginas (31)
+## Páginas (38)
 
 - **Técnicas:** metodo_guloso, divisao_conquista, tentativa_erro, programacao_dinamica
-- **Fundamentos e estruturas:** eficiencia, recursao, ponteiros, registros, listas_encadeadas, pilhas, filas, hash, arvores, algoritmos_arvores, abb, grafos
-- **Ordenação:** ordenacao, estabilidade, bubblesort, selecao_direta, insertionsort, mergesort, quicksort, heapsort, radixsort
-- **Busca e grafos:** busca_binaria, bfs, ordenacao_topologica, dijkstra, kruskal, prim
+- **Fundamentos e estruturas:** eficiencia, inducao, recursao, mdc_euclides, ponteiros, registros, listas_encadeadas, pilhas, filas, conjuntos, hash, arvores, algoritmos_arvores, abb, grafos, imagens_pbm, automatos
+- **Ordenação:** ordenacao, estabilidade, bubblesort, selecao_direta, insertionsort, mergesort, quicksort, heapsort, ordenacao_contagem, radixsort
+- **Busca e grafos:** busca_sequencial, busca_binaria, bfs, ordenacao_topologica, dijkstra, kruskal, prim

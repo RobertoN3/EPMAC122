@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programação dinâmica | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Programação dinâmica</h1><a class="botao botao-sec" href="programacao_dinamica_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#programa%C3%A7%C3%A3o-din%C3%A2mica">Programação dinâmica</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Mochila binária por programação dinâmica</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#richard-bellman">Richard Bellman</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1952">1952</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#subestrutura-%C3%B3tima">Subestrutura ótima</a><a class="chip f-conceitos" href="conceitos.html#memoriza%C3%A7%C3%A3o">Memorização</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+<dt class="f-problema"><a href="problema.html#dados-n-objetos-cada-um-com-peso-e-valor-e-uma-mochila-de-capacidade-c-escolher-objetos-de-peso-total-no-m%C3%A1ximo-c-que-maximizem-o-valor-total">Problema</a></dt><dd class="texto">Dados n objetos, cada um com peso e valor, e uma mochila de capacidade C, escolher objetos de peso total no máximo C que maximizem o valor total</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A programação dinâmica resolve um problema combinando soluções de subproblemas, como a <a href="divisao_conquista.html">divisão e conquista</a>. A diferença está na natureza dos subproblemas:</p>
+<ul><li>na divisão e conquista, os subproblemas são independentes (as duas metades do <a href="mergesort.html">Merge Sort</a> não têm nada em comum);</li>
+<li>na programação dinâmica, os subproblemas se sobrepõem: o mesmo subproblema aparece muitas e muitas vezes.</li></ul>
+<p>Uma solução <a href="recursao.html">recursiva</a> ingênua, nesses casos, recalcula os mesmos subproblemas repetidamente e pode gastar tempo exponencial. A programação dinâmica resolve cada subproblema UMA única vez e guarda o resultado em uma tabela; quando ele é necessário de novo, basta consultá-la. É uma troca de memória por tempo.</p>
+<p>Observação sobre o nome: &quot;programação&quot; aqui não significa escrever programas, e sim planejar, no sentido de &quot;programação de produção&quot; ou &quot;planilha&quot;; refere-se ao preenchimento de uma tabela.</p>
+<h2>Quando se aplica: o princípio da otimalidade de Bellman</h2>
+<p>A técnica é aplicável a problemas de otimização que satisfazem duas condições:</p>
+<p>1. Subestrutura ótima (princípio da otimalidade de Bellman): uma solução ótima do problema é formada por soluções ótimas de seus subproblemas. Na formulação original de Bellman: uma política ótima tem a propriedade de que, quaisquer que sejam o estado inicial e a decisão inicial, as decisões restantes constituem uma política ótima em relação ao estado resultante da primeira decisão.</p>
+<p>Exemplo: se o caminho mais curto de São Paulo a Belo Horizonte passa por Campinas, então o trecho de São Paulo a Campinas desse caminho é o caminho mais curto entre essas duas cidades. Se houvesse um atalho, ele encurtaria também o caminho inteiro.</p>
+<p>Contraexemplo: o caminho SIMPLES (sem repetir vértices) mais LONGO entre dois vértices não tem essa propriedade, e por isso não se resolve por programação dinâmica dessa forma.</p>
+<p>2. Subproblemas sobrepostos: o número de subproblemas DIFERENTES é pequeno (em geral polinomial), embora a recursão ingênua os visite muitas vezes.</p>
+<h2>Roteiro para projetar um algoritmo de programação dinâmica</h2>
+<p>1. Caracterizar a estrutura de uma solução ótima. 2. Definir os subproblemas e escrever uma recorrência que exprima o valor ótimo de um subproblema em função de subproblemas menores. 3. Calcular os valores, guardando-os em uma tabela, em uma ordem em que os subproblemas menores fiquem prontos antes dos maiores. 4. (Opcional) Reconstruir a solução ótima, e não só seu valor, guardando ou recalculando qual escolha produziu cada ótimo.</p>
+<h2>Duas formas de implementar</h2>
+<ul><li>De cima para baixo (top-down) com memorização (memoization): escreve-se a recursão natural e, antes de calcular, verifica-se se o resultado já está na tabela. Só são calculados os subproblemas realmente necessários.</li>
+<li>De baixo para cima (bottom-up): preenche-se a tabela iterativamente, dos subproblemas menores para os maiores, sem recursão. Costuma ser mais rápida (sem custo de chamadas) e permite economizar memória quando só as últimas linhas da tabela são necessárias.</li></ul>
+<h2>Exemplo introdutório: Fibonacci</h2>
+<p>A recursão fib(n) = fib(n-1) + fib(n-2), com fib(0) = 0 e fib(1) = 1, é correta mas desastrosa. Para calcular fib(5) calcula-se fib(3) duas vezes, fib(2) três vezes, e assim por diante. O número de chamadas cresce como a própria sequência, aproximadamente 1,618^n: para n = 50 seriam dezenas de bilhões de chamadas.</p>
+<p>Há apenas n+1 subproblemas diferentes: fib(0), ..., fib(n). Guardando-os em um vetor f, cada valor é calculado uma única vez:</p>
+<pre>  f[0] = 0; f[1] = 1
+  para i de 2 até n: f[i] = f[i-1] + f[i-2]
+</pre>
+<p>O tempo cai de exponencial para O(n). Como cada valor depende só dos dois anteriores, basta guardar duas variáveis, e a memória cai para O(1).</p>
+<h2>Exemplo principal: mochila binária (0/1)</h2>
+<p>Há n objetos; o objeto i tem peso p[i] e valor v[i]. A mochila suporta peso total C. Cada objeto é levado inteiro ou não é levado (por isso &quot;binária&quot; ou &quot;0/1&quot;). Quer-se maximizar o valor total.</p>
+<p>Força bruta: testar os 2^n subconjuntos de objetos. Para n = 50 isso é inviável. O <a href="metodo_guloso.html">método guloso</a> (escolher pela maior razão valor/peso) pode errar, como mostra a página do método guloso.</p>
+<p>Subproblemas: M[i][c] = maior valor possível usando apenas os objetos 1..i e capacidade c, para 0 &lt;= i &lt;= n e 0 &lt;= c &lt;= C.</p>
+<p>Recorrência: para o objeto i há duas opções.</p>
+<ul><li>Não levá-lo: o melhor é M[i-1][c].</li>
+<li>Levá-lo (só se p[i] &lt;= c): ganha-se v[i] e sobra capacidade c - p[i] para os objetos 1..i-1, cujo melhor valor é M[i-1][c - p[i]].</li></ul>
+<p>M[0][c] = 0                                       (sem objetos) M[i][c] = M[i-1][c],                              se p[i] &gt; c M[i][c] = max(M[i-1][c], v[i] + M[i-1][c - p[i]]), se p[i] &lt;= c</p>
+<p>A resposta é M[n][C]. O princípio da otimalidade vale: se a solução ótima leva o objeto i, então o restante dela é uma solução ótima para os objetos 1..i-1 com capacidade C - p[i]; caso contrário, poderíamos melhorá-la.</p>
+<p>Exemplo com C = 7 e objetos (peso, valor) = (1, 1), (3, 4), (4, 5), (5, 7):</p>
+<pre>  c:        0  1  2  3  4  5  6  7
+  i = 0:    0  0  0  0  0  0  0  0
+  i = 1:    0  1  1  1  1  1  1  1
+  i = 2:    0  1  1  4  5  5  5  5
+  i = 3:    0  1  1  4  5  6  6  9
+  i = 4:    0  1  1  4  5  7  8  9
+</pre>
+<p>O melhor valor é M[4][7] = 9, obtido com os objetos 2 e 3 (pesos 3 + 4 = 7, valores 4 + 5 = 9). Para reconstruir a escolha, percorre-se a tabela de baixo para cima: se M[i][c] != M[i-1][c], o objeto i foi levado e c diminui de p[i].</p>
+<p>Complexidade: a tabela tem (n+1)(C+1) casas e cada uma é preenchida em O(1), portanto O(n C) de tempo e memória (a memória pode ser reduzida a O(C) usando uma única linha). Esse tempo é chamado pseudopolinomial: é polinomial no VALOR de C, mas exponencial no número de bits de C. Isso é coerente com o fato de a mochila binária ser um problema NP-difícil.</p>
+<h2>Outros problemas clássicos de programação dinâmica</h2>
+<ul><li>Troco com o menor número de moedas, para quaisquer valores de moedas.</li>
+<li>Maior subsequência comum (LCS) entre duas cadeias: base do comando diff e da comparação de sequências de DNA.</li>
+<li>Distância de edição (Levenshtein): número mínimo de inserções, remoções e substituições para transformar uma palavra em outra; usada em corretores ortográficos.</li>
+<li>Multiplicação de uma cadeia de matrizes: a melhor ordem de parentização.</li>
+<li>Caminhos mínimos: Bellman-Ford (aceita pesos negativos) e Floyd-Warshall (todos os pares).</li>
+<li>Maior subsequência crescente e corte de hastes (rod cutting).</li>
+<li>Algoritmo de Viterbi, usado em reconhecimento de voz e em comunicações.</li></ul>
+<h2>Programação dinâmica x outras técnicas</h2>
+<ul><li>x divisão e conquista: ambas dividem em subproblemas; a programação dinâmica compensa quando eles se repetem.</li>
+<li>x método guloso: ambas exigem subestrutura ótima; o guloso faz uma escolha só e não volta atrás, enquanto a programação dinâmica compara TODAS as escolhas possíveis em cada passo (por isso é mais geral e mais cara).</li>
+<li>x <a href="tentativa_erro.html">tentativa e erro</a>: o backtracking explora a <a href="arvores.html">árvore</a> de escolhas; a programação dinâmica percebe que muitos nós dessa árvore representam o mesmo subproblema e os resolve uma vez só.</li></ul>
+<h2>Histórico</h2>
+<p>Richard Bellman desenvolveu o método na RAND Corporation, no início da década de 1950. Seu artigo &quot;On the Theory of Dynamic Programming&quot;, publicado em 1952 nos Proceedings of the National Academy of Sciences, registra o uso do termo nesse ano; é essa a data usada no campo Data desta página (ela não data a criação da mochila binária, nem afirma que o termo surgiu exatamente ali). Por volta de 1953 o termo ganhou seu sentido moderno, e o livro &quot;Dynamic Programming&quot; foi publicado em 1957. Em sua autobiografia, Bellman conta que escolheu a palavra &quot;dinâmica&quot; em parte porque soava impressionante e não poderia ser usada de forma pejorativa, o que o ajudava a proteger a pesquisa matemática de um secretário de Defesa que detestava a palavra &quot;pesquisa&quot;. A equação de recorrência que expressa o princípio da otimalidade é hoje chamada equação de Bellman e é a base da teoria de controle ótimo e do aprendizado por reforço.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo calcula Fibonacci de baixo para cima e resolve a mochila binária preenchendo a tabela M[i][c] com a recorrência acima, para o mesmo exemplo da tabela mostrada nesta página.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BELLMAN, R. On the theory of dynamic programming. Proceedings of the National Academy of Sciences, v. 38, n. 8, p. 716-719, 1952.</li>
+<li>BELLMAN, R. Dynamic Programming. Princeton: Princeton University Press, 1957.</li>
+<li>BELLMAN, R. Eye of the Hurricane: an autobiography. Singapore: World Scientific, 1984.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 15 (Programação dinâmica).</li>
+<li>KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Capítulo 6 (Dynamic Programming).</li>
+<li>DASGUPTA, S.; PAPADIMITRIOU, C.; VAZIRANI, U. Algoritmos. Porto Alegre: McGraw-Hill/Bookman, 2009. Capítulo 6.</li>
+<li>FEOFILOFF, P. Programação dinâmica. https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/dynamic-programming.html</li>
+<li>BRANDÃO, L. O. Introdução à recursividade (Fibonacci recursivo e iterativo). MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html</li>
+<li>Wikipedia. Dynamic programming. https://en.wikipedia.org/wiki/Dynamic_programming</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="programacao_dinamica_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

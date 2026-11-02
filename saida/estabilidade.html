@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estabilidade em algoritmos de ordenação | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Estabilidade em algoritmos de ordenação</h1><a class="botao botao-sec" href="estabilidade_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Um algoritmo de <a href="ordenacao.html">ordenação</a> é estável quando preserva a ordem relativa dos elementos cujas chaves de ordenação são iguais. Se Ana aparece antes de Bruno na entrada e os dois têm nota 8, uma ordenação estável apenas pela nota mantém Ana antes de Bruno.</p>
+<p>Dois cuidados com a definição:</p>
+<ul><li>a propriedade precisa valer para TODAS as entradas, não apenas para um exemplo; um teste que &quot;deu certo&quot; não prova estabilidade;</li>
+<li>estabilidade não significa deixar os elementos nas posições originais: eles podem mudar de lugar, desde que os empatados mantenham a ordem entre si.</li></ul>
+<p>A estabilidade só faz diferença quando ordenamos <a href="registros.html">registros</a> com mais de um campo: ao ordenar números soltos, dois valores iguais são indistinguíveis.</p>
+<h2>Exemplo: estável x instável</h2>
+<p>Entrada, nesta ordem: Ana (nota 8), Bruno (nota 8), Carla (nota 6). Ordenamos por nota crescente.</p>
+<p>Com a <a href="insertionsort.html">inserção direta</a>, Bruno não ultrapassa Ana, pois as notas são iguais e só se deslocam elementos ESTRITAMENTE maiores. Ao inserir Carla, deslocamos Bruno e Ana uma posição para a direita e colocamos Carla no início:</p>
+<pre>  Carla (6), Ana (8), Bruno (8)
+</pre>
+<p>Ana e Bruno mudaram de posição, mas Ana continua antes de Bruno.</p>
+<p>Com a <a href="selecao_direta.html">seleção direta</a> com trocas, o primeiro passo encontra Carla como menor nota e a troca com Ana, que está na primeira posição:</p>
+<pre>  Carla (6), Bruno (8), Ana (8)
+</pre>
+<p>Os dois restantes já estão em ordem de nota e nada mais muda. Ana e Bruno trocaram de ordem relativa: o método é instável.</p>
+<p>Note que a seleção usa comparação estrita na busca do mínimo, o que mantém o PRIMEIRO mínimo encontrado. Isso preserva a escolha entre mínimos empatados, mas não impede que a troca distante leve outro elemento (aqui, Ana) para depois de um igual a ele. A estabilidade exige olhar para toda a movimentação dos elementos, não só para o critério de escolha.</p>
+<h2>Para que serve: ordenar por várias chaves</h2>
+<p>A estabilidade é útil quando há chaves com prioridades diferentes. Para listar alunos em ordem crescente de nota e, nos empates, em ordem alfabética de nome:</p>
+<ol><li>ordene por nome;</li>
+<li>depois ordene, com um método ESTÁVEL, por nota.</li></ol>
+<p>A segunda passagem preserva a ordem de nomes dentro de cada grupo de notas iguais.</p>
+<p>Com mais chaves, fazem-se as passagens da chave MENOS importante para a MAIS importante. O material da disciplina dá dois exemplos dessa relação entre chave primária e secundária: capítulos e seções de um livro, e os pares (linha, coluna) de uma matriz guardada por linhas. Exemplo com pares (primária, secundária):</p>
+<pre>  original:                 (3,6) (7,5) (3,5) (6,2) (9,1)
+  pela secundária:          (9,1) (6,2) (7,5) (3,5) (3,6)
+  depois, estável, pela
+  primária:                 (3,5) (3,6) (6,2) (7,5) (9,1)
+</pre>
+<p>Os pares (3,5) e (3,6) empatam na primária e ficam na ordem da passagem anterior. Atenção: a estabilidade sozinha não ordena pelos nomes (ou pela chave secundária); ela apenas PRESERVA a ordem que já existia antes da passagem.</p>
+<p>O <a href="radixsort.html">Radix Sort</a> LSD é exatamente esse procedimento aplicado aos dígitos de um número, do menos para o mais significativo, e só funciona porque cada passagem é estável.</p>
+<h2>Quais métodos são estáveis</h2>
+<p>Nas implementações usuais:</p>
+<ul><li><a href="bubblesort.html">Bolha</a>: estável, se troca apenas vizinhos com chaves ESTRITAMENTE fora de ordem (v[i] &gt; v[i+1]).</li>
+<li><a href="insertionsort.html">Inserção direta</a>: estável, se desloca apenas chaves ESTRITAMENTE maiores que a inserida.</li>
+<li><a href="mergesort.html">Merge Sort</a>: estável, se em um empate na intercalação escolhe primeiro o elemento da metade ESQUERDA (comparação &lt;=).</li>
+<li><a href="radixsort.html">Radix Sort</a> e Counting Sort: estáveis, se a distribuição percorre o vetor de trás para a frente (ou mantém a ordem de chegada nos baldes).</li>
+<li><a href="selecao_direta.html">Seleção direta</a> com trocas: instável.</li>
+<li><a href="quicksort.html">Quick Sort</a> com partição no próprio vetor: instável.</li>
+<li><a href="heapsort.html">Heap Sort</a>: instável.</li></ul>
+<p>A classificação depende da implementação, não só do nome do algoritmo: trocar &lt; por &lt;= no lugar errado pode destruir a estabilidade, e existem variantes estáveis de métodos que normalmente são instáveis.</p>
+<h2>Como obter um resultado estável com um método instável</h2>
+<p>Há uma técnica geral: anexar a cada elemento seu índice na entrada e comparar o par (chave, índice). Primeiro comparam-se as chaves; em caso de empate, o menor índice vem antes. Como os índices são todos distintos, não há mais empates, e os elementos de mesma chave saem obrigatoriamente na ordem de entrada. Depois da ordenação, os índices são descartados. O custo é O(n) de memória extra para guardar os índices.</p>
+<p>Para a seleção direta especificamente, há outra saída: em vez da troca distante, retirar o mínimo e DESLOCAR uma posição para a direita os elementos entre a posição dele e o início do trecho. Essa variante é estável e continua Theta(n²) em comparações, mas pode fazer Theta(n²) movimentações, em vez de apenas O(n) trocas.</p>
+<h2>Estabilidade não é eficiência</h2>
+<p>Inserção direta e seleção direta têm pior caso Theta(n²) e usam Theta(1) de memória extra, mas se comportam de modo diferente nos empates. A inserção ainda tem melhor caso Theta(n), enquanto a seleção faz Theta(n²) comparações mesmo com a entrada já ordenada. Estabilidade e <a href="eficiencia.html">eficiência</a> são propriedades independentes, e é preciso analisar cada uma.</p>
+<h2>Sobre o código</h2>
+<p>O programa ordena duas cópias do mesmo vetor de registros (nome e nota), comparando só a nota: uma com a inserção direta estável e outra com a seleção direta com trocas. O nome serve para observar a ordem relativa de Ana e Bruno, que empatam, nas duas saídas.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Capítulo 5 (definição de ordenação estável).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seções 8.2 e 8.3 (counting sort e radix sort).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 6.1 (estabilidade).</li>
+<li>FEOFILOFF, P. Ordenação: algoritmos elementares. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="estabilidade_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

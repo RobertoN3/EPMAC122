@@ -1,0 +1,196 @@
+2. Algoritmo: Gravação e transformação de imagens PBM, PGM e PPM a partir de matrizes
+3. Autores: Jef Poskanzer
+4. Data: 1988
+5. Conceitos: Matrizes, Vetores
+6. Problema: Dada uma imagem representada por uma matriz de pixels, gravá-la num formato simples, que possa ser escrito com printf e lido por qualquer programa de imagens, e aplicar a ela transformações como o negativo
+7. Titulo: Imagens simples: PBM, PGM e PPM
+
+## Ideia geral
+
+Uma imagem digital é uma MATRIZ: uma grade de pontos, os pixels, organizada
+em linhas e colunas. Cada pixel guarda um número (o tom de cinza) ou três
+números (as intensidades de vermelho, verde e azul). Por isso o primeiro
+exemplo de uso de matrizes na disciplina é justamente uma imagem, e
+perguntas como "como funciona o reconhecimento facial?" começam por aí:
+para o computador, um rosto é uma matriz de números.
+
+Os formatos PBM, PGM e PPM são o jeito mais simples de guardar essa matriz
+num arquivo. Na versão em texto, o arquivo é só um cabeçalho seguido dos
+números da matriz, linha por linha. Dá para escrevê-lo com printf, lê-lo
+com scanf, abri-lo num editor de texto e, ao mesmo tempo, vê-lo como imagem.
+
+## Os três formatos
+
+Todos começam com um "número mágico" que diz o tipo, seguido da largura
+(número de colunas) e da altura (número de linhas). Linhas que começam com
+# são comentários.
+
+- PBM (Portable BitMap), números mágicos P1 (texto) e P4 (binário): imagens
+  em preto e branco, 1 bit por pixel; 1 é preto e 0 é branco.
+- PGM (Portable GrayMap), P2 e P5: tons de cinza. Depois das dimensões vem
+  o valor máximo (em geral 255); 0 é preto e o máximo é branco.
+- PPM (Portable PixMap), P3 e P6: imagens coloridas, com três números por
+  pixel (vermelho, verde, azul, o sistema RGB), cada um de 0 ao máximo.
+  Por isso, com as mesmas dimensões, um PPM tem o triplo de números de um
+  PGM.
+
+Exemplo do material da disciplina, a letra L em PBM (5 x 5):
+
+```
+  P1
+  # Exemplo de "L" em PBM
+  5 5
+  1 0 0 0 0
+  1 0 0 0 0
+  1 0 0 0 0
+  1 0 0 0 0
+  1 1 1 1 1
+```
+
+A mesma letra em PGM, preta sobre fundo branco:
+
+```
+  P2
+  5 5
+  255
+    0 255 255 255 255
+    0 255 255 255 255
+    0 255 255 255 255
+    0 255 255 255 255
+    0   0   0   0   0
+```
+
+Note a inversão: no PBM, 1 é preto; no PGM, 0 é preto. Os formatos binários
+(P4, P5, P6) guardam os mesmos dados em bytes, o que deixa o arquivo bem
+menor, mas ilegível num editor.
+
+## Matrizes em C
+
+Em C, uma imagem de L linhas e C colunas pode ser guardada em
+int img[L][C], e img[i][j] é o pixel da linha i e coluna j. A matriz fica
+na memória linha após linha (row-major): img[i][j] está na posição
+i·C + j a partir do início, o que torna eficiente percorrer a imagem com o
+laço das colunas por dentro.
+
+Um erro muito comum: no cabeçalho, a LARGURA (colunas) vem antes da ALTURA
+(linhas), ao contrário da ordem dos índices img[linha][coluna]. Trocar as
+duas embaralha qualquer imagem que não seja quadrada.
+
+Para imagens grandes, ou de tamanho conhecido só ao ler o arquivo, a
+matriz é alocada com malloc (um vetor de L·C posições, acessado como
+img[i*C + j]); ver [[ponteiros]].
+
+## Transformações: laços sobre a matriz
+
+Quase todo processamento de imagem é um laço duplo que visita cada pixel,
+em tempo O(L · C):
+
+- negativo: novo[i][j] = max - img[i][j];
+- limiarização (de cinza para preto e branco): o pixel vira 1 (preto) se
+  img[i][j] < limiar e 0 caso contrário;
+- espelhamento horizontal: novo[i][j] = img[i][C-1-j];
+- rotação de 90 graus: novo[j][L-1-i] = img[i][j] (a imagem nova tem C
+  linhas e L colunas);
+- filtros de suavização e de detecção de bordas, em que cada pixel novo
+  depende dos vizinhos (uma pequena matriz de pesos percorre a imagem).
+
+Mesmo uma foto modesta, de 4000 x 3000 pixels, tem 12 milhões de pixels (36
+milhões de números em cores): a [[eficiencia|eficiência]] dos laços sobre
+a matriz importa.
+
+## Como ver as imagens
+
+Os arquivos .pbm, .pgm e .ppm abrem no GIMP, no IrfanView, no visualizador
+de imagens de muitas distribuições Linux e em vários editores online. O
+programa convert, do ImageMagick, converte para PNG:
+convert imagem.pgm imagem.png.
+
+## Histórico
+
+Jef Poskanzer criou o PBM nos anos 1980 para poder enviar imagens em
+mensagens de correio eletrônico, que na época só aceitavam texto. No fim de
+1988, no pacote Pbmplus, ele estendeu a ideia para tons de cinza (PGM) e
+cores (PPM). Desde 1993 o pacote é mantido por outras pessoas com o nome
+Netpbm, que dá nome à família de formatos.
+
+## Sobre o código
+
+O programa monta, em matrizes, a palavra MAC do material da disciplina (em
+PBM), um degradê de cinza e o seu negativo (em PGM) e uma pequena imagem
+colorida (em PPM), e grava os quatro arquivos (mac.pbm, degrade.pgm,
+negativo.pgm e cores.ppm) na pasta onde é executado.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Breve introdução aos formatos de imagem: PBM, PGM, PPM e matrizes. IME-USP. https://www.ime.usp.br/~leo/intr_prog/breve_introducao_imagens_pbm_pgm_ppm.html
+- POSKANZER, J. et al. Netpbm: user manual (formatos pbm, pgm e ppm). https://netpbm.sourceforge.net/doc/
+- GONZALEZ, R. C.; WOODS, R. E. Processamento digital de imagens. 3. ed. São Paulo: Pearson, 2010. Capítulos 2 e 3.
+- KERNIGHAN, B. W.; RITCHIE, D. M. C: a linguagem de programação padrão ANSI. Rio de Janeiro: Campus, 1989. Seção 5.7 (vetores multidimensionais).
+- Wikipedia. Netpbm. https://en.wikipedia.org/wiki/Netpbm
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define LIN 5
+#define COL 11
+#define TAM 8          /* lado do degradê */
+
+/* "MAC" do material da disciplina: 1 = preto, 0 = branco */
+int mac[LIN][COL] = {
+  {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+  {1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+  {1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0},
+  {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+  {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1}
+};
+
+/* grava uma matriz TAM x TAM de cinzas no formato PGM em texto (P2) */
+int grava_pgm(const char *nome, int img[TAM][TAM], int max) {
+  FILE *f = fopen(nome, "w");
+  int i, j;
+  if (f == NULL) { perror(nome); return 0; }
+  fprintf(f, "P2\n# gerado pelo EP de MAC0122\n%d %d\n%d\n", TAM, TAM, max); /* largura, altura */
+  for (i = 0; i < TAM; i++) {
+    for (j = 0; j < TAM; j++) fprintf(f, "%4d", img[i][j]);
+    fprintf(f, "\n");
+  }
+  fclose(f);
+  return 1;
+}
+
+int main(void) {
+  int deg[TAM][TAM], neg[TAM][TAM], i, j;
+  FILE *f;
+
+  /* PBM: a palavra MAC; o cabeçalho traz COLUNAS antes de LINHAS */
+  f = fopen("mac.pbm", "w");
+  if (f == NULL) { perror("mac.pbm"); return 1; }
+  fprintf(f, "P1\n%d %d\n", COL, LIN);
+  for (i = 0; i < LIN; i++) {
+    for (j = 0; j < COL; j++) fprintf(f, "%d ", mac[i][j]);
+    fprintf(f, "\n");
+  }
+  fclose(f);
+
+  /* PGM: degradê da esquerda (preto) para a direita (branco) e o negativo */
+  for (i = 0; i < TAM; i++)
+    for (j = 0; j < TAM; j++) {
+      deg[i][j] = j * 255 / (TAM - 1);
+      neg[i][j] = 255 - deg[i][j];       // negativo: max - valor
+    }
+  if (!grava_pgm("degrade.pgm", deg, 255) || !grava_pgm("negativo.pgm", neg, 255)) return 1;
+
+  /* PPM: 2 x 3 pixels coloridos, três números (R G B) por pixel */
+  f = fopen("cores.ppm", "w");
+  if (f == NULL) { perror("cores.ppm"); return 1; }
+  fprintf(f, "P3\n3 2\n255\n");
+  fprintf(f, "255 0 0   0 255 0   0 0 255\n");     /* vermelho, verde, azul */
+  fprintf(f, "255 255 0   0 0 0   255 255 255\n"); /* amarelo, preto, branco */
+  fclose(f);
+
+  printf("Gravados: mac.pbm (%dx%d), degrade.pgm e negativo.pgm (%dx%d), cores.ppm (3x2)\n",
+         COL, LIN, TAM, TAM);
+  printf("Linha do meio do degradê:");
+  for (j = 0; j < TAM; j++) printf(" %d", deg[TAM / 2][j]);
+  printf("\n");
+  return 0;
+}
+FIM_CODIGO_C

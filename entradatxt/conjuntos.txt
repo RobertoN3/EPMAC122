@@ -1,0 +1,207 @@
+2. Algoritmo: Conjunto em vetor linear e em vetor de bits
+5. Conceitos: Representação de conjuntos, Vetores, Hash, Eficiência de algoritmos
+6. Problema: Dado um conjunto que muda durante a execução, com elementos tirados de um universo {0, 1, ..., U-1}, buscar, inserir e remover elementos e esvaziar o conjunto
+7. Titulo: Representação de conjuntos
+
+## Ideia geral
+
+Muitos programas precisam guardar um CONJUNTO: uma coleção sem repetições,
+em que a ordem não importa e a pergunta principal é "x pertence ao
+conjunto?". Exemplos: os vértices já visitados numa
+[[bfs|busca em largura]], as palavras reservadas da linguagem C, os números
+já sorteados num bingo, os alunos presentes numa aula.
+
+As operações básicas são:
+- pertence(x): x está no conjunto?
+- insere(x): acrescenta x (se ainda não estiver);
+- remove(x): retira x;
+- esvazia(): deixa o conjunto vazio;
+- e, às vezes, união, interseção e listagem dos elementos.
+
+Não existe uma representação que seja a melhor para tudo: cada uma troca
+tempo por memória de um jeito. Esta página compara as duas vistas na
+disciplina.
+
+## Método linear: um vetor com os elementos
+
+Guardam-se os n elementos do conjunto em v[0..n-1], sem repetição e em
+qualquer ordem.
+
+- pertence(x): [[busca_sequencial|busca sequencial]] em v[0..n-1]: O(n).
+- insere(x): é preciso verificar antes se x já está lá (senão o conjunto
+  teria repetições), e depois colocá-lo em v[n]: O(n).
+- remove(x): achar x (O(n)) e pôr no lugar dele o último elemento, v[n-1],
+  diminuindo n. Como a ordem não importa, não é preciso deslocar nada: a
+  remoção em si é O(1), mas a busca torna o total O(n).
+- esvazia(): basta fazer n = 0: O(1).
+
+Memória: proporcional ao número de elementos, n, e não ao tamanho do
+universo. Bom quando o conjunto é pequeno, mesmo que o universo seja enorme.
+
+## Vetor de bits: uma posição para cada elemento possível
+
+Quando o universo é {0, 1, ..., U-1} e U não é grande demais, usa-se um
+vetor V com U posições:
+
+```
+  x pertence ao conjunto  <=>  V[x] == 1
+```
+
+- pertence(x): olhar V[x]: O(1).
+- insere(x): V[x] = 1: O(1). Repetições são impossíveis por construção.
+- remove(x): V[x] = 0: O(1).
+- esvazia(): zerar as U posições: O(U).
+- união e interseção de dois conjuntos: percorrer os vetores fazendo OU e
+  E posição a posição: O(U).
+
+Também chamado de vetor característico ou bitmap. O nome "de bits" vem do
+fato de cada posição só precisar de um bit: com U = 1 000 000, o conjunto
+cabe em 125 000 bytes. Em C, guardam-se 8 elementos por byte (ou 32 ou 64
+por palavra): o elemento x fica no bit x % 8 do byte x / 8, e as operações
+usam deslocamentos e máscaras:
+
+```
+  pertence: (bits[x / 8] >> (x % 8)) & 1
+  insere:    bits[x / 8] |=  (1 << (x % 8))
+  remove:    bits[x / 8] &= ~(1 << (x % 8))
+```
+
+Com palavras de 64 bits, a união de dois conjuntos faz um OU de 64
+elementos de uma vez.
+
+## Comparação
+
+```
+  operação      método linear    vetor de bits
+  pertence      O(n)             O(1)
+  insere        O(n)             O(1)
+  remove        O(n)             O(1)
+  esvazia       O(1)             O(U)
+  memória       n inteiros       U bits
+```
+
+(n é o número de elementos no conjunto; U é o tamanho do universo.)
+
+Regra prática: universo pequeno e denso (muitos dos U valores possíveis
+aparecem) pede vetor de bits; universo enorme e conjunto pequeno pede o
+método linear, ou algo melhor.
+
+## E quando o universo não é {0, ..., U-1}?
+
+Para conjuntos de cadeias de caracteres (nomes, palavras), não dá para ter
+uma posição para cada cadeia possível. A ideia, apresentada na disciplina
+logo depois do vetor de bits, é usar uma função que transforma cada cadeia
+num índice de 0 a N-1 e então usar um vetor: é a
+[[hash|tabela de espalhamento]], que mantém pertence, insere e remove em
+tempo médio O(1) e lida com as colisões. Se for preciso também listar os
+elementos em ordem, uma [[abb|árvore binária de busca]] é a alternativa.
+
+O vetor de frequências da [[ordenacao_contagem|ordenação por contagem]] é
+uma generalização do vetor de bits: em vez de 0 ou 1, cada posição conta
+quantas vezes o valor aparece (um multiconjunto).
+
+## Aplicações
+
+- Crivo de Eratóstenes: um vetor de bits marca os números compostos; os
+  que sobram são os primos.
+- Vértices visitados em buscas em [[grafos]].
+- Bancos de dados e mecanismos de busca usam bitmaps para saber, por
+  exemplo, quais registros têm um certo atributo, e fazem consultas com
+  operações E e OU sobre eles.
+- Sistemas operacionais usam bitmaps para controlar blocos livres do disco
+  e páginas livres da memória.
+
+Uma técnica curiosa, o conjunto esparso de Briggs e Torczon (1993), usa dois
+vetores para ter pertence, insere e remove em O(1) e, além disso, esvaziar
+também em O(1).
+
+## Sobre o código
+
+O programa representa conjuntos de inteiros de 0 a 63 das duas formas,
+executa as mesmas operações em cada uma, calcula a união e a interseção de
+dois conjuntos com o vetor de bits e usa um vetor de bits para encontrar os
+primos até 100 pelo crivo de Eratóstenes.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Material de MAC0122, semana 5 (representação de conjuntos: método linear e vetor de bits; espalhamento). IME-USP, e-Disciplinas, 2026.
+- FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 11.1 (tabelas de endereçamento direto) e exercício 11.1-2 (vetor de bits).
+- BENTLEY, J. Programming Pearls. 2. ed. Reading: Addison-Wesley, 2000. Coluna 1 (ordenação com um vetor de bits).
+- KNUTH, D. E. The Art of Computer Programming, v. 4A: Combinatorial Algorithms, Part 1. Upper Saddle River: Addison-Wesley, 2011. Seção 7.1.3 (Bitwise tricks and techniques).
+- BRIGGS, P.; TORCZON, L. An efficient representation for sparse sets. ACM Letters on Programming Languages and Systems, v. 2, n. 1-4, p. 59-69, 1993.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define U 64                  /* universo: 0..U-1 */
+#define BYTES ((U + 7) / 8)   /* 8 elementos por byte */
+
+/* ---------- método linear ---------- */
+typedef struct { int v[U]; int n; } ConjLinear;
+
+int lin_pertence(const ConjLinear *c, int x) {
+  int i;
+  for (i = 0; i < c->n; i++) if (c->v[i] == x) return 1;   /* O(n) */
+  return 0;
+}
+void lin_insere(ConjLinear *c, int x) {
+  if (!lin_pertence(c, x)) c->v[c->n++] = x;
+}
+void lin_remove(ConjLinear *c, int x) {
+  int i;
+  for (i = 0; i < c->n; i++)
+    if (c->v[i] == x) { c->v[i] = c->v[--c->n]; return; }  /* põe o último no lugar */
+}
+
+/* ---------- vetor de bits ---------- */
+typedef struct { unsigned char b[BYTES]; } ConjBits;
+
+int bit_pertence(const ConjBits *c, int x) { return (c->b[x / 8] >> (x % 8)) & 1; }
+void bit_insere(ConjBits *c, int x) { c->b[x / 8] |= (unsigned char)(1u << (x % 8)); }
+void bit_remove(ConjBits *c, int x) { c->b[x / 8] &= (unsigned char)~(1u << (x % 8)); }
+void bit_esvazia(ConjBits *c) { int i; for (i = 0; i < BYTES; i++) c->b[i] = 0; } // O(U)
+
+void bit_imprime(const char *nome, const ConjBits *c) {
+  int x;
+  printf("%s = {", nome);
+  for (x = 0; x < U; x++) if (bit_pertence(c, x)) printf(" %d", x);
+  printf(" }\n");
+}
+
+int main(void) {
+  ConjLinear L = {{0}, 0};
+  ConjBits A, B, uniao, inter;
+  int dados[] = {5, 12, 40, 12, 7, 63}, i, x;
+
+  bit_esvazia(&A);
+  for (i = 0; i < 6; i++) { lin_insere(&L, dados[i]); bit_insere(&A, dados[i]); }
+  lin_remove(&L, 40);
+  bit_remove(&A, 40);
+  printf("linear: n = %d, pertence(12) = %d, pertence(40) = %d\n",
+         L.n, lin_pertence(&L, 12), lin_pertence(&L, 40));
+  bit_imprime("bits A", &A);
+
+  bit_esvazia(&B);
+  for (x = 0; x < 16; x += 3) bit_insere(&B, x);    /* múltiplos de 3 até 15 */
+  bit_imprime("bits B", &B);
+  for (i = 0; i < BYTES; i++) {                       /* 8 elementos por operação */
+    uniao.b[i] = A.b[i] | B.b[i];
+    inter.b[i] = A.b[i] & B.b[i];
+  }
+  bit_imprime("A uniao B", &uniao);
+  bit_imprime("A inter B", &inter);
+
+  /* crivo de Eratóstenes: os compostos são marcados no vetor de bits */
+  {
+    unsigned char comp[(101 + 7) / 8] = {0};
+    int p, m;
+    printf("primos até 100:");
+    for (p = 2; p <= 100; p++) {
+      if ((comp[p / 8] >> (p % 8)) & 1) continue;
+      printf(" %d", p);
+      for (m = p * p; m <= 100; m += p) comp[m / 8] |= (unsigned char)(1u << (m % 8));
+    }
+    printf("\n");
+  }
+  return 0;
+}
+FIM_CODIGO_C

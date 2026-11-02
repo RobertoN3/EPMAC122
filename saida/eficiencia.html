@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eficiência de algoritmos | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Eficiência de algoritmos</h1><a class="botao botao-sec" href="eficiencia_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Saber que um algoritmo está correto não basta: é preciso que ele seja eficiente. A eficiência de um algoritmo tem dois aspectos principais.</p>
+<ul><li>Precisão: a resposta precisa estar suficientemente próxima da solução verdadeira. Se resolvemos um sistema linear Ax = b e obtemos um x para o qual Ax está longe de b, a &quot;solução&quot; é inútil, por mais rápida que tenha sido.</li>
+<li>Velocidade: a resposta precisa ser obtida em tempo factível, isto é, a tempo de ser útil. Calcular a escala de voos de um aeroporto para amanhã em uma semana não serve para nada. Junto com o tempo, analisa-se também a memória consumida.</li></ul>
+<h2>Precisão: os números no computador</h2>
+<p>Os números reais são representados em ponto flutuante: uma quantidade fixa de dígitos significativos (mantissa) e um expoente. No tipo double (padrão IEEE 754) são cerca de 15 a 16 dígitos decimais significativos. Daí:</p>
+<ul><li>números como 1/3, 0,1 e sqrt(2) são guardados de forma aproximada (0,1 não tem representação binária finita, e 0,1 + 0,2 != 0,3 em double);</li>
+<li>somar um número muito pequeno a um muito grande pode não ter efeito;</li>
+<li>subtrair números quase iguais destrói dígitos significativos (cancelamento catastrófico);</li>
+<li>valores que crescem muito rápido, como potências e fatoriais, estouram a faixa representável: 13! já não cabe em um int de 32 bits, e 21! não cabe nem em um inteiro de 64 bits.</li></ul>
+<p>Como consequência, dois algoritmos matematicamente equivalentes podem dar respostas numericamente muito diferentes.</p>
+<h2>Exemplo: calcular cos(x) pela série de Taylor</h2>
+<p>Funções como o cosseno são transcendentes: não podem ser escritas com um número finito de somas e multiplicações. Calculadoras e bibliotecas as aproximam por séries truncadas, como a série de Taylor (de MacLaurin) em torno de 0:</p>
+<pre>  cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ...
+</pre>
+<p>Três maneiras de implementá-la:</p>
+<ol><li>Muito ineficiente: em cada termo, chamar uma função de potência para x^k e uma de fatorial para k!. Refaz-se todo o trabalho dos termos anteriores: o termo k custa O(k), e n termos custam O(n²). Além disso, x^k e k! crescem rapidamente e geram erro numérico (e até estouro).</li>
+<li>Ineficiente: reaproveitar a potência e o fatorial do termo anterior, mas guardá-los separadamente. O tempo vira O(n), mas os números enormes continuam prejudicando a precisão.</li>
+<li>Eficiente: notar que cada termo é o anterior multiplicado por -x² / ((k+1)(k+2)). Calcula-se diretamente o termo, sempre um número pequeno, em O(1) por termo. É mais rápida E mais precisa: coincide com a função cos da biblioteca math.h em todos os dígitos impressos.</li></ol>
+<p>A lição: pensar sobre o algoritmo, e não apenas traduzir a fórmula, melhora os dois aspectos da eficiência ao mesmo tempo.</p>
+<h2>Velocidade: como medir o tempo de um algoritmo</h2>
+<p>Medir segundos com um cronômetro (em C, a função clock()) é útil, mas o resultado depende do computador, do compilador e da carga da máquina. Para comparar ALGORITMOS, usa-se um modelo abstrato:</p>
+<ul><li>conta-se o número de operações básicas executadas (comparações, atribuições, operações aritméticas, acessos a vetor), supondo que cada uma custa tempo constante;</li>
+<li>expressa-se essa contagem como função do tamanho n da entrada (o número de elementos do vetor, de vértices do <a href="grafos.html">grafo</a>, de dígitos do número...).</li></ul>
+<p>Como entradas do mesmo tamanho podem exigir esforços diferentes, analisam-se três casos:</p>
+<ul><li>pior caso: o maior tempo entre todas as entradas de tamanho n. É a garantia mais útil e a análise mais comum;</li>
+<li>melhor caso: o menor tempo (por exemplo, vetor já ordenado);</li>
+<li>caso médio: a média sobre uma distribuição das entradas (em geral, supondo todas igualmente prováveis). É mais realista, porém mais difícil de calcular.</li></ul>
+<p>Exemplo: busca sequencial de x em um vetor de n elementos, contando como operação o exame de um elemento. Pior caso: n exames (x não está, ou está na última posição). Melhor caso: 1 exame. Caso médio: se x está presente, uma única vez, e todas as posições são igualmente prováveis, a média é (1 + 2 + ... + n) / n = (n + 1) / 2 exames. Essa conta vale só sob essas hipóteses; se parte das buscas for sem sucesso, a média muda.</p>
+<p>Comparação concreta: no vetor ordenado 0, 1, 2, ..., 7 (n = 8), procurando o valor 8, que não está lá, a busca sequencial examina os 8 elementos. A <a href="busca_binaria.html">busca binária</a> examina os índices 3, 5, 6 e 7 (o meio de cada trecho, arredondado para baixo) e para: 4 exames. Dobrando n, a busca sequencial dobra o trabalho, enquanto a binária faz só um exame a mais: para n = 1024 são 1024 contra 11. (A busca binária exige o vetor ordenado; o custo de ordená-lo não entra na conta de uma busca.)</p>
+<h2>Notação assintótica</h2>
+<p>Na contagem exata, como 3n² + 5n + 2, o que importa para n grande é o termo dominante, e as constantes dependem de detalhes da máquina. A notação assintótica descreve só a ordem de crescimento.</p>
+<ul><li>O (ó grande, limite superior): f(n) = O(g(n)) se existem constantes c &gt; 0 e n0 tais que f(n) &lt;= c · g(n) para todo n &gt;= n0. Exemplo: 3n² + 5n + 2 = O(n²), pois 3n² + 5n + 2 &lt;= 4n² para n &gt;= 6.</li>
+<li>Omega (limite inferior): f(n) = Omega(g(n)) se f(n) &gt;= c · g(n) para n grande.</li>
+<li>Theta (ordem exata): f(n) = Theta(g(n)) se f é O(g) e Omega(g) ao mesmo tempo.</li></ul>
+<p>Uma confusão comum: O NÃO significa &quot;pior caso&quot;, e Omega NÃO significa &quot;melhor caso&quot;. As notações descrevem limites de uma função qualquer; podemos aplicá-las ao custo do pior caso, do melhor caso ou do caso médio. Por exemplo, o pior caso da inserção direta é Theta(n²) e o seu melhor caso é Theta(n). Também vale 3n + 2 = O(n²), mas é um limite pouco preciso: o mais informativo é dizer 3n + 2 = Theta(n).</p>
+<p>Ordens de crescimento comuns, da mais rápida para a mais lenta:</p>
+<pre>  O(1)        constante     acesso a v[i], empilhar
+  O(log n)    logarítmica   busca binária
+  O(n)        linear        busca sequencial, maior elemento
+  O(n log n)  &quot;n log n&quot;     Merge Sort, Heap Sort
+  O(n²)       quadrática    bolha, seleção, inserção
+  O(n³)       cúbica        multiplicação ingênua de matrizes
+  O(2^n)      exponencial   subconjuntos, Fibonacci recursivo ingênuo
+  O(n!)       fatorial      todas as permutações
+</pre>
+<p>Para sentir a diferença, suponha um computador que faça 10^9 operações por segundo e uma entrada com n = 10^6 elementos:</p>
+<ul><li>n log n ~ 2 · 10^7 operações: 0,02 segundo;</li>
+<li>n² = 10^12 operações: cerca de 17 minutos;</li>
+<li>2^n: mais do que a idade do universo, mesmo para n = 100.</li></ul>
+<p>Por isso, um algoritmo melhor costuma valer muito mais do que um computador mais rápido: multiplicar a velocidade da máquina por 1000 permite a um algoritmo O(2^n) resolver entradas só cerca de 10 unidades maiores.</p>
+<h2>Regras práticas de análise</h2>
+<ul><li>Laços em sequência: somam-se os custos (o maior domina).</li>
+<li>Laços aninhados: multiplicam-se. Dois laços de 1 a n dão O(n²).</li>
+<li>Laço em que a variável é dividida por 2 a cada passo: O(log n).</li>
+<li>Algoritmos <a href="recursao.html">recursivos</a>: escreve-se uma recorrência, como T(n) = 2T(n/2) + n, e resolve-se (<a href="arvores.html">árvore</a> de recursão, substituição ou teorema mestre).</li></ul>
+<h2>Memória</h2>
+<p>A mesma análise vale para o espaço. Um algoritmo é &quot;in place&quot; se usa memória extra O(1) (bolha, seleção, inserção, <a href="heapsort.html">Heap Sort</a>). O <a href="mergesort.html">Merge Sort</a> usa O(n) extra; algoritmos recursivos usam memória de <a href="pilhas.html">pilha</a> proporcional à profundidade da recursão. Muitas vezes é possível trocar memória por tempo, como na <a href="programacao_dinamica.html">programação dinâmica</a> e nas <a href="hash.html">tabelas de espalhamento</a>.</p>
+<h2>Limites do que é possível</h2>
+<ul><li>Problemas intratáveis: para alguns problemas, todos os algoritmos conhecidos são exponenciais. O exemplo central é a satisfatibilidade (SAT): dada uma expressão booleana, como b1 E (b2 OU NÃO b3), existe uma atribuição de valores que a torne verdadeira? Para 3 variáveis basta testar 8 combinações; para 300, seriam 2^300. SAT é NP-completo, e decidir se existe algoritmo polinomial para ele é o famoso problema &quot;P = NP?&quot;, em aberto desde 1971.</li>
+<li>Problemas indecidíveis: não existe NENHUM algoritmo que os resolva. O exemplo clássico é o problema da parada (Turing, 1936): decidir, para um programa e uma entrada quaisquer, se o programa termina.</li></ul>
+<h2>Histórico</h2>
+<p>A notação O foi introduzida pelo matemático Paul Bachmann em 1894 e popularizada por Edmund Landau em 1909 (por isso &quot;símbolos de Landau&quot;). Donald Knuth propôs em 1976 o uso sistemático de O, Omega e Theta em análise de algoritmos e é considerado o pai dessa área, com a série &quot;The Art of Computer Programming&quot;. O conceito de tempo polinomial como &quot;eficiente&quot; vem de Alan Cobham e Jack Edmonds (1965), e a teoria da NP-completude, de Stephen Cook (1971) e Richard Karp (1972).</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa a versão eficiente do cosseno pela série de Taylor e compara o resultado com a função cos da biblioteca math.h.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Introdução à eficiência de algoritmos. MAC122, IME-USP. http://users.ime.usp.br/~leo/mac/mac122/introducao_eficiencia_algoritmos.html</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulos 2 e 3 (Crescimento de funções) e 34 (NP-completude).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 1.2.11 (notação O). Seção 4.2 do v. 2 trata de aritmética de ponto flutuante.</li>
+<li>KNUTH, D. E. Big Omicron and big Omega and big Theta. ACM SIGACT News, v. 8, n. 2, p. 18-24, 1976.</li>
+<li>FEOFILOFF, P. Análise de algoritmos. https://www.ime.usp.br/~pf/analise_de_algoritmos/</li>
+<li>GOLDBERG, D. What every computer scientist should know about floating-point arithmetic. ACM Computing Surveys, v. 23, n. 1, p. 5-48, 1991.</li>
+<li>GAREY, M. R.; JOHNSON, D. S. Computers and Intractability: a guide to the theory of NP-completeness. San Francisco: W. H. Freeman, 1979.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="eficiencia_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

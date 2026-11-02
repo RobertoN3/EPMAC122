@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Busca sequencial e busca com sentinela | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Busca sequencial e busca com sentinela</h1><a class="botao botao-sec" href="busca_sequencial_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Busca sequencial e busca com sentinela</dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#busca-sequencial">Busca sequencial</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-n%C3%A3o-ordenado-com-n-elementos-e-um-valor-x-decidir-se-x-est%C3%A1-no-vetor-e-em-que-posi%C3%A7%C3%A3o-ele-aparece-pela-primeira-vez">Problema</a></dt><dd class="texto">Dado um vetor não ordenado com n elementos e um valor x, decidir se x está no vetor e em que posição ele aparece pela primeira vez</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Procurar um valor em uma coleção é uma das tarefas mais comuns em programação: um nome numa agenda, um produto num estoque, uma palavra num texto. Quando os dados estão em um vetor sem nenhuma ordem, não há atalho: a única maneira de ter certeza de que x não está no vetor é olhar todos os elementos. A busca sequencial (ou busca linear) faz exatamente isso: examina v[0], v[1], v[2], ..., até encontrar x ou chegar ao fim do vetor.</p>
+<p>Esta página trata da busca em vetor NÃO ordenado. Se o vetor estiver ordenado, a <a href="busca_binaria.html">busca binária</a> é muito mais rápida.</p>
+<h2>O algoritmo</h2>
+<pre>  busca(v, n, x):
+      j &lt;- 0
+      enquanto j &lt; n:
+          se v[j] == x: devolva j      (primeira ocorrência)
+          j &lt;- j + 1
+      devolva -1                       (x não está no vetor)
+</pre>
+<p>Convenção usada no material da disciplina: a função devolve o índice da primeira ocorrência de x, ou -1 se x não ocorre. Como todo índice válido é maior ou igual a zero, o valor -1 não pode ser confundido com uma posição.</p>
+<h2>Por que está correto: o invariante</h2>
+<p>No início de cada iteração do laço vale o invariante:</p>
+<pre>  x não pertence a v[0..j-1]
+</pre>
+<ul><li>No início, j = 0 e o trecho v[0..-1] é vazio: o invariante vale.</li>
+<li>Se o invariante vale e v[j] != x, então x também não está em v[0..j]; ao fazer j &lt;- j + 1, ele continua valendo.</li>
+<li>Se o laço devolve j, é porque v[j] == x e, pelo invariante, nenhuma posição anterior tem x: j é de fato a PRIMEIRA ocorrência.</li>
+<li>Se o laço termina com j == n, o invariante diz que x não está em v[0..n-1]: devolver -1 está correto.</li></ul>
+<p>O uso de invariantes para provar algoritmos, e a ligação com a indução, são explicados na página sobre o <a href="mdc_euclides.html">algoritmo de Euclides</a>.</p>
+<h2>Análise</h2>
+<p>Contando as comparações feitas pelo laço:</p>
+<ul><li>Cada iteração faz DUAS comparações: o teste de fim (j &lt; n) e o teste do elemento (v[j] == x).</li>
+<li>Melhor caso: x está em v[0]. São 2 comparações: O(1).</li>
+<li>Pior caso: x não está no vetor (ou está só na última posição). São n comparações com x e n + 1 testes de fim, ou seja, 2n + 1 comparações: O(n).</li>
+<li>Caso médio: se x está no vetor, uma única vez, e todas as posições são igualmente prováveis, examinam-se em média (n + 1) / 2 elementos.</li></ul>
+<p>Não há como fazer melhor que O(n) no pior caso sem saber nada sobre a ordem dos dados: qualquer algoritmo que deixe de examinar uma posição pode errar quando x está justamente nela.</p>
+<h2>Busca com sentinela</h2>
+<p>O teste de fim (j &lt; n) existe só para o laço não passar do fim do vetor quando x não está lá. A busca com sentinela elimina esse teste com um truque: antes de começar, coloca-se uma cópia de x numa posição extra, logo depois do último elemento, v[n]. Essa cópia é o sentinela: ela garante que o laço sempre encontra x e, portanto, sempre para.</p>
+<pre>  busca_sentinela(v, n, x):       (v precisa ter espaço para n + 1 elementos)
+      v[n] &lt;- x
+      j &lt;- 0
+      enquanto v[j] != x: j &lt;- j + 1
+      se j &lt; n: devolva j          (achou antes do sentinela)
+      senão:    devolva -1         (só achou o sentinela)
+</pre>
+<p>O invariante é o mesmo (x não está em v[0..j-1]). A diferença está na contagem:</p>
+<ul><li>busca simples, pior caso: n comparações com x + (n + 1) testes de fim = 2n + 1;</li>
+<li>busca com sentinela, pior caso: (n + 1) comparações com x + 1 teste no final = n + 2.</li></ul>
+<p>A ordem de crescimento continua O(n): o sentinela não muda a classe do algoritmo, mas corta quase pela metade o número de testes, o que se nota em laços executados milhões de vezes. Custos do truque: é preciso uma posição a mais no vetor, e a função escreve no vetor (não pode ser usada com um vetor somente leitura nem em dois processos que leem o mesmo vetor ao mesmo tempo).</p>
+<p>A mesma ideia aparece em outros lugares: a <a href="insertionsort.html">inserção direta</a> com sentinela em v[0] elimina o teste j &gt;= 0, e a célula-cabeça das <a href="listas_encadeadas.html">listas encadeadas</a> elimina casos especiais.</p>
+<h2>Exemplo</h2>
+<p>Vetor v = (31, 7, 18, 42, 5, 26, 13, 9), com n = 8.</p>
+<pre>  procurar 26:  examina 31, 7, 18, 42, 5, 26        -&gt; posição 5
+                simples: 6 com x + 6 de fim = 12   sentinela: 6 + 1 = 7
+  procurar 99:  examina os 8 elementos              -&gt; -1
+                simples: 8 com x + 9 de fim = 17   sentinela: 9 + 1 = 10
+</pre>
+<h2>Quando usar a busca sequencial</h2>
+<ul><li>O vetor não está ordenado e serão feitas poucas buscas. Ordenar custa O(n log n); só compensa se depois vierem muitas buscas binárias de O(log n) cada.</li>
+<li>A estrutura só permite acesso em sequência, como uma lista encadeada ou um arquivo lido do começo ao fim.</li>
+<li>O vetor é pequeno: para algumas dezenas de elementos, o laço simples costuma ser tão rápido quanto métodos mais sofisticados.</li>
+<li>Quando há muitas buscas num conjunto que muda, a melhor opção costuma ser uma <a href="hash.html">tabela de espalhamento</a>, com busca em tempo médio O(1).</li></ul>
+<p>Uma variação útil é a busca auto-organizada: cada elemento encontrado é movido para o início (ou trocado com o anterior), de modo que os elementos procurados com frequência ficam perto do começo.</p>
+<h2>Histórico</h2>
+<p>A busca sequencial é tão antiga quanto as listas. Knuth a apresenta como o primeiro algoritmo de busca do volume 3 de &quot;The Art of Computer Programming&quot; (seção 6.1), junto com a versão com sentinela, e mostra que o sentinela torna o laço interno bem mais rápido nas máquinas da época.</p>
+<h2>Sobre o código</h2>
+<p>O programa implementa as duas buscas sobre o vetor do exemplo, procura um valor do meio, o primeiro e um ausente, e imprime a posição devolvida e o número de comparações de cada método.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Busca em vetor não ordenado. MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/busca_nao_ordenado.html</li>
+<li>BRANDÃO, L. O. Busca em vetor não ordenado com sentinela. MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/busca_nao_ordenado_sentinela.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.1 (Sequential searching).</li>
+<li>FEOFILOFF, P. Busca em vetor. https://www.ime.usp.br/~pf/algoritmos/aulas/busca.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seção 12.3.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Exercício 2.1-3 (busca linear e invariante).</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="busca_sequencial_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

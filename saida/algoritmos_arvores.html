@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Algoritmos recursivos em árvores | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Algoritmos recursivos em árvores</h1><a class="botao botao-sec" href="algoritmos_arvores_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Contagem de nós, contagem de folhas e altura de árvores binárias</dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-arvores-%C3%A1rvore-bin%C3%A1ria-determinar-seu-n%C3%BAmero-de-n%C3%B3s-seu-n%C3%BAmero-de-folhas-e-sua-altura">Problema</a></dt><dd class="texto">Dada uma <a href="arvores.html">árvore</a> binária, determinar seu número de nós, seu número de folhas e sua altura</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma <a href="arvores.html">árvore</a> binária ou é vazia, ou é formada por uma raiz, uma subárvore esquerda e uma subárvore direita, que também são árvores binárias. Essa definição <a href="recursao.html">recursiva</a> sugere um modo de calcular quase qualquer propriedade de uma árvore:</p>
+<ol><li>resolver o caso base (em geral, a árvore vazia) diretamente;</li>
+<li>resolver o mesmo problema nas duas subárvores;</li>
+<li>combinar os dois resultados com a informação da raiz.</li></ol>
+<p>O exercício da página 4 do material de grafos e árvores da disciplina propõe três exemplos desse esquema: contar nós, contar folhas e calcular a altura. Aqui os casos base são escritos explicitamente: a árvore vazia tem zero nós, zero folhas e altura -1. A altura é medida em arestas, de modo que uma folha tem altura zero, a mesma convenção da página de <a href="arvores.html">árvores</a>. Supõe-se uma árvore válida: sem ciclos e sem nós compartilhados entre as duas subárvores.</p>
+<h2>Contar nós</h2>
+<p>Seja N(T) o número de nós da árvore T, e E e D suas subárvores.</p>
+<pre>  N(vazia) = 0
+  N(T)     = 1 + N(E) + N(D)
+</pre>
+<p>O 1 conta a raiz; as outras parcelas contam os nós das subárvores. Uma folha tem as duas subárvores vazias, logo N(folha) = 1 + 0 + 0 = 1. Cada nó é contado exatamente uma vez, porque a raiz e as duas subárvores são partes disjuntas da árvore.</p>
+<h2>Contar folhas</h2>
+<p>Seja F(T) o número de folhas de T. Aqui são necessários TRÊS casos:</p>
+<pre>  F(vazia) = 0
+  F(folha) = 1
+  F(T)     = F(E) + F(D),  se a raiz tem pelo menos um filho
+</pre>
+<p>O caso da folha precisa ser explícito. Se usássemos apenas a terceira regra, uma folha somaria os resultados de seus dois filhos ausentes e devolveria zero, deixando de contar a si mesma. Quando a raiz tem um só filho, a subárvore ausente contribui com zero e a outra com suas folhas: a raiz só conta como folha quando não tem filho algum.</p>
+<h2>Calcular a altura</h2>
+<p>Seja H(T) a altura de T.</p>
+<pre>  H(vazia) = -1
+  H(T)     = 1 + max(H(E), H(D))
+</pre>
+<p>Com essa escolha de caso base, uma folha tem H = 1 + max(-1, -1) = 0. Se só um filho existe, vale a altura da subárvore dele, mais a aresta que liga a raiz a esse filho. Na implementação, as duas alturas são guardadas em variáveis antes de compará-las. Escrever 1 + (altura(E) &gt; altura(D) ? altura(E) : altura(D)) chamaria a função DUAS vezes para a subárvore vencedora, em cada nível, e o tempo deixaria de ser linear.</p>
+<h2>Por que estão corretos</h2>
+<p>Os três algoritmos se provam por indução no número de nós, exatamente como na página de <a href="recursao.html">recursão</a>:</p>
+<ul><li>o caso base (árvore vazia, e a folha no caso de F) está certo por definição;</li>
+<li>supondo que as chamadas devolvem o valor certo para as subárvores, que são menores, a regra de combinação dá o valor certo para a árvore toda;</li>
+<li>as chamadas recebem subárvores estritamente menores, então sempre chegam ao caso base: a recursão termina.</li></ul>
+<h2>Exemplo</h2>
+<p>Usamos a árvore da figura: a raiz 1 tem filhos 2 e 3; o nó 2 tem apenas o filho esquerdo 4; o nó 3 tem os filhos 5 e 6.</p>
+<pre>          1
+        /   \
+       2     3
+      /     / \
+     4     5   6
+</pre>
+<ul><li>Nós: as folhas 4, 5 e 6 devolvem 1. A subárvore de raiz 2 devolve 1 + 1 + 0 = 2, e a de raiz 3 devolve 1 + 1 + 1 = 3. A raiz devolve 1 + 2 + 3 = 6.</li>
+<li>Folhas: a subárvore de raiz 2 contribui com 1 (o nó 4) e a de raiz 3 com 2 (os nós 5 e 6): total 3.</li>
+<li>Altura: as folhas têm altura 0, os nós 2 e 3 têm altura 1, e a raiz tem altura 1 + max(1, 1) = 2.</li></ul>
+<h2>Complexidade</h2>
+<p>Para uma árvore com n nós:</p>
+<ul><li>Tempo: cada função visita cada nó uma vez e faz trabalho constante por visita. As chamadas para subárvores vazias são n + 1 (cada ponteiro NULL é visitado uma vez), também em quantidade linear. Logo cada função custa Theta(n). Na árvore vazia, termina em Theta(1).</li>
+<li>Espaço: a <a href="pilhas.html">pilha</a> de execução guarda os contextos das chamadas ainda não concluídas de um único caminho da raiz até o ponto atual. Para uma árvore de altura h, o espaço é Theta(h + 1): Theta(log n) em árvores balanceadas e Theta(n) em uma árvore degenerada, que parece uma lista. As duas subárvores são processadas uma depois da outra, então suas pilhas não coexistem.</li></ul>
+<h2>Outros problemas no mesmo esquema</h2>
+<p>O mesmo molde (caso base + duas chamadas + combinação) resolve muitos outros problemas:</p>
+<ul><li>soma ou maior valor guardado nos nós;</li>
+<li>número de nós no nível k (passando k-1 para os filhos);</li>
+<li>verificar se duas árvores são iguais (mesma forma e mesmos valores);</li>
+<li>espelhar uma árvore (trocar esquerda e direita em todo nó);</li>
+<li>verificar se uma árvore é uma <a href="abb.html">árvore binária de busca</a>;</li>
+<li>os três percursos (pré, in e pós-ordem) e a liberação da memória, que é um percurso em pós-ordem: os filhos devem ser liberados antes do pai.</li></ul>
+<h2>Sobre o código</h2>
+<p>O programa representa a árvore com <a href="registros.html">registros</a> ligados por <a href="ponteiros.html">ponteiros</a>, usando NULL para a subárvore vazia. Ele calcula as três propriedades para a árvore de seis nós do exemplo, para a árvore vazia e para uma árvore de um só nó, e confere os resultados esperados: (6, 3, 2), (0, 0, -1) e (1, 1, 0), na ordem nós, folhas e altura. As funções recebem ponteiros para nós constantes e não alteram a árvore. Os nós são variáveis locais ligadas no main, sem alocação dinâmica.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. Página 4 (recorrências e exercício 1.1). https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf</li>
+<li>FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 5 (Recursion and Trees).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 10.4 e apêndice B.5 (árvores).</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="algoritmos_arvores_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

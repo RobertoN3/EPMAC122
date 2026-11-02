@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Código: Estabilidade em algoritmos de ordenação | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>.pp{color:#9C6500}.pf{color:#3D7B7B;font-style:italic}.tp{color:#B00040}.kw{color:#008000;font-weight:bold}.cm{color:#3D7B7B;font-style:italic}.st{color:#BA2121}.es{color:#AA5D1F;font-weight:bold}.nu{color:#666666}.ct{color:#008000}.op{color:#666666}</style>
+</head>
+<body class="pagina-codigo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="codigo-pagina">
+<header class="titulo-artigo"><h1>Estabilidade em algoritmos de ordenação: código em C</h1><a class="botao botao-sec" href="estabilidade.html">Voltar para a explicação</a></header>
+<ul class="legenda" aria-label="Cores usadas no código">
+<li><code class="pp">#include</code> pragma (pré-processador)</li>
+<li><code class="pf">&lt;stdio.h&gt;</code> arquivo incluído</li>
+<li><code class="tp">int</code> tipo</li>
+<li><code class="kw">for</code> comando ou palavra reservada</li>
+<li><code class="cm">/* ... */</code> comentário</li>
+<li><code class="st">"texto"</code> cadeia de caracteres</li>
+<li><code class="es">\n</code> sequência de escape</li>
+<li><code class="nu">3.14</code> número</li>
+<li><code class="ct">NULL</code> constante da biblioteca</li>
+<li><code class="op">+=</code> operador</li>
+</ul>
+<section class="bloco">
+<div class="bloco-barra"><span>77 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/estabilidade.c" download>Baixar estabilidade.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="codigo"><pre class="nl" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+
+<span class="kw">typedef</span> <span class="tp">struct</span> {
+    <span class="tp">char</span> nome[<span class="nu">32</span>];
+    <span class="tp">int</span> nota;
+} Aluno;
+
+<span class="cm">/* Estavel: registros com nota igual nao sao deslocados pela chave. */</span>
+<span class="tp">void</span> insertion_sort(Aluno vetor[], <span class="tp">size_t</span> n)
+{
+    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        Aluno chave <span class="op">=</span> vetor[i];
+        <span class="tp">size_t</span> j <span class="op">=</span> i;
+
+        <span class="kw">while</span> (j <span class="op">&gt;</span> <span class="nu">0</span> <span class="op">&amp;&amp;</span> vetor[j <span class="op">-</span> <span class="nu">1</span>].nota <span class="op">&gt;</span> chave.nota) {
+            vetor[j] <span class="op">=</span> vetor[j <span class="op">-</span> <span class="nu">1</span>];
+            j<span class="op">--</span>;
+        }
+        vetor[j] <span class="op">=</span> chave;
+    }
+}
+
+<span class="cm">/* Instavel: a troca distante pode inverter registros de notas iguais.
+   Mesmo selecionar o primeiro minimo nao impede essa inversao. */</span>
+<span class="tp">void</span> selecao_direta(Aluno vetor[], <span class="tp">size_t</span> n)
+{
+    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="tp">size_t</span> menor <span class="op">=</span> i;
+
+        <span class="kw">for</span> (<span class="tp">size_t</span> j <span class="op">=</span> i <span class="op">+</span> <span class="nu">1</span>; j <span class="op">&lt;</span> n; j<span class="op">++</span>) {
+            <span class="kw">if</span> (vetor[j].nota <span class="op">&lt;</span> vetor[menor].nota) {
+                menor <span class="op">=</span> j;
+            }
+        }
+        <span class="kw">if</span> (menor <span class="op">!=</span> i) {
+            Aluno auxiliar <span class="op">=</span> vetor[i];
+            vetor[i] <span class="op">=</span> vetor[menor];
+            vetor[menor] <span class="op">=</span> auxiliar;
+        }
+    }
+}
+
+<span class="tp">void</span> imprimir(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>titulo, <span class="kw">const</span> Aluno vetor[], <span class="tp">size_t</span> n)
+{
+    printf(<span class="st">"%s<span class="es">\n</span>"</span>, titulo);
+    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        printf(<span class="st">"  %s: nota %d<span class="es">\n</span>"</span>, vetor[i].nome, vetor[i].nota);
+    }
+    printf(<span class="st">"<span class="es">\n</span>"</span>);
+}
+
+<span class="tp">int</span> main(<span class="tp">void</span>)
+{
+    <span class="kw">const</span> Aluno original[] <span class="op">=</span> {
+        {<span class="st">"Ana"</span>, <span class="nu">8</span>},
+        {<span class="st">"Bruno"</span>, <span class="nu">8</span>},
+        {<span class="st">"Carla"</span>, <span class="nu">6</span>}
+    };
+    Aluno estavel[<span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>]];
+    Aluno instavel[<span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>]];
+    <span class="kw">const</span> <span class="tp">size_t</span> n <span class="op">=</span> <span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>];
+
+    <span class="cm">// As duas ordenacoes recebem a mesma sequencia inicial.</span>
+    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        estavel[i] <span class="op">=</span> original[i];
+        instavel[i] <span class="op">=</span> original[i];
+    }
+
+    insertion_sort(estavel, n);
+    selecao_direta(instavel, n);
+
+    imprimir(<span class="st">"Entrada original:"</span>, original, n);
+    imprimir(<span class="st">"Insertion Sort estavel, por nota crescente:"</span>, estavel, n);
+    imprimir(<span class="st">"Selecao Direta instavel, por nota crescente:"</span>, instavel, n);
+    printf(<span class="st">"Ana e Bruno empatam na nota. Observe a ordem dos nomes.<span class="es">\n</span>"</span>);
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</code></pre></div>
+</section>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+<script>function reserva(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){b.textContent='Copiar código';b.classList.remove('feito');},1800);}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});</script>
+</body></html>

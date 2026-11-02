@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Código: Algoritmos recursivos em árvores | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>.pp{color:#9C6500}.pf{color:#3D7B7B;font-style:italic}.tp{color:#B00040}.kw{color:#008000;font-weight:bold}.cm{color:#3D7B7B;font-style:italic}.st{color:#BA2121}.es{color:#AA5D1F;font-weight:bold}.nu{color:#666666}.ct{color:#008000}.op{color:#666666}</style>
+</head>
+<body class="pagina-codigo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="codigo-pagina">
+<header class="titulo-artigo"><h1>Algoritmos recursivos em árvores: código em C</h1><a class="botao botao-sec" href="algoritmos_arvores.html">Voltar para a explicação</a></header>
+<ul class="legenda" aria-label="Cores usadas no código">
+<li><code class="pp">#include</code> pragma (pré-processador)</li>
+<li><code class="pf">&lt;stdio.h&gt;</code> arquivo incluído</li>
+<li><code class="tp">int</code> tipo</li>
+<li><code class="kw">for</code> comando ou palavra reservada</li>
+<li><code class="cm">/* ... */</code> comentário</li>
+<li><code class="st">"texto"</code> cadeia de caracteres</li>
+<li><code class="es">\n</code> sequência de escape</li>
+<li><code class="nu">3.14</code> número</li>
+<li><code class="ct">NULL</code> constante da biblioteca</li>
+<li><code class="op">+=</code> operador</li>
+</ul>
+<section class="bloco">
+<div class="bloco-barra"><span>83 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/algoritmos_arvores.c" download>Baixar algoritmos_arvores.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="codigo"><pre class="nl" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+
+<span class="kw">typedef</span> <span class="tp">struct</span> No {
+    <span class="tp">int</span> valor;
+    <span class="tp">struct</span> No <span class="op">*</span>esquerdo;
+    <span class="tp">struct</span> No <span class="op">*</span>direito;
+} No;
+
+<span class="tp">size_t</span> contar_nos(<span class="kw">const</span> No <span class="op">*</span>raiz)
+{
+    <span class="kw">if</span> (raiz <span class="op">==</span> <span class="ct">NULL</span>) {
+        <span class="kw">return</span> <span class="nu">0</span>; <span class="cm">/* Caso base: arvore vazia. */</span>
+    }
+    <span class="kw">return</span> <span class="nu">1</span> <span class="op">+</span> contar_nos(raiz<span class="op">-&gt;</span>esquerdo) <span class="op">+</span> contar_nos(raiz<span class="op">-&gt;</span>direito);
+}
+
+<span class="tp">size_t</span> contar_folhas(<span class="kw">const</span> No <span class="op">*</span>raiz)
+{
+    <span class="kw">if</span> (raiz <span class="op">==</span> <span class="ct">NULL</span>) {
+        <span class="kw">return</span> <span class="nu">0</span>; <span class="cm">/* Arvore vazia nao tem folhas. */</span>
+    }
+    <span class="kw">if</span> (raiz<span class="op">-&gt;</span>esquerdo <span class="op">==</span> <span class="ct">NULL</span> <span class="op">&amp;&amp;</span> raiz<span class="op">-&gt;</span>direito <span class="op">==</span> <span class="ct">NULL</span>) {
+        <span class="kw">return</span> <span class="nu">1</span>; <span class="cm">/* Uma folha conta a si mesma. */</span>
+    }
+    <span class="kw">return</span> contar_folhas(raiz<span class="op">-&gt;</span>esquerdo) <span class="op">+</span> contar_folhas(raiz<span class="op">-&gt;</span>direito);
+}
+
+<span class="tp">int</span> altura(<span class="kw">const</span> No <span class="op">*</span>raiz)
+{
+    <span class="kw">if</span> (raiz <span class="op">==</span> <span class="ct">NULL</span>) {
+        <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>; <span class="cm">/* Faz a altura de uma folha ser zero. */</span>
+    }
+    <span class="tp">int</span> esquerda <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>esquerdo);
+    <span class="tp">int</span> direita <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>direito);
+    <span class="kw">return</span> <span class="nu">1</span> <span class="op">+</span> (esquerda <span class="op">&gt;</span> direita <span class="op">?</span> esquerda <span class="op">:</span> direita);
+}
+
+<span class="cm">/* Imprime os resultados e retorna 1 quando todos estao corretos. */</span>
+<span class="tp">int</span> conferir(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>nome, <span class="kw">const</span> No <span class="op">*</span>raiz,
+             <span class="tp">size_t</span> nos_esperados, <span class="tp">size_t</span> folhas_esperadas,
+             <span class="tp">int</span> altura_esperada)
+{
+    <span class="tp">size_t</span> nos <span class="op">=</span> contar_nos(raiz);
+    <span class="tp">size_t</span> folhas <span class="op">=</span> contar_folhas(raiz);
+    <span class="tp">int</span> h <span class="op">=</span> altura(raiz);
+    <span class="tp">int</span> correto <span class="op">=</span> nos <span class="op">==</span> nos_esperados <span class="op">&amp;&amp;</span> folhas <span class="op">==</span> folhas_esperadas <span class="op">&amp;&amp;</span>
+                  h <span class="op">==</span> altura_esperada;
+
+    printf(<span class="st">"%s: nos = %zu, folhas = %zu, altura = %d [%s]<span class="es">\n</span>"</span>,
+           nome, nos, folhas, h, correto <span class="op">?</span> <span class="st">"OK"</span> <span class="op">:</span> <span class="st">"ERRO"</span>);
+    <span class="kw">if</span> (<span class="op">!</span>correto) {
+        fprintf(<span class="ct">stderr</span>, <span class="st">"Esperado: nos = %zu, folhas = %zu, altura = %d<span class="es">\n</span>"</span>,
+                nos_esperados, folhas_esperadas, altura_esperada);
+    }
+    <span class="kw">return</span> correto;
+}
+
+<span class="tp">int</span> main(<span class="tp">void</span>)
+{
+    No nos[] <span class="op">=</span> {
+        {<span class="nu">1</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>}, {<span class="nu">2</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>}, {<span class="nu">3</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>},
+        {<span class="nu">4</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>}, {<span class="nu">5</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>}, {<span class="nu">6</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>}
+    };
+    No unico <span class="op">=</span> {<span class="nu">1</span>, <span class="ct">NULL</span>, <span class="ct">NULL</span>};
+    <span class="tp">int</span> falhas <span class="op">=</span> <span class="nu">0</span>;
+
+    nos[<span class="nu">0</span>].esquerdo <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">1</span>];
+    nos[<span class="nu">0</span>].direito <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">2</span>];
+    nos[<span class="nu">1</span>].esquerdo <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">3</span>];
+    nos[<span class="nu">2</span>].esquerdo <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">4</span>];
+    nos[<span class="nu">2</span>].direito <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">5</span>];
+
+    <span class="cm">// Todos os testes sao executados, mesmo se algum falhar.</span>
+    falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore de seis nos"</span>, <span class="op">&amp;</span>nos[<span class="nu">0</span>], <span class="nu">6</span>, <span class="nu">3</span>, <span class="nu">2</span>);
+    falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore vazia"</span>, <span class="ct">NULL</span>, <span class="nu">0</span>, <span class="nu">0</span>, <span class="op">-</span><span class="nu">1</span>);
+    falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore com um no"</span>, <span class="op">&amp;</span>unico, <span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">0</span>);
+
+    <span class="kw">if</span> (falhas <span class="op">!=</span> <span class="nu">0</span>) {
+        <span class="kw">return</span> <span class="nu">1</span>;
+    }
+    printf(<span class="st">"Todos os resultados conferem.<span class="es">\n</span>"</span>);
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</code></pre></div>
+</section>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+<script>function reserva(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){b.textContent='Copiar código';b.classList.remove('feito');},1800);}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});</script>
+</body></html>

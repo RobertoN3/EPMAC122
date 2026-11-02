@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Divisão e conquista | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Divisão e conquista</h1><a class="botao botao-sec" href="divisao_conquista_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#divis%C3%A3o-e-conquista">Divisão e conquista</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>&quot;Dividir para conquistar&quot; (do latim divide et impera) é uma estratégia militar e política antiga: em vez de enfrentar um adversário grande de uma vez, separa-se o problema em partes menores e mais fáceis de dominar. Em algoritmos, a técnica de divisão e conquista resolve um problema em três fases:</p>
+<ol><li>Dividir: quebrar a instância original em duas ou mais instâncias menores do MESMO problema.</li>
+<li>Conquistar: resolver cada instância menor. Em geral isso é feito recursivamente, aplicando o mesmo algoritmo; as instâncias suficientemente pequenas (o caso base) são resolvidas diretamente.</li>
+<li>Combinar: juntar as soluções das instâncias menores para obter a solução da instância original.</li></ol>
+<p>A técnica está intimamente ligada à <a href="recursao.html">recursão</a>: o algoritmo chama a si mesmo sobre as partes. Por isso, para provar que ele está correto usa-se indução: supõe-se que as chamadas recursivas resolvem corretamente as instâncias menores e mostra-se que a fase de combinação produz a resposta certa.</p>
+<p>Esquema geral, em pseudocódigo:</p>
+<pre>  resolve(I):
+      se I é pequena:
+          devolva a solução direta de I
+      divida I em I1, I2, ..., Ik
+      para cada Ij: Sj &lt;- resolve(Ij)
+      devolva combina(S1, S2, ..., Sk)
+</pre>
+<h2>Exemplo principal: ordenação por fusão (Merge Sort)</h2>
+<p>Para ordenar o trecho v[ini..fim]:</p>
+<ul><li>Dividir: calcula-se meio = (ini + fim) / 2, obtendo as metades v[ini..meio] e v[meio+1..fim]. A divisão é trivial e custa O(1).</li>
+<li>Conquistar: cada metade é ordenada recursivamente. Um trecho com 0 ou 1 elemento já está ordenado: esse é o caso base.</li>
+<li>Combinar: as duas metades, agora ordenadas, são intercaladas (fundidas) em um único trecho ordenado. Todo o trabalho &quot;de verdade&quot; acontece aqui.</li></ul>
+<p>A intercalação funciona como juntar dois montes de cartas já ordenados, virados para cima: olha-se o topo dos dois montes, pega-se a menor carta, coloca-se no monte de saída e repete-se. Quando um dos montes acaba, o resto do outro é copiado. Como cada passo copia um elemento, intercalar dois trechos com n elementos no total custa O(n). Ela usa um vetor auxiliar com o tamanho do trecho.</p>
+<p>Exemplo com v = (38, 27, 43, 3, 9, 82, 10):</p>
+<pre>  dividir:    (38 27 43 3) | (9 82 10)
+              (38 27)(43 3) | (9 82)(10)
+              (38)(27)(43)(3) | (9)(82)(10)
+  intercalar: (27 38)(3 43) | (9 82)(10)
+              (3 27 38 43) | (9 10 82)
+              (3 9 10 27 38 43 82)
+</pre>
+<p><a href="ordenacao.html">Estabilidade</a>: na intercalação, quando os dois elementos comparados são iguais, copia-se primeiro o da metade esquerda (usa-se &lt;= na comparação). Assim, elementos iguais preservam a ordem original e o <a href="mergesort.html">Merge Sort</a> é estável.</p>
+<h2>Análise por recorrência</h2>
+<p>Seja T(n) o tempo para ordenar n elementos. Há duas chamadas recursivas sobre metades e uma intercalação linear, então:</p>
+<pre>  T(1) = c
+  T(n) = 2 T(n/2) + c n
+</pre>
+<p>Abrindo a recorrência (<a href="arvores.html">árvore</a> de recursão): no nível 0 há 1 problema de tamanho n, que custa c n; no nível 1 há 2 problemas de tamanho n/2, que custam juntos c n; no nível 2 há 4 problemas de tamanho n/4, de novo c n no total; e assim por diante. A árvore tem log2(n) + 1 níveis, cada um custando c n, logo T(n) = c n log2(n) + c n = O(n log n).</p>
+<p>Isso vale para todos os casos (melhor, médio e pior): o Merge Sort não depende da ordem inicial dos dados. Em compensação, precisa de O(n) de memória auxiliar para a intercalação.</p>
+<h2>O teorema mestre</h2>
+<p>Muitos algoritmos de divisão e conquista geram recorrências da forma</p>
+<pre>  T(n) = a T(n/b) + f(n)
+</pre>
+<p>em que a é o número de subproblemas, n/b o tamanho de cada um e f(n) o custo de dividir e combinar. O teorema mestre resolve essa recorrência comparando f(n) com n^(log_b a), o custo total das folhas da árvore de recursão:</p>
+<ul><li>se f(n) cresce mais devagar que n^(log_b a), as folhas dominam e T(n) = Theta(n^(log_b a));</li>
+<li>se f(n) é da mesma ordem de n^(log_b a), todos os níveis custam o mesmo e T(n) = Theta(n^(log_b a) log n);</li>
+<li>se f(n) cresce mais rápido (com uma condição de regularidade), a raiz domina e T(n) = Theta(f(n)).</li></ul>
+<p>Exemplos:</p>
+<ul><li>Merge Sort: a = 2, b = 2, f(n) = n, n^(log_2 2) = n -&gt; Theta(n log n).</li>
+<li><a href="busca_binaria.html">Busca binária</a>: a = 1, b = 2, f(n) = 1, n^0 = 1 -&gt; Theta(log n).</li>
+<li>Karatsuba: a = 3, b = 2, f(n) = n -&gt; Theta(n^(log_2 3)) ~ Theta(n^1,585).</li></ul>
+<h2>Outros exemplos de divisão e conquista</h2>
+<ul><li>Busca binária: compara com o elemento do meio e descarta metade do vetor. Só um subproblema precisa ser resolvido (às vezes chamado de &quot;diminuir e conquistar&quot;).</li>
+<li><a href="quicksort.html">Quick Sort</a> (Hoare, 1959): divide o vetor em &quot;menores que o pivô&quot; e &quot;maiores que o pivô&quot;; aqui o trabalho está na DIVISÃO (partição) e a combinação é trivial, o oposto do Merge Sort.</li>
+<li>Multiplicação de inteiros de Karatsuba (1960): multiplica números de n dígitos com 3 multiplicações de metades em vez de 4, obtendo O(n^1,585) em vez de O(n²).</li>
+<li>Multiplicação de matrizes de Strassen (1969): 7 multiplicações de blocos em vez de 8, O(n^2,81).</li>
+<li>Par de pontos mais próximos no plano: O(n log n) em vez de O(n²).</li>
+<li>Torres de Hanói, potência rápida (x^n com O(log n) multiplicações) e a Transformada Rápida de Fourier (FFT, Cooley e Tukey, 1965).</li></ul>
+<h2>Cuidados e limitações</h2>
+<ul><li>Subproblemas que se repetem: se a divisão gera muitas vezes os mesmos subproblemas, a divisão e conquista refaz cálculos. O Fibonacci recursivo, fib(n) = fib(n-1) + fib(n-2), gasta tempo exponencial por isso. Nesse caso a técnica indicada é a <a href="programacao_dinamica.html">programação dinâmica</a>, que guarda os resultados.</li>
+<li>Divisões desequilibradas: se uma parte fica quase do tamanho do problema original (como no pior caso do Quick Sort, com pivô sempre extremo), a profundidade da recursão vira n e o tempo vira O(n²).</li>
+<li>Custo da recursão: para instâncias pequenas, o custo das chamadas pode superar o ganho. Implementações práticas param a recursão em trechos pequenos (por exemplo, com menos de 16 elementos) e usam <a href="insertionsort.html">inserção direta</a>.</li>
+<li>Memória da <a href="pilhas.html">pilha</a>: a profundidade da recursão consome pilha de execução; no Merge Sort ela é O(log n), o que não é problema.</li></ul>
+<h2>Histórico</h2>
+<p>O Merge Sort foi proposto por John von Neumann em 1945, para o computador EDVAC, e é um dos primeiros algoritmos escritos para um computador com programa armazenado. A ordenação por intercalação já era usada antes com máquinas de cartões perfurados. A análise sistemática de algoritmos por recorrências e o &quot;teorema mestre&quot; foram popularizados por Bentley, Haken e Saxe (1980) e pelo livro de Cormen e colegas.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa o Merge Sort recursivo com a intercalação em vetor auxiliar alocado dinamicamente, marcando nos comentários as fases de dividir, conquistar e combinar.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 2.3 (Projeto de algoritmos) e capítulo 4 (Divisão e conquista; teorema mestre).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.4 (Sorting by merging).</li>
+<li>KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Capítulo 5 (Divide and Conquer).</li>
+<li>FEOFILOFF, P. Mergesort. https://www.ime.usp.br/~pf/algoritmos/aulas/mrgsrt.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 8 (Merging and Mergesort).</li>
+<li>BENTLEY, J. L.; HAKEN, D.; SAXE, J. B. A general method for solving divide-and-conquer recurrences. ACM SIGACT News, v. 12, n. 3, p. 36-44, 1980.</li>
+<li>BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="divisao_conquista_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

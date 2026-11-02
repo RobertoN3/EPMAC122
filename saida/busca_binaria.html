@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Busca binária | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Busca binária</h1><a class="botao botao-sec" href="busca_binaria_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#divis%C3%A3o-e-conquista">Divisão e conquista</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Busca binária</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#john-mauchly">John Mauchly</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1946">1946</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#busca-bin%C3%A1ria">Busca binária</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-ordenacao-em-ordem-crescente-e-um-valor-x-decidir-se-x-est%C3%A1-no-vetor-e-em-que-posi%C3%A7%C3%A3o">Problema</a></dt><dd class="texto">Dado um vetor <a href="ordenacao.html">em ordem crescente</a> e um valor x, decidir se x está no vetor e em que posição</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Procurar um valor x em um vetor v[0..n-1] é uma das operações mais comuns em programação. Sem nenhuma informação sobre o vetor, o único jeito é a busca sequencial: comparar x com v[0], v[1], v[2], ..., até encontrá-lo ou chegar ao fim. No pior caso são n comparações: O(n).</p>
+<p>Se o vetor estiver em ordem crescente, podemos fazer muito melhor. É o que fazemos ao procurar uma palavra no dicionário ou um nome em uma lista telefônica impressa: abrimos no meio; se a palavra procurada vem antes, descartamos a segunda metade inteira, e vice-versa. Em poucos passos chegamos à página certa.</p>
+<p>A busca binária compara x com o elemento do meio do trecho, v[m]:</p>
+<ul><li>se x == v[m], encontrou;</li>
+<li>se x &lt; v[m], então x, se estiver no vetor, está em v[ini..m-1], pois todos os elementos a partir de m são maiores ou iguais a v[m] &gt; x;</li>
+<li>se x &gt; v[m], pelo mesmo argumento, x só pode estar em v[m+1..fim].</li></ul>
+<p>A cada comparação, METADE do trecho é descartada.</p>
+<h2>Busca binária como divisão e conquista</h2>
+<p>A busca binária divide o problema (procurar em v[ini..fim]) em dois subproblemas de metade do tamanho, mas, com uma única comparação, descobre qual deles NÃO precisa ser resolvido. Só uma das metades é conquistada, e não há fase de combinação. Por isso alguns autores a classificam como &quot;diminuir e conquistar&quot;. Sua recorrência é T(n) = T(n/2) + c, cuja solução é T(n) = O(log n).</p>
+<h2>Exemplo</h2>
+<p>v = (2, 5, 8, 12, 16, 23, 38, 56, 72, 91), procurando x = 23.</p>
+<pre>  ini = 0, fim = 9: m = 4, v[4] = 16 &lt; 23  -&gt; ini = 5
+  ini = 5, fim = 9: m = 7, v[7] = 56 &gt; 23  -&gt; fim = 6
+  ini = 5, fim = 6: m = 5, v[5] = 23 = x   -&gt; encontrado na posição 5
+</pre>
+<p>Procurando x = 40:</p>
+<pre>  ini = 0, fim = 9: m = 4, v[4] = 16 &lt; 40  -&gt; ini = 5
+  ini = 5, fim = 9: m = 7, v[7] = 56 &gt; 40  -&gt; fim = 6
+  ini = 5, fim = 6: m = 5, v[5] = 23 &lt; 40  -&gt; ini = 6
+  ini = 6, fim = 6: m = 6, v[6] = 38 &lt; 40  -&gt; ini = 7
+  ini = 7 &gt; fim = 6: trecho vazio          -&gt; 40 não está no vetor
+</pre>
+<h2>Análise</h2>
+<p>A cada passo, o tamanho do trecho cai de k para no máximo k/2. Começando com n, depois de t passos o trecho tem no máximo n/2^t elementos; ele fica vazio quando 2^t &gt; n, isto é, depois de cerca de log2(n) + 1 passos. Assim:</p>
+<pre>  n = 1 000          -&gt;  no máximo 10 comparações
+  n = 1 000 000      -&gt;  no máximo 20 comparações
+  n = 1 000 000 000  -&gt;  no máximo 30 comparações
+</pre>
+<p>Comparada à busca sequencial (até um bilhão de comparações no último caso), a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado: ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca binária não funciona bem em <a href="listas_encadeadas.html">listas encadeadas</a> (para isso existem as <a href="arvores.html">árvores</a> binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).</p>
+<h2>Correção: o invariante</h2>
+<p>O invariante do laço da versão iterativa, com intervalo fechado [ini, fim], é:</p>
+<pre>  se x está no vetor, então x está em v[ini..fim].
+</pre>
+<ul><li>No início, ini = 0 e fim = n-1: o trecho é o vetor todo, e o invariante vale.</li>
+<li>Cada passo descarta apenas elementos que certamente são diferentes de x, por causa da ordenação; logo o invariante continua valendo.</li>
+<li>O trecho diminui pelo menos um elemento a cada passo (pois m é excluído), então o laço termina.</li>
+<li>Ao terminar com ini &gt; fim, o trecho é vazio e, pelo invariante, x não está no vetor.</li></ul>
+<h2>Cuidados de implementação</h2>
+<p>A busca binária é famosa por ser fácil de entender e difícil de escrever corretamente. Pontos que exigem atenção:</p>
+<ul><li>Decidir a convenção do intervalo, fechado [ini, fim] ou semiaberto [ini, fim), e respeitá-la em todo o código: inicialização, condição do laço e atualizações.</li>
+<li>Atualizar com ini = m + 1 e fim = m - 1 (no intervalo fechado). Escrever ini = m pode criar um laço infinito quando o trecho tem dois elementos.</li>
+<li>Calcular o meio como m = ini + (fim - ini) / 2. A forma (ini + fim) / 2 pode estourar a capacidade de um int quando ini e fim são grandes. Esse erro ficou escondido por anos em implementações de bibliotecas conhecidas, inclusive na de Java, e só foi corrigido em 2006.</li>
+<li>Elementos repetidos: a versão básica devolve UMA posição de x, não necessariamente a primeira. Para achar a primeira ocorrência (ou a posição onde x deveria ser inserido), continua-se a busca à esquerda mesmo depois de encontrar x.</li></ul>
+<h2>Versão recursiva</h2>
+<pre>  busca(v, ini, fim, x):
+      se ini &gt; fim: devolva -1          (trecho vazio)
+      m &lt;- (ini + fim) / 2
+      se v[m] == x: devolva m
+      se x &lt; v[m]: devolva busca(v, ini, m-1, x)
+      senão:       devolva busca(v, m+1, fim, x)
+</pre>
+<p>É uma <a href="recursao.html">recursão</a> de cauda (a chamada recursiva é a última operação), que se traduz diretamente na versão iterativa. A profundidade da recursão é O(log n), então não há risco de estourar a <a href="pilhas.html">pilha</a>.</p>
+<h2>Generalizações</h2>
+<p>A ideia de &quot;dividir o intervalo de busca ao meio&quot; vai muito além de vetores:</p>
+<ul><li>busca pela raiz de uma função contínua (método da bisseção);</li>
+<li>busca na resposta: encontrar o menor valor que satisfaz uma condição monótona, por exemplo o menor tamanho de página que cabe em um limite;</li>
+<li>git bisect: encontrar, entre centenas de versões de um programa, a primeira que introduziu um erro, testando O(log n) versões;</li>
+<li>o jogo &quot;adivinhe o número de 1 a 100&quot; é resolvido em no máximo 7 perguntas.</li></ul>
+<p>A função bsearch da biblioteca padrão do C (stdlib.h) implementa a busca binária para vetores de qualquer tipo, recebendo uma função de comparação.</p>
+<h2>Histórico</h2>
+<p>A ideia da busca binária foi mencionada por John Mauchly, um dos criadores do ENIAC, em 1946, nas Moore School Lectures, a primeira série de aulas sobre computação eletrônica. Segundo Knuth, a primeira versão publicada que funcionava para todo n (e não só para n da forma 2^k - 1) é de D. H. Lehmer, em 1960. Jon Bentley relata que, ao pedir a programadores profissionais que escrevessem uma busca binária, a grande maioria cometeu erros; e, em 2006, Joshua Bloch mostrou que a própria implementação de Bentley, e a de Java, continham o erro de estouro no cálculo do meio.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa a busca binária iterativa (com o cálculo do meio que evita estouro) e a recursiva, e as testa com os dois exemplos desta página.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.2.1 (Searching an ordered table), com histórico.</li>
+<li>FEOFILOFF, P. Busca em vetor ordenado. https://www.ime.usp.br/~pf/algoritmos/aulas/bubi.html</li>
+<li>BENTLEY, J. Programming Pearls. 2. ed. Reading: Addison-Wesley, 2000. Colunas 4 e 5.</li>
+<li>BLOCH, J. Extra, extra - read all about it: nearly all binary searches and mergesorts are broken. Google Research Blog, 2006. https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Exercício 2.3-5.</li>
+<li>BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="busca_binaria_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

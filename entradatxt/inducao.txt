@@ -1,0 +1,170 @@
+5. Conceitos: Indução, Recursão, Invariante
+7. Titulo: Indução finita
+
+## Ideia geral
+
+Imagine uma fila infinita de peças de dominó em pé. Para ter certeza de que
+todas vão cair, bastam duas coisas: a primeira peça cai, e toda peça que cai
+derruba a seguinte. Ninguém precisa olhar as peças uma a uma.
+
+A indução finita (ou indução matemática) é esse raciocínio, aplicado a
+afirmações sobre números naturais. É a ferramenta usada para provar que um
+algoritmo [[recursao|recursivo]] está certo, que um laço mantém o seu
+[[mdc_euclides|invariante]] e que uma recorrência, como a do
+[[mergesort|Merge Sort]], tem a solução que dizemos que tem. Por isso
+aparece logo no começo da disciplina, junto com a recursividade.
+
+## O princípio
+
+Seja P(n) uma afirmação que depende de um natural n (por exemplo,
+"1 + 2 + ... + n = n(n+1)/2"). Para provar que P(n) vale para todo
+n >= n0, basta provar:
+
+1) Base: P(n0) é verdadeira.
+2) Passo: para todo k >= n0, se P(k) é verdadeira, então P(k+1) também é.
+
+No passo, a suposição "P(k) é verdadeira" chama-se hipótese de indução. Não
+é uma suposição sobre o que queremos provar para todos os n: é só o
+"dominó anterior" que usamos para derrubar o seguinte.
+
+## Exemplo 1: a soma dos n primeiros naturais
+
+P(n): 0 + 1 + 2 + ... + n = n(n+1)/2.
+
+- Base (n = 0): a soma é 0 e 0·1/2 = 0.
+- Passo: suponha que 0 + 1 + ... + k = k(k+1)/2. Então
+
+```
+  0 + 1 + ... + k + (k+1) = k(k+1)/2 + (k+1)       (hipótese de indução)
+                          = (k+1)(k/2 + 1)
+                          = (k+1)(k+2)/2
+```
+
+que é exatamente P(k+1). Logo a fórmula vale para todo n >= 0. Ela diz, por
+exemplo, que a soma de 1 a 100 é 5050, e explica por que dois laços
+aninhados como os da [[bubblesort|bolha]] fazem n(n-1)/2 comparações.
+
+## Exemplo 2: as Torres de Hanói
+
+Seja M(n) o número de movimentos que a solução recursiva das
+[[recursao|Torres de Hanói]] faz para n discos: M(1) = 1 e
+M(n) = 2·M(n-1) + 1 (move n-1 discos, o maior, e n-1 discos de novo).
+
+P(n): M(n) = 2^n - 1.
+
+- Base (n = 1): M(1) = 1 = 2^1 - 1.
+- Passo: se M(k) = 2^k - 1, então M(k+1) = 2(2^k - 1) + 1 = 2^(k+1) - 1.
+
+Também por indução prova-se que ninguém consegue fazer com menos: para
+mover o maior disco, os outros n-1 precisam estar todos numa haste só, o
+que exige pelo menos M(n-1) movimentos antes e outros M(n-1) depois. A
+apostila do LEM recomendada na disciplina usa o jogo justamente para
+ensinar indução.
+
+## Indução forte
+
+Às vezes o passo precisa de mais do que o caso anterior. Na indução forte,
+a hipótese é que P(n0), P(n0+1), ..., P(k) são todas verdadeiras, e com
+isso prova-se P(k+1). As duas formas são equivalentes, mas a forte é mais
+cômoda quando o problema se reduz a casos bem menores, e não só ao
+anterior.
+
+Exemplo: todo inteiro n >= 2 é primo ou produto de primos. Se k+1 é primo,
+acabou; senão, k+1 = a·b com 2 <= a, b <= k, e pela hipótese a e b já são
+produtos de primos.
+
+Em algoritmos, a indução forte prova a correção da divisão e conquista: o
+[[mergesort|Merge Sort]] e a [[busca_binaria|busca binária]] reduzem o
+problema a metades, e não ao tamanho anterior.
+
+## Indução e algoritmos
+
+- Recursão: para provar que uma função recursiva está certa, prova-se o
+  caso base e, supondo que as chamadas recursivas (com entradas menores)
+  acertam, que a combinação acerta. É indução sobre o tamanho da entrada.
+  Ver [[recursao|recursão]] e
+  [[algoritmos_arvores|algoritmos recursivos em árvores]].
+- Laços: provar um invariante (inicialização, manutenção, término) é
+  indução sobre o número de iterações. Ver o
+  [[mdc_euclides|algoritmo de Euclides]].
+- Recorrências: para mostrar que o Merge Sort, com
+  T(n) = 2T(n/2) + n, faz no máximo c·n·log n operações, supõe-se a
+  desigualdade para n/2 e prova-se para n.
+- Terminação: um laço termina se alguma quantidade natural diminui a cada
+  passo; isso é o princípio da boa ordem, equivalente à indução.
+
+## Um erro clássico
+
+A "prova" de que todos os cavalos têm a mesma cor: P(n) diz que em todo
+grupo de n cavalos todos têm a mesma cor. A base P(1) vale. No passo, tira-se
+um cavalo de um grupo de k+1 (sobram k, da mesma cor), depois tira-se outro
+(sobram k, da mesma cor), e como os dois grupos têm cavalos em comum, todos
+têm a mesma cor.
+
+O erro está no passo de 1 para 2: com k+1 = 2 cavalos, os dois grupos de k
+= 1 não têm nenhum cavalo em comum, e o argumento não se aplica. Lição: o
+passo precisa valer para TODO k >= n0, inclusive o primeiro. Testar a
+fórmula em alguns casos, como faz o programa desta página, ajuda a
+encontrar erros, mas não substitui a prova.
+
+## Histórico
+
+Raciocínios por indução aparecem em textos de matemáticos árabes e
+europeus medievais; costuma-se citar Francesco Maurolico (1575) e Blaise
+Pascal, que o usou de forma explícita no "Tratado do triângulo aritmético"
+(publicado em 1665). O nome "indução matemática" é atribuído a Augustus De
+Morgan (1838), e o princípio virou axioma dos números naturais com Giuseppe
+Peano (1889).
+
+## Sobre o código
+
+O programa não prova nada: ele confere, para n de 0 a 20, a fórmula da soma
+dos n primeiros naturais (calculada por um laço e por uma função recursiva)
+e a fórmula 2^n - 1 dos movimentos das Torres de Hanói (contados pela
+própria recursão), e imprime uma tabela.
+
+REFERENCIAS:
+- IME-USP, Laboratório de Ensino de Matemática (LEM). Apostila sobre as Torres de Hanói (explicações sobre indução). https://www.ime.usp.br/lem/ens-mat/apostila_lem_hanoi_2021_2001_10.pdf
+- IME-USP, Laboratório de Ensino de Matemática (LEM). Apostilas. https://www.ime.usp.br/lem/apostilas.html
+- BRANDÃO, L. O. Introdução à recursividade. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/introducao_recursividade.html
+- GRAHAM, R. L.; KNUTH, D. E.; PATASHNIK, O. Matemática Concreta. 2. ed. Rio de Janeiro: LTC, 1995. Capítulo 1 (Problemas recorrentes).
+- KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 1.2.1 (Mathematical induction).
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 4.3 (método de substituição) e apêndice A.
+
+INICIO_CODIGO_C
+#include <stdio.h>
+
+/* soma 0 + 1 + ... + n por um laço */
+long soma_laco(int n) {
+  long s = 0;
+  int i;
+  for (i = 1; i <= n; i++) s += i;
+  return s;
+}
+
+/* a mesma soma pela definição recursiva: S(0) = 0, S(n) = n + S(n-1) */
+long soma_rec(int n) {
+  if (n == 0) return 0;
+  return n + soma_rec(n - 1);
+}
+
+/* conta os movimentos da solução recursiva das Torres de Hanói */
+long hanoi(int n) {
+  if (n == 0) return 0;
+  return hanoi(n - 1) + 1 + hanoi(n - 1);
+}
+
+int main(void) {
+  int n, erros = 0;
+  printf("  n   laço  recursiva  n(n+1)/2   Hanói  2^n - 1\n");
+  for (n = 0; n <= 20; n++) {
+    long f = (long)n * (n + 1) / 2, h = hanoi(n), p = (1L << n) - 1;
+    if (soma_laco(n) != f || soma_rec(n) != f || h != p) erros++;
+    if (n <= 5 || n % 5 == 0)
+      printf("%3d %6ld %10ld %9ld %7ld %8ld\n", n, soma_laco(n), soma_rec(n), f, h, p);
+  }
+  printf("%s\n", erros ? "Alguma fórmula falhou!" : "As fórmulas conferem para n = 0..20.");
+  /* conferir não é provar: a prova é a indução descrita na página */
+  return 0;
+}
+FIM_CODIGO_C

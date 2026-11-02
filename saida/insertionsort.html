@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inserção direta (Insertion Sort) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Inserção direta (Insertion Sort)</h1><a class="botao botao-sec" href="insertionsort_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Ordenação por inserção direta (Insertion Sort)</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#john-mauchly">John Mauchly</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1946">1946</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>A inserção direta (insertion sort) é o método que a maioria das pessoas usa, sem perceber, para ordenar as cartas de um jogo de baralho na mão. Pegamos as cartas uma a uma; a cada nova carta, procuramos, entre as que já estão ordenadas na mão, o lugar certo para ela, e a encaixamos ali.</p>
+<p>No vetor v[0..n-1], a ideia é manter o início do vetor ordenado e fazê-lo crescer de um elemento por vez:</p>
+<ul><li>no início, v[0..0] (um único elemento) está trivialmente ordenado;</li>
+<li>no passo i, o trecho v[0..i-1] já está ordenado; o elemento x = v[i] é inserido no lugar correto dentro desse trecho, que passa a ser v[0..i];</li>
+<li>depois do passo i = n-1, o vetor inteiro está ordenado.</li></ul>
+<p>Para inserir x, percorre-se a parte ordenada da direita para a esquerda, deslocando uma posição para a direita cada elemento MAIOR que x, até encontrar um elemento menor ou igual a x (ou chegar ao início do vetor). O espaço aberto é onde x é colocado.</p>
+<h2>O algoritmo</h2>
+<pre>  para i de 1 até n-1:
+      x &lt;- v[i]
+      j &lt;- i - 1
+      enquanto j &gt;= 0 e v[j] &gt; x:
+          v[j+1] &lt;- v[j]       (desloca para a direita)
+          j &lt;- j - 1
+      v[j+1] &lt;- x
+</pre>
+<p>Repare que não se fazem trocas, só deslocamentos: x é guardado em uma variável e copiado uma única vez, no final. Isso torna a inserção mais rápida que a bolha, que faz trocas (três atribuições cada).</p>
+<h2>Exemplo</h2>
+<p>v = (12, 11, 13, 5, 6)</p>
+<pre>  i = 1, x = 11: 12 &gt; 11 desloca          -&gt; (11, 12, 13, 5, 6)
+  i = 2, x = 13: 12 &lt; 13, fica no lugar   -&gt; (11, 12, 13, 5, 6)
+  i = 3, x = 5:  desloca 13, 12 e 11      -&gt; (5, 11, 12, 13, 6)
+  i = 4, x = 6:  desloca 13, 12 e 11      -&gt; (5, 6, 11, 12, 13)
+</pre>
+<h2>Técnica: método incremental</h2>
+<p>A inserção direta é o exemplo típico do método incremental: resolve-se o problema para os i primeiros elementos e, a partir dessa solução, obtém-se a solução para os i+1 primeiros. Em termos <a href="recursao.html">recursivos</a>: para ordenar v[0..i], ordena-se v[0..i-1] e depois insere-se v[i]. É uma forma de &quot;diminuir e conquistar&quot;, em que o problema diminui uma unidade por vez (em contraste com a <a href="divisao_conquista.html">divisão e conquista</a>, que o divide ao meio).</p>
+<h2>Correção: o invariante</h2>
+<p>No início de cada iteração do laço externo (para cada i):</p>
+<pre>  v[0..i-1] está em ordem crescente e contém exatamente os elementos que
+  estavam originalmente em v[0..i-1].
+</pre>
+<ul><li>Vale para i = 1 (um elemento só).</li>
+<li>O laço interno desloca para a direita os elementos maiores que x e coloca x logo depois do primeiro elemento menor ou igual a ele; logo v[0..i] fica ordenado, com os mesmos elementos de antes mais x.</li>
+<li>Ao final, i = n e o vetor inteiro está ordenado.</li></ul>
+<p>Note a diferença para a <a href="selecao_direta.html">seleção direta</a>: lá, a parte ordenada já contém os MENORES elementos do vetor, em suas posições definitivas; aqui, contém apenas os PRIMEIROS elementos, ordenados entre si, que ainda poderão ser deslocados.</p>
+<h2>Análise</h2>
+<p>O número de deslocamentos no passo i é o número de elementos de v[0..i-1] maiores que v[i]. Somando para todo i, o total de deslocamentos é exatamente o número de inversões do vetor (pares i &lt; j com v[i] &gt; v[j]). Portanto:</p>
+<ul><li>Melhor caso (vetor já ordenado): nenhum deslocamento e n-1 comparações: O(n).</li>
+<li>Pior caso (ordem decrescente): n(n-1)/2 inversões, O(n²) comparações e deslocamentos.</li>
+<li>Caso médio: n(n-1)/4 inversões em média, ou seja, cerca de n²/4 comparações e deslocamentos: O(n²), mas com a metade do trabalho do pior caso.</li>
+<li>De modo geral, o custo é O(n + I), em que I é o número de inversões. Por isso a inserção é excelente para vetores &quot;quase ordenados&quot;, com poucos elementos fora do lugar.</li></ul>
+<p>Memória extra: O(1). <a href="ordenacao.html">Estabilidade</a>: o laço interno só desloca elementos ESTRITAMENTE maiores que x (condição v[j] &gt; x); um elemento igual a x faz o laço parar, e x fica depois dele. A ordem relativa dos iguais é mantida: o método é estável. (Trocar &gt; por &gt;= tornaria o algoritmo instável.)</p>
+<p>Outra vantagem: a inserção é um algoritmo online, isto é, pode ordenar os dados à medida que eles chegam, sem precisar conhecer o vetor inteiro.</p>
+<h2>Variações</h2>
+<ul><li>Inserção binária: como v[0..i-1] está ordenado, a posição de x pode ser encontrada com <a href="busca_binaria.html">busca binária</a>, em O(log i) comparações. O número de deslocamentos não muda, então o algoritmo continua O(n²), mas é útil quando comparar é muito mais caro que mover (por exemplo, comparar cadeias longas).</li>
+<li>Sentinela: colocando em v[0] um valor menor que todos (ou movendo o menor elemento para lá antes de começar), o teste j &gt;= 0 do laço interno pode ser eliminado.</li>
+<li>Shell sort (Donald Shell, 1959): faz várias inserções diretas sobre elementos separados por uma distância h (h-ordenação), com valores de h decrescentes até 1. Assim, elementos distantes de sua posição andam muitas casas de uma vez, e a inserção final encontra um vetor quase ordenado. Com boas sequências de distâncias, fica muito mais rápido que O(n²) na prática.</li>
+<li>Em <a href="listas_encadeadas.html">listas encadeadas</a> a inserção não precisa deslocar nada: basta mudar <a href="ponteiros.html">ponteiros</a>.</li></ul>
+<h2>Na prática</h2>
+<p>Entre os métodos elementares, a inserção direta é a mais rápida na prática, e é imbatível para vetores pequenos (até algumas dezenas de elementos), porque seu laço é muito simples. Por isso as implementações profissionais de <a href="mergesort.html">Merge Sort</a> e <a href="quicksort.html">Quick Sort</a>, ao chegarem a trechos pequenos na recursão, trocam para a inserção direta. O Timsort, usado em Python e Java, aplica inserção binária para formar os pequenos trechos ordenados que depois intercala, e o Introsort, do C++, termina com inserção.</p>
+<h2>Histórico</h2>
+<p>Segundo Knuth, a inserção direta foi mencionada por John Mauchly em 1946, nas Moore School Lectures, a primeira série de aulas sobre computação eletrônica, junto com a ideia da inserção binária. O método é, claro, muito mais antigo como prática manual de quem ordena fichas ou cartas. O Shell sort, publicado em 1959, foi um dos primeiros algoritmos a &quot;quebrar a barreira&quot; quadrática na prática.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa a inserção direta, para o vetor do exemplo desta página, imprimindo o vetor ao final de cada passo para mostrar a parte ordenada crescendo.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 5.2.1 (Sorting by insertion), com histórico.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seções 2.1 e 2.2 (Ordenação por inserção; análise).</li>
+<li>FEOFILOFF, P. Ordenação: algoritmos elementares. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Seções 6.3 (Insertion sort) e 6.6 (Shellsort).</li>
+<li>SHELL, D. L. A high-speed sorting procedure. Communications of the ACM, v. 2, n. 7, p. 30-32, 1959.</li>
+<li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 2 (Ordenação por inserção direta).</li>
+<li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="insertionsort_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

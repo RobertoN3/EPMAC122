@@ -1,7 +1,7 @@
 2. Algoritmo: Torres de Hanói recursivo
 3. Autores: Édouard Lucas
 4. Data: 1883
-5. Conceitos: Recursão, Pilhas
+5. Conceitos: Recursão, Pilhas, Indução
 6. Problema: Dados n discos de tamanhos distintos empilhados na haste A, movê-los para a haste C usando B como auxiliar, um disco por vez e sem nunca colocar um disco maior sobre um menor
 7. Titulo: Recursão
 

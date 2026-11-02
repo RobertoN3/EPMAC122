@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Autômatos de estado finito | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Autômatos de estado finito</h1><a class="botao botao-sec" href="automatos_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Reconhecimento de números e identificadores com autômato finito</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#stephen-c-kleene">Stephen C. Kleene</a><a class="chip f-autores" href="autores.html#michael-o-rabin">Michael O. Rabin</a><a class="chip f-autores" href="autores.html#dana-scott">Dana Scott</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1956">1956</a><a class="chip f-data" href="data.html#1959">1959</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#aut%C3%B4matos-finitos">Autômatos finitos</a><a class="chip f-conceitos" href="conceitos.html#matrizes">Matrizes</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-cadeia-de-caracteres-decidir-se-ela-%C3%A9-um-n%C3%BAmero-inteiro-um-n%C3%BAmero-real-ou-um-identificador-da-linguagem-c-examinando-cada-caractere-uma-%C3%BAnica-vez">Problema</a></dt><dd class="texto">Dada uma cadeia de caracteres, decidir se ela é um número inteiro, um número real ou um identificador da linguagem C, examinando cada caractere uma única vez</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Um autômato de estado finito (AEF) é uma máquina muito simples: ela tem uma quantidade finita de ESTADOS e, a cada símbolo que lê, passa de um estado para outro de acordo com uma regra fixa. Não tem outra memória além do estado em que está.</p>
+<p>Exemplos do dia a dia:</p>
+<ul><li>uma catraca: estados &quot;travada&quot; e &quot;liberada&quot;; o símbolo &quot;moeda&quot; libera, o símbolo &quot;empurrão&quot; trava de novo;</li>
+<li>um semáforo, um elevador, uma máquina de venda de bilhetes;</li>
+<li>a fechadura de um cofre, que só abre depois de uma sequência certa de números.</li></ul>
+<p>Em computação, o uso mais importante é reconhecer padrões em textos: decidir se uma cadeia é um número, um nome de variável, um endereço de e-mail. É assim que um compilador começa a ler um programa, na etapa chamada análise léxica. Este tema foi estudado na disciplina na semana 6, com o simulador iCG.</p>
+<h2>Definição</h2>
+<p>Um autômato finito determinístico é uma quíntupla M = (Q, Z, d, q0, F):</p>
+<ul><li>Q: o conjunto finito de estados;</li>
+<li>Z: o alfabeto, o conjunto de símbolos que podem ser lidos;</li>
+<li>d: Q x Z -&gt; Q, a função de transição: d(q, a) é o estado para onde a máquina vai quando está em q e lê o símbolo a;</li>
+<li>q0: o estado inicial;</li>
+<li>F: o conjunto dos estados finais (de aceitação), contido em Q.</li></ul>
+<p>Para ler uma cadeia a1 a2 ... an, a máquina começa em q0 e aplica d a cada símbolo, da esquerda para a direita. A cadeia é ACEITA se o estado em que a máquina termina pertence a F; caso contrário, é rejeitada. &quot;Determinístico&quot; quer dizer que, para cada estado e cada símbolo, há exatamente um próximo estado.</p>
+<h2>Exemplo: números e identificadores</h2>
+<p>Vamos reconhecer três tipos de cadeia:</p>
+<ul><li>inteiro: sinal opcional (+ ou -) seguido de um ou mais dígitos: 42, -17;</li>
+<li>real: um inteiro, um ponto e um ou mais dígitos: 3.14, -0.5;</li>
+<li>identificador da linguagem C: letra ou _, seguida de letras, dígitos ou _: x1, _soma.</li></ul>
+<p>Para a tabela não ter um estado por caractere, agrupam-se os símbolos em classes: DIGITO, LETRA (inclui _), SINAL (+ e -), PONTO e OUTRO. Estados: INICIO, SINAL, INTEIRO, PONTO, REAL, IDENT e ERRO. Os finais são INTEIRO, REAL e IDENT.</p>
+<pre>  estado     DIGITO    LETRA   SINAL   PONTO   OUTRO
+  INICIO     INTEIRO   IDENT   SINAL   ERRO    ERRO
+  SINAL      INTEIRO   ERRO    ERRO    ERRO    ERRO
+  INTEIRO    INTEIRO   ERRO    ERRO    PONTO   ERRO
+  PONTO      REAL      ERRO    ERRO    ERRO    ERRO
+  REAL       REAL      ERRO    ERRO    ERRO    ERRO
+  IDENT      IDENT     IDENT   ERRO    ERRO    ERRO
+  ERRO       ERRO      ERRO    ERRO    ERRO    ERRO
+</pre>
+<p>Lendo &quot;-3.14&quot;: INICIO -(-)-&gt; SINAL -(3)-&gt; INTEIRO -(.)-&gt; PONTO -(1)-&gt; REAL -(4)-&gt; REAL. Terminou em REAL: é um número real. Já &quot;2.&quot; termina em PONTO, que não é final, e &quot;2x&quot; cai em ERRO ao ler o x: as duas são rejeitadas. O estado ERRO é um &quot;poço&quot;: dele não se sai, e o restante da cadeia não muda a resposta.</p>
+<h2>Implementação em C</h2>
+<p>A forma mais direta é guardar d numa matriz delta[estado][classe] e fazer um único laço:</p>
+<pre>  q &lt;- INICIO
+  para cada caractere c da cadeia:
+      q &lt;- delta[q][classe(c)]
+  aceita se q é final
+</pre>
+<p>Cada caractere custa uma consulta à matriz: O(1). Reconhecer uma cadeia de tamanho n custa O(n), lendo cada caractere uma só vez, sem voltar atrás. Outra forma comum é um switch sobre o estado atual dentro do laço, que é como costumam ser escritos os analisadores léxicos feitos à mão.</p>
+<h2>Analisadores léxicos</h2>
+<p>Um compilador não lê o programa caractere por caractere na hora de entendê- lo: antes, um analisador léxico agrupa os caracteres em itens léxicos (tokens): palavras reservadas, identificadores, números, cadeias, operadores, comentários. Cada tipo de item é reconhecido por um autômato. O simulador iCG, estudado na disciplina, tem o seu analisador léxico no arquivo AnaLex.java.</p>
+<p>O filtro de cores deste EP, o colorir.c, é um analisador léxico escrito à mão nesse estilo. Ao ler um &quot;/*&quot;, ele entra num estado &quot;dentro de comentário&quot; e só sai ao encontrar &quot;*/&quot;; ao ler uma aspa, entra no estado &quot;dentro de cadeia&quot; e trata a barra invertida como início de uma sequência de escape; uma letra inicia um identificador, que no fim é comparado com as listas de tipos e comandos.</p>
+<h2>O que um autômato finito não consegue fazer</h2>
+<p>Como a única memória é o estado, um AEF não consegue contar além de um limite fixo. Por exemplo, nenhum AEF reconhece exatamente as cadeias de parênteses balanceados, como &quot;(())()&quot;: seria preciso lembrar quantos parênteses estão abertos, e esse número pode ser qualquer um. Para isso é preciso uma <a href="pilhas.html">pilha</a>, e a máquina com pilha é o autômato de pilha, base da análise sintática dos compiladores. Os padrões que um AEF reconhece são exatamente os descritos por expressões regulares, as mesmas usadas em ferramentas de busca de texto como o grep.</p>
+<h2>Histórico</h2>
+<p>Warren McCulloch e Walter Pitts propuseram em 1943 um modelo de neurônio que se comporta como uma máquina de estados finitos. Stephen C. Kleene mostrou, em 1956, que as linguagens reconhecidas por essas máquinas são exatamente as descritas por expressões regulares. Em 1959, Michael O. Rabin e Dana Scott definiram os autômatos finitos não determinísticos e provaram que eles reconhecem as mesmas linguagens que os determinísticos; o trabalho lhes rendeu o prêmio Turing de 1976.</p>
+<h2>Sobre o código</h2>
+<p>O programa implementa o autômato da tabela como uma matriz de transições, mostra os estados percorridos ao ler &quot;-3.14&quot; e classifica uma lista de cadeias como inteiro, real, identificador ou rejeitada.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Material de MAC0122, semana 6 (autômatos de estado finito; iCG). IME-USP, e-Disciplinas, 2026.</li>
+<li>BRANDÃO, L. O. iCG: Computador Gaveteiro interativo. https://www.matematica.br/icg e código em https://github.com/leonidasbrandao/icg-java</li>
+<li>HOPCROFT, J. E.; MOTWANI, R.; ULLMAN, J. D. Introdução à teoria de autômatos, linguagens e computação. Rio de Janeiro: Elsevier, 2002. Capítulo 2.</li>
+<li>SIPSER, M. Introdução à teoria da computação. 2. ed. São Paulo: Cengage Learning, 2007. Capítulo 1 (Linguagens regulares).</li>
+<li>AHO, A. V.; LAM, M. S.; SETHI, R.; ULLMAN, J. D. Compiladores: princípios, técnicas e ferramentas. 2. ed. São Paulo: Pearson, 2008. Capítulo 3 (Análise léxica).</li>
+<li>RABIN, M. O.; SCOTT, D. Finite automata and their decision problems. IBM Journal of Research and Development, v. 3, n. 2, p. 114-125, 1959.</li>
+<li>Wikipedia. Autômato finito determinístico. https://pt.wikipedia.org/wiki/Autômato_finito_determinístico</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="automatos_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

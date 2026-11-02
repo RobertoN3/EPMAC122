@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MDC e algoritmo de Euclides | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>MDC e algoritmo de Euclides</h1><a class="botao botao-sec" href="mdc_euclides_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Algoritmo de Euclides para o máximo divisor comum</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#euclides">Euclides</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#300-a-c">300 a.C.</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a><a class="chip f-conceitos" href="conceitos.html#indu%C3%A7%C3%A3o">Indução</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dados-dois-inteiros-a-e-b-n%C3%A3o-negativos-e-n%C3%A3o-ambos-nulos-determinar-o-maior-inteiro-que-divide-os-dois-o-m%C3%A1ximo-divisor-comum-mdc-a-b">Problema</a></dt><dd class="texto">Dados dois inteiros a e b, não negativos e não ambos nulos, determinar o maior inteiro que divide os dois, o máximo divisor comum mdc(a, b)</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>O máximo divisor comum de dois inteiros a e b, escrito mdc(a, b), é o maior inteiro que divide os dois sem deixar resto. Por exemplo, mdc(12, 18) = 6, mdc(17, 5) = 1 e mdc(8, 0) = 8 (todo inteiro divide 0). É usado para simplificar frações (12/18 = 2/3, dividindo por 6), calcular o mínimo múltiplo comum e, com a versão estendida, em criptografia.</p>
+<p>Na disciplina, o MDC é o exemplo escolhido para apresentar os INVARIANTES: afirmações que valem a cada passo de um laço e que permitem provar, por <a href="inducao.html">indução</a>, que o algoritmo está correto. Esta página é a referência do site para invariantes.</p>
+<h2>Uma solução ingênua</h2>
+<p>A ideia mais direta é testar os candidatos, do maior possível para baixo:</p>
+<pre>  mdc_ingenuo(a, b):              (a, b &gt; 0)
+      d &lt;- min(a, b)
+      enquanto a % d != 0 ou b % d != 0:
+          d &lt;- d - 1
+      devolva d
+</pre>
+<p>Invariante: nenhum inteiro maior que d divide a e b ao mesmo tempo. Ele vale no início (nenhum número maior que min(a, b) divide o menor deles) e é mantido a cada decremento (só se descarta d depois de ver que ele não serve). Quando o laço para, d divide os dois e nenhum maior divide: d é o mdc. O laço termina porque d = 1 sempre serve.</p>
+<p>Correta, mas lenta: no pior caso faz min(a, b) tentativas. Para números de 18 dígitos, seriam cerca de 10^18 divisões.</p>
+<h2>O algoritmo de Euclides</h2>
+<p>A observação de Euclides: um número divide a e b se e somente se divide b e a % b (o resto da divisão de a por b). Logo, para b &gt; 0,</p>
+<pre>  mdc(a, b) = mdc(b, a % b)
+  mdc(a, 0) = a
+</pre>
+<p>Como o resto é sempre menor que o divisor, o segundo argumento diminui a cada passo e chega a 0. Em pseudocódigo:</p>
+<pre>  euclides(a, b):
+      enquanto b != 0:
+          r &lt;- a % b
+          a &lt;- b
+          b &lt;- r
+      devolva a
+</pre>
+<p>Por que a observação vale: a % b = a - q·b, em que q é o quociente.</p>
+<ul><li>Se d divide a e b, divide a - q·b, isto é, divide a % b.</li>
+<li>Se d divide b e a % b, divide q·b + (a % b), isto é, divide a.</li></ul>
+<p>Os pares (a, b) e (b, a % b) têm exatamente os mesmos divisores comuns e, portanto, o mesmo máximo divisor comum.</p>
+<h2>Exemplo</h2>
+<p>mdc(1071, 462):</p>
+<pre>  1071 = 2 x 462 + 147
+   462 = 3 x 147 +  21
+   147 = 7 x  21 +   0      -&gt; mdc = 21
+</pre>
+<p>Três divisões, contra 442 tentativas da solução ingênua (de 462 até 21).</p>
+<h2>Invariantes: como provar que um laço está certo</h2>
+<p>Um invariante de laço é uma afirmação sobre as variáveis que vale toda vez que o laço vai começar uma nova iteração. Para usá-lo numa prova, mostram-se três coisas, como numa demonstração por indução no número de iterações:</p>
+<ol><li>Inicialização: o invariante vale antes da primeira iteração.</li>
+<li>Manutenção: se vale no início de uma iteração, continua valendo no início da próxima.</li>
+<li>Término: quando o laço para, o invariante, junto com a condição de parada, dá o resultado desejado.</li></ol>
+<p>No algoritmo de Euclides, sejam a0 e b0 os valores iniciais. O invariante é:</p>
+<pre>  mdc(a, b) = mdc(a0, b0)
+</pre>
+<ul><li>Inicialização: no começo, a = a0 e b = b0.</li>
+<li>Manutenção: cada iteração troca (a, b) por (b, a % b), que tem o mesmo mdc, como vimos.</li>
+<li>Término: o laço para com b = 0, e mdc(a, 0) = a; pelo invariante, a é mdc(a0, b0).</li></ul>
+<p>Falta provar que o laço termina: b é um inteiro não negativo que diminui estritamente a cada iteração (a % b &lt; b), e não existe sequência infinita estritamente decrescente de naturais.</p>
+<p>O mesmo roteiro prova vários algoritmos do site: a <a href="busca_sequencial.html">busca sequencial</a> (x não está em v[0..j-1]), a <a href="selecao_direta.html">seleção direta</a> (v[0..i-1] tem os i menores elementos, em ordem), a <a href="insertionsort.html">inserção direta</a>, a <a href="bubblesort.html">bolha</a> e a <a href="busca_binaria.html">busca binária</a>.</p>
+<h2>Eficiência</h2>
+<p>Quantas divisões o algoritmo de Euclides faz? Note que, a cada duas iterações, o primeiro número cai pelo menos pela metade (se b &lt;= a/2, então a % b &lt; b &lt;= a/2; se b &gt; a/2, então a % b = a - b &lt; a/2). Logo o número de iterações é O(log min(a, b)): proporcional ao número de DÍGITOS dos números, e não ao valor deles.</p>
+<p>O pior caso acontece com números de Fibonacci consecutivos: mdc(55, 34) passa por (34, 21), (21, 13), (13, 8), (8, 5), (5, 3), (3, 2), (2, 1), (1, 0), num total de 8 divisões, porque cada resto é o número de Fibonacci anterior. Em 1844, Gabriel Lamé provou que o número de divisões nunca passa de 5 vezes o número de dígitos decimais do menor número: foi uma das primeiras análises de complexidade de um algoritmo.</p>
+<h2>Versão recursiva e aplicações</h2>
+<p>A definição mdc(a, b) = mdc(b, a % b) é naturalmente <a href="recursao.html">recursiva</a>:</p>
+<pre>  mdc(a, b): se b == 0, devolva a; senão, devolva mdc(b, a % b)
+</pre>
+<p>É uma recursão de cauda: a chamada recursiva é a última coisa que a função faz, e o compilador pode transformá-la num laço.</p>
+<p>Aplicações:</p>
+<ul><li>frações irredutíveis: dividir numerador e denominador pelo mdc;</li>
+<li>mínimo múltiplo comum: mmc(a, b) = a / mdc(a, b) x b (dividir antes de multiplicar evita estouro);</li>
+<li>o algoritmo de Euclides estendido, que também acha inteiros x e y com a·x + b·y = mdc(a, b), é usado para calcular inversos modulares na criptografia RSA.</li></ul>
+<h2>Histórico</h2>
+<p>O algoritmo aparece nos Elementos de Euclides, por volta de 300 a.C. (livro VII, proposições 1 e 2), formulado com subtrações sucessivas de segmentos: subtrair repetidamente o menor do maior é o mesmo que tomar o resto. Knuth o considera o algoritmo não trivial mais antigo ainda em uso, e dedica a ele uma longa seção do volume 2 de &quot;The Art of Computer Programming&quot;.</p>
+<h2>Sobre o código</h2>
+<p>O programa mostra as divisões de mdc(1071, 462), compara o número de passos da solução ingênua com o do algoritmo de Euclides em três pares (incluindo dois números de Fibonacci consecutivos), confere a versão recursiva e calcula um mínimo múltiplo comum.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Material de MAC0122, semana 3 (invariantes; MDC; algoritmo de Euclides). IME-USP, e-Disciplinas, 2026.</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 1.1 (o algoritmo de Euclides como primeiro exemplo de algoritmo) e 1.2.1 (indução).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 2: Seminumerical Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 4.5.2 (The greatest common divisor).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 2.1 (invariantes de laço) e seção 31.2 (máximo divisor comum).</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Seção sobre invariantes e o algoritmo de Euclides.</li>
+<li>Wikipedia. Euclidean algorithm. https://en.wikipedia.org/wiki/Euclidean_algorithm</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="mdc_euclides_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

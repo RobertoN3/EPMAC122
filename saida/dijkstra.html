@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Algoritmo de Dijkstra | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Algoritmo de Dijkstra</h1><a class="botao botao-sec" href="dijkstra_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#m%C3%A9todo-guloso">Método guloso</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Dijkstra para caminho mínimo</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#edsger-w-dijkstra">Edsger W. Dijkstra</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1956">1956</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a><a class="chip f-conceitos" href="conceitos.html#caminho-m%C3%ADnimo">Caminho mínimo</a><a class="chip f-conceitos" href="conceitos.html#fila-de-prioridade">Fila de prioridade</a><a class="chip f-conceitos" href="conceitos.html#invariante">Invariante</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-grafos-grafo-com-pesos-n%C3%A3o-negativos-nas-arestas-e-um-v%C3%A9rtice-de-origem-determinar-a-dist%C3%A2ncia-m%C3%ADnima-da-origem-a-cada-um-dos-demais-v%C3%A9rtices">Problema</a></dt><dd class="texto">Dado um <a href="grafos.html">grafo</a> com pesos não negativos nas arestas e um vértice de origem, determinar a distância mínima da origem a cada um dos demais vértices</dd>
+</dl>
+<h2>O problema do caminho mínimo</h2>
+<p>Em um <a href="grafos.html">grafo</a> com pesos (distâncias, tempos, custos) nas arestas, o comprimento de um caminho é a soma dos pesos de suas arestas. O problema dos caminhos mínimos a partir de uma origem s pede, para cada vértice v:</p>
+<ul><li>a distância dist[v]: o menor comprimento de um caminho de s até v (infinito, se v não é alcançável);</li>
+<li>um caminho que realize essa distância.</li></ul>
+<p>É o problema resolvido por aplicativos de navegação (GPS), por protocolos de roteamento na Internet (como o OSPF, que usa exatamente o algoritmo de Dijkstra) e por jogos (movimentação de personagens).</p>
+<p>Se todas as arestas têm o mesmo peso, basta a <a href="bfs.html">busca em largura</a>, que conta arestas. Com pesos diferentes, o caminho com menos arestas pode não ser o mais curto, e é preciso um algoritmo que leve os pesos em conta.</p>
+<h2>Ideia do algoritmo</h2>
+<p>O algoritmo de Dijkstra funciona como uma &quot;onda&quot; que se espalha a partir da origem, alcançando os vértices em ordem crescente de distância. Ele mantém:</p>
+<ul><li>um conjunto de vértices fixados (ou definitivos), cuja distância verdadeira já é conhecida;</li>
+<li>para os demais vértices, uma estimativa dist[v]: o comprimento do melhor caminho de s até v encontrado até agora, passando apenas por vértices fixados;</li>
+<li>um vetor pai[v], o vértice anterior a v nesse melhor caminho.</li></ul>
+<p>Inicialização: dist[s] = 0; dist[v] = infinito para v != s; nenhum vértice fixado.</p>
+<p>Repita enquanto houver vértices não fixados com estimativa finita:</p>
+<ol><li>escolha o vértice u não fixado com a MENOR estimativa dist[u] (esta é a escolha gulosa);</li>
+<li>fixe u: a partir de agora dist[u] é definitiva;</li>
+<li>relaxe as arestas que saem de u: para cada vizinho v de u, se dist[u] + peso(u, v) &lt; dist[v], então dist[v] = dist[u] + peso(u, v) e pai[v] = u.</li></ol>
+<p>&quot;Relaxar&quot; uma aresta significa verificar se ela oferece um atalho: chegar a v passando por u é melhor do que o que se conhecia?</p>
+<p>Ao final, o vetor pai descreve uma <a href="arvores.html">árvore</a> enraizada em s, a árvore de caminhos mínimos: o caminho mínimo até v é obtido seguindo pai[v], pai[pai[v]], ..., até s, e invertendo a sequência.</p>
+<h2>Exemplo</h2>
+<p>Grafo não dirigido com vértices 0 a 4 e arestas (u-v: peso): 0-1: 10, 0-2: 3, 1-2: 1, 1-3: 2, 2-3: 8, 2-4: 2, 3-4: 7. Origem s = 0.</p>
+<pre>  início:        dist = [0, inf, inf, inf, inf]
+  fixa 0 (0):    relaxa 0-1 e 0-2   -&gt; dist = [0, 10, 3, inf, inf]
+  fixa 2 (3):    relaxa 2-1: 3+1=4 &lt; 10; 2-3: 3+8=11; 2-4: 3+2=5
+                                    -&gt; dist = [0, 4, 3, 11, 5]
+  fixa 1 (4):    relaxa 1-3: 4+2=6 &lt; 11 -&gt; dist = [0, 4, 3, 6, 5]
+  fixa 4 (5):    relaxa 4-3: 5+7=12, não melhora
+  fixa 3 (6):    fim
+</pre>
+<p>Distâncias finais: [0, 4, 3, 6, 5]. Pais: pai[1] = 2, pai[2] = 0, pai[3] = 1, pai[4] = 2. O caminho mínimo até 3 é 0 -&gt; 2 -&gt; 1 -&gt; 3, de comprimento 3 + 1 + 2 = 6, embora o caminho 0 -&gt; 1 -&gt; 3 tenha menos arestas (comprimento 12).</p>
+<h2>Por que funciona (e por que exige pesos não negativos)</h2>
+<p>Invariante: quando um vértice u é fixado, dist[u] é a distância verdadeira de s a u.</p>
+<p>Ideia da prova: suponha que existisse um caminho de s até u mais curto do que dist[u]. Esse caminho começa em s (fixado) e termina em u (ainda não fixado), então em algum ponto ele sai pela primeira vez do conjunto dos fixados, chegando a um vértice y não fixado. A estimativa de y já leva em conta esse trecho, então dist[y] &lt;= comprimento do trecho até y. Como os pesos são NÃO NEGATIVOS, o resto do caminho, de y até u, não diminui o comprimento; logo dist[y] &lt;= comprimento do caminho &lt; dist[u]. Mas então o algoritmo teria escolhido y, e não u, como o não fixado de menor estimativa: contradição.</p>
+<p>O argumento quebra se houver pesos negativos: o trecho de y até u poderia &quot;descontar&quot; comprimento, e um vértice fixado cedo demais ficaria com uma distância errada. Um exemplo mínimo, sem nenhum ciclo: arestas dirigidas S-&gt;A com peso 2, S-&gt;B com peso 5 e B-&gt;A com peso -4. Depois de processar S, o algoritmo fixa A com distância 2, antes de B (que tem estimativa 5). Mas o caminho S-&gt;B-&gt;A custa 5 - 4 = 1. Como A já foi fixado, a resposta fica errada. Ou seja, não basta excluir ciclos negativos: o algoritmo de Dijkstra exige pesos NÃO NEGATIVOS (peso zero é permitido). Para grafos com pesos negativos (mas sem ciclos negativos) usa-se o algoritmo de Bellman-Ford, de <a href="programacao_dinamica.html">programação dinâmica</a>, que custa O(n m).</p>
+<h2>Complexidade</h2>
+<p>Depende de como se encontra o vértice de menor estimativa:</p>
+<ul><li>Busca linear em um vetor (como no código de exemplo): n escolhas de custo O(n), mais o relaxamento de todas as arestas. Total O(n²), ótimo para grafos densos e para matriz de adjacência.</li>
+<li><a href="heapsort.html">Fila de prioridade</a> com heap binário e listas de adjacência: cada escolha e cada redução de estimativa custam O(log n). Total O((n + m) log n), muito melhor para grafos esparsos como mapas de estradas.</li>
+<li>Heap de Fibonacci (Fredman e Tarjan, 1984): O(m + n log n).</li></ul>
+<p>Em aplicações reais com milhões de vértices (mapas), usam-se variações: a busca A* (Hart, Nilsson e Raphael, 1968), que acrescenta uma estimativa da distância restante até o destino para guiar a onda na direção certa, e técnicas de pré-processamento que permitem responder consultas em milissegundos.</p>
+<h2>Dijkstra como algoritmo guloso</h2>
+<p>Em cada passo, o algoritmo toma uma decisão definitiva (fixar um vértice) com base em uma função critério (a menor estimativa), sem jamais reconsiderá-la: é o <a href="metodo_guloso.html">método guloso</a>. A prova de correção acima é exatamente a prova de que a escolha gulosa é segura. Sua estrutura é quase idêntica à do <a href="prim.html">algoritmo de Prim</a> para a árvore espalhada mínima: a única diferença é o critério (Prim usa o peso da aresta que liga o vértice à árvore; Dijkstra, a distância total desde a origem).</p>
+<h2>Histórico</h2>
+<p>Edsger Wybe Dijkstra (1930-2002), cientista da computação holandês, concebeu o algoritmo em 1956, no Centro de Matemática de Amsterdã, para demonstrar a capacidade do novo computador ARMAC: o programa calculava a rota mais curta entre cidades holandesas. Ele contou, em entrevista, que projetou o algoritmo em cerca de vinte minutos, sem lápis e papel, enquanto tomava café com a noiva em um terraço de Amsterdã. O artigo, de três páginas, só foi publicado em 1959, na revista Numerische Mathematik, e trazia também uma versão do algoritmo de árvore espalhada mínima. Dijkstra recebeu o prêmio Turing em 1972 e é também conhecido pela programação estruturada, pelo semáforo em programação concorrente e pelo algoritmo &quot;shunting-yard&quot;.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo implementa o algoritmo de Dijkstra com matriz de adjacência e busca linear do vértice de menor estimativa (versão O(n²)), para o grafo do exemplo desta página, imprimindo as distâncias e os pais.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>DIJKSTRA, E. W. A note on two problems in connexion with graphs. Numerische Mathematik, v. 1, p. 269-271, 1959.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 24 (Caminhos mínimos de fonte única).</li>
+<li>SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 21 (Shortest Paths).</li>
+<li>KLEINBERG, J.; TARDOS, É. Algorithm Design. Boston: Addison-Wesley, 2005. Seção 4.4.</li>
+<li>FEOFILOFF, P. Algoritmo de Dijkstra. https://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dijkstra.html</li>
+<li>MISA, T. J.; FRANA, P. L. An interview with Edsger W. Dijkstra. Communications of the ACM, v. 53, n. 8, p. 41-47, 2010.</li>
+<li>FREDMAN, M. L.; TARJAN, R. E. Fibonacci heaps and their uses in improved network optimization algorithms. Journal of the ACM, v. 34, n. 3, p. 596-615, 1987.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="dijkstra_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

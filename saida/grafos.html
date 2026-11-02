@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grafos | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Grafos</h1><a class="botao botao-sec" href="grafos_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#leonhard-euler">Leonhard Euler</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1736">1736</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#grafos">Grafos</a><a class="chip f-conceitos" href="conceitos.html#listas-encadeadas">Listas encadeadas</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a><a class="chip f-conceitos" href="conceitos.html#filas">Filas</a><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Um grafo é uma estrutura matemática que representa objetos e as ligações entre eles. Formalmente, um grafo G = (V, A) é formado por:</p>
+<ul><li>um conjunto V de vértices (ou nós);</li>
+<li>um conjunto A de arestas; cada aresta liga um par de vértices.</li></ul>
+<p>Costuma-se escrever n = |V| para o número de vértices e m = |A| para o número de arestas.</p>
+<p>Grafos estão em toda parte:</p>
+<ul><li>mapas: cidades são vértices e estradas são arestas (com o comprimento como peso);</li>
+<li>redes de computadores e a própria Internet;</li>
+<li>a Web: páginas são vértices e links são arcos;</li>
+<li>redes sociais: pessoas e amizades;</li>
+<li>dependências entre tarefas, disciplinas com pré-requisitos, módulos de um programa;</li>
+<li>moléculas (átomos e ligações), circuitos elétricos, redes de metrô.</li></ul>
+<p>Modelar um problema como grafo permite usar algoritmos gerais, já estudados e provados corretos, em vez de inventar uma solução específica.</p>
+<h2>Terminologia básica</h2>
+<ul><li>Grafo não dirigido: a aresta u-v não tem sentido; vale nos dois.</li>
+<li>Grafo dirigido (digrafo): cada arco u-&gt;v tem sentido, de u para v. Uma rua de mão única ou um link de uma página para outra são arcos.</li>
+<li>Grafo com pesos (ou custos): cada aresta tem um número associado (distância, tempo, preço, capacidade).</li>
+<li>Vizinhos (adjacentes): dois vértices ligados por uma aresta.</li>
+<li>Grau de um vértice: número de arestas que incidem nele. Em todo grafo, a soma dos graus é 2m, pois cada aresta contribui para o grau de dois vértices. Em digrafos distinguem-se grau de entrada e grau de saída.</li>
+<li>Passeio e caminho: um passeio é uma sequência de vértices v0, v1, ..., vk em que cada par consecutivo é ligado por uma aresta (em digrafos, respeitando o sentido). O comprimento é o número de arestas (k), ou a soma dos pesos, se houver pesos. Um caminho é um passeio que não repete vértices (muitos livros dizem &quot;caminho simples&quot;).</li>
+<li>Ciclo: passeio com pelo menos uma aresta que começa e termina no mesmo vértice e não repete arestas nem os demais vértices.</li>
+<li>Grafo conexo: existe caminho entre quaisquer dois vértices. As componentes conexas são os &quot;pedaços&quot; conexos maximais de um grafo: não se pode acrescentar a eles nenhum outro vértice mantendo a conexidade. Um vértice isolado é, sozinho, uma componente. Em um digrafo, uma componente fortemente conexa é um conjunto maximal de vértices em que cada um alcança qualquer outro por um caminho dirigido.</li>
+<li>Subgrafo: grafo formado por parte dos vértices e arestas de G.</li>
+<li>Grafo completo: todos os pares de vértices são adjacentes; tem n(n-1)/2 arestas.</li>
+<li>Grafo esparso: m é da ordem de n (como em mapas de estradas). Grafo denso: m é da ordem de n².</li>
+<li>Grafo bipartido: os vértices se dividem em dois grupos e toda aresta liga um grupo ao outro (por exemplo, alunos e disciplinas).</li>
+<li><a href="arvores.html">Árvore</a>: grafo conexo e sem ciclos. Tem exatamente n-1 arestas. Uma floresta é um grafo sem ciclos (cada componente é uma árvore).</li>
+<li>Árvore espalhada (geradora) de G: subgrafo de G que é árvore e contém todos os vértices. Se há pesos, a de menor peso total é a árvore espalhada mínima.</li></ul>
+<h2>Representações no computador</h2>
+<ol><li>Matriz de adjacência: uma matriz n x n em que adj[u][v] = 1 (ou o peso da aresta) se existe a aresta u-v, e 0 caso contrário. Para grafos não dirigidos a matriz é simétrica.<ul><li>testar se u-v é aresta: O(1);</li>
+<li>percorrer os vizinhos de u: O(n), mesmo que u tenha poucos vizinhos;</li>
+<li>memória: O(n²). Boa para grafos densos ou pequenos.</li></ul>
+</li></ol>
+<ol><li>Listas de adjacência: um vetor de n <a href="listas_encadeadas.html">listas encadeadas</a>; a lista do vértice u contém seus vizinhos (e os pesos, se houver).<ul><li>testar se u-v é aresta: O(grau(u));</li>
+<li>percorrer os vizinhos de u: O(grau(u));</li>
+<li>memória: O(n + m). Boa para grafos esparsos, que são a maioria dos grafos grandes na prática (um mapa com milhões de cruzamentos tem poucas ruas por cruzamento).</li></ul>
+</li></ol>
+<ol><li>Lista de arestas: um vetor com os m pares (u, v, peso). Simples e útil quando o algoritmo processa as arestas em ordem, como o de <a href="kruskal.html">Kruskal</a>.</li></ol>
+<ol><li>Matriz de incidência (apresentada no material da disciplina): as linhas representam vértices e as colunas representam arestas. Em um grafo não dirigido, a coluna de uma aresta marca com 1 as suas duas extremidades; em um digrafo, pode-se usar -1 na origem e 1 no destino. Ocupa O(n · m) de memória e é mais usada em teoria (por exemplo, em fluxos e circuitos elétricos) do que em algoritmos.</li></ol>
+<p>Exemplo do material da disciplina, o grafo G1: V = {1, 2, 3, 4} e A = {1-2, 1-3, 1-4, 3-4}. Cada aresta não dirigida entra duas vezes na matriz de adjacência (posições [1][2] e [2][1], por exemplo) e nas listas de suas duas extremidades. Os graus ficam 3, 1, 2 e 2; a soma 8 é o dobro do número de arestas, como manda a propriedade dos graus.</p>
+<p>Exemplo: o grafo não dirigido com vértices 0 a 4 e arestas 0-1, 0-2, 1-3, 2-3 e 3-4 fica assim nas duas representações principais:</p>
+<pre>  matriz de adjacência        listas de adjacência
+      0 1 2 3 4
+  0:  0 1 1 0 0               0: 2 -&gt; 1
+  1:  1 0 0 1 0               1: 3 -&gt; 0
+  2:  1 0 0 1 0               2: 3 -&gt; 0
+  3:  0 1 1 0 1               3: 4 -&gt; 2 -&gt; 1
+  4:  0 0 0 1 0               4: 3
+</pre>
+<p>Nas listas, cada vizinho novo é inserido no início da lista (custo O(1)), por isso os vizinhos aparecem na ordem inversa da inserção.</p>
+<h2>Percorrendo um grafo</h2>
+<p>Quase todo algoritmo em grafos começa por um percurso sistemático, que visita cada vértice alcançável uma única vez. Os dois percursos básicos diferem apenas na estrutura que guarda os vértices &quot;a visitar&quot;:</p>
+<ul><li>Busca em largura (<a href="bfs.html">BFS</a>): usa uma <a href="filas.html">fila</a>. Visita os vértices em &quot;ondas&quot; a partir da origem e, por isso, calcula o menor número de arestas da origem a cada vértice. Tem página própria.</li>
+<li>Busca em profundidade (DFS): usa uma <a href="pilhas.html">pilha</a>, ou, de forma equivalente, a <a href="recursao.html">recursão</a>. Segue um caminho o mais longe possível; quando chega a um vértice sem vizinhos novos, volta (como no <a href="tentativa_erro.html">backtracking</a>) e tenta outro ramo:</li></ul>
+<pre>  dfs(u):
+      marque u como visitado
+      para cada vizinho v de u:
+          se v não foi visitado: dfs(v)
+</pre>
+<p>As duas custam O(n + m) com listas de adjacência e O(n²) com matriz. Aplicações da DFS: encontrar componentes conexas, detectar ciclos, <a href="ordenacao_topologica.html">ordenação topológica</a> (ordem para executar tarefas com dependências), encontrar pontes e pontos de articulação, resolver labirintos.</p>
+<h2>Problemas clássicos em grafos</h2>
+<ul><li>Árvore espalhada mínima: ligar todos os vértices com o menor custo (algoritmos de <a href="kruskal.html">Kruskal</a> e de <a href="prim.html">Prim</a>; <a href="metodo_guloso.html">método guloso</a>).</li>
+<li>Caminhos mínimos com pesos: algoritmo de <a href="dijkstra.html">Dijkstra</a> (pesos não negativos, guloso), Bellman-Ford e Floyd-Warshall (<a href="programacao_dinamica.html">programação dinâmica</a>).</li>
+<li><a href="ordenacao_topologica.html">Ordenação topológica</a>: dispor os vértices de um grafo dirigido de modo que toda aresta vá de um vértice anterior para um posterior. Existe exatamente quando o grafo não tem ciclos dirigidos.</li>
+<li>Coloração: atribuir cores aos vértices de modo que vizinhos tenham cores diferentes (alocação de horários, de registradores, de frequências). O Teorema das Quatro Cores (1976) garante que todo mapa plano pode ser colorido com 4 cores.</li>
+<li>Circuito euleriano: percorre cada ARESTA exatamente uma vez e volta ao início, podendo repetir vértices. É fácil: em um grafo conexo, existe se e somente se todos os graus são pares. Circuito hamiltoniano: visita cada VÉRTICE exatamente uma vez antes de voltar ao inicial. Parece parecido, mas decidir se existe é NP-completo, assim como o problema do caixeiro-viajante.</li>
+<li>Fluxo máximo e emparelhamentos.</li></ul>
+<h2>Histórico: as pontes de Königsberg</h2>
+<p>A teoria dos grafos nasceu de um quebra-cabeça. A cidade de Königsberg (hoje Kaliningrado, na Rússia) era cortada pelo rio Pregel, com duas ilhas ligadas às margens e entre si por sete pontes. Os moradores perguntavam se seria possível passear pela cidade atravessando cada ponte exatamente uma vez.</p>
+<p>Em 1736, Leonhard Euler resolveu o problema abstraindo os detalhes: cada porção de terra virou um ponto (vértice) e cada ponte, uma linha (aresta). Ele observou que, em um passeio desse tipo, toda vez que se chega a uma região por uma ponte, sai-se por outra; assim, exceto pelo início e pelo fim, toda região precisa ter um número PAR de pontes. Em Königsberg, as quatro regiões tinham número ímpar de pontes, e o passeio era impossível. O artigo foi publicado em 1741.</p>
+<p>A palavra &quot;graph&quot; foi usada nesse sentido por J. J. Sylvester em 1878, e o primeiro livro sobre o assunto foi escrito por Dénes König em 1936. A busca em profundidade foi estudada já no século XIX por Charles Trémaux, como método para explorar labirintos, e sistematizada por Hopcroft e Tarjan (1973).</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo monta o mesmo grafo do exemplo acima nas duas representações: uma matriz de adjacência (vetor de vetores) e um vetor de listas de adjacência (<a href="registros.html">registros</a> ligados por <a href="ponteiros.html">ponteiros</a>, alocados com malloc). Em seguida imprime as duas e libera a memória das listas. Os percursos estão nas páginas <a href="bfs.html">bfs</a> e <a href="dijkstra.html">dijkstra</a>.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Algoritmos para Grafos em C via Sedgewick. https://www.ime.usp.br/~pf/algoritmos_para_grafos/</li>
+<li>SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 22 (Algoritmos elementares em grafos).</li>
+<li>BONDY, J. A.; MURTY, U. S. R. Graph Theory. London: Springer, 2008.</li>
+<li>FEOFILOFF, P.; KOHAYAKAWA, Y.; WAKABAYASHI, Y. Uma introdução sucinta à teoria dos grafos. São Paulo: IME-USP, 2011. https://www.ime.usp.br/~pf/teoriadosgrafos/</li>
+<li>EULER, L. Solutio problematis ad geometriam situs pertinentis. Commentarii academiae scientiarum Petropolitanae, v. 8, p. 128-140, 1741.</li>
+<li>BRANDÃO, L. O. Grafos e Árvores: alguns conceitos e representações. Introdução às Estruturas de Dados: grafos e árvores. Material didático de MAC0122, IME-USP, versão 1.2, 2017. https://edisciplinas.usp.br/pluginfile.php/9699787/mod_resource/content/2/introducao_grafos.pdf</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="grafos_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registros (structs) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Registros (structs)</h1><a class="botao botao-sec" href="registros_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Um vetor agrupa vários dados do MESMO tipo, identificados por um índice. Muitas vezes, porém, precisamos agrupar dados de tipos DIFERENTES que descrevem uma mesma coisa: um aluno tem nome (cadeia de caracteres), número USP (inteiro) e nota (real); um ponto do plano tem duas coordenadas; uma data tem dia, mês e ano; uma aresta de um <a href="grafos.html">grafo</a> tem duas pontas e um peso.</p>
+<p>Um registro (em C, struct, de &quot;structure&quot;) é um pacote de variáveis, possivelmente de tipos diferentes, tratado como uma unidade. Cada componente é um campo (ou membro) e é identificado por um nome, e não por um índice. É o equivalente, em programação, a uma ficha de cadastro ou a uma linha de uma tabela.</p>
+<h2>Declaração</h2>
+<p>Declara-se primeiro o tipo do registro, descrevendo seus campos:</p>
+<pre>  struct aluno {
+      char nome[50];
+      int nusp;
+      float nota;
+  };
+</pre>
+<p>Isso cria um novo tipo, struct aluno, mas nenhuma variável. Depois, declaram-se variáveis desse tipo: struct aluno a, b;</p>
+<p>Com typedef pode-se dar um nome mais curto ao tipo:</p>
+<pre>  typedef struct aluno Aluno;     // agora basta escrever Aluno a;
+</pre>
+<p>É comum fazer as duas coisas de uma vez: typedef struct { ... } Aluno;.</p>
+<p>Inicialização na declaração: Aluno a = {&quot;Ana&quot;, 1111, 7.5};</p>
+<h2>Acesso aos campos</h2>
+<ul><li>Com uma variável do tipo registro, usa-se o ponto: a.nota = 8.0; a.nusp; a.nome.</li>
+<li>Com um <a href="ponteiros.html">ponteiro</a> p para um registro, usa-se a seta: p-&gt;nota, que é abreviação de (*p).nota.</li></ul>
+<p>Campos podem ser de qualquer tipo, inclusive vetores, outros registros e ponteiros: uma struct aluno pode ter um campo do tipo struct data para a data de nascimento, e então se escreve a.nascimento.ano.</p>
+<h2>Operações com registros</h2>
+<ul><li>Atribuição: b = a; copia TODOS os campos de a para b (inclusive vetores que estejam dentro do registro), diferentemente de vetores, que não podem ser atribuídos diretamente.</li>
+<li>Comparação: não existe a == b para registros; é preciso comparar campo a campo (ou só a chave que interessa).</li>
+<li>Funções: registros podem ser passados como parâmetros e devolvidos como resultado. Como a passagem é por valor, a função recebe uma CÓPIA. Para registros grandes (cópia cara) ou quando a função precisa alterar o original, passa-se um ponteiro: void corrige(Aluno *p, float nova).</li>
+<li>Tamanho: sizeof(Aluno) dá o número de bytes do registro; ele pode ser maior do que a soma dos campos, porque o compilador insere bytes de preenchimento (padding) para alinhar os campos na memória.</li></ul>
+<h2>Vetores de registros: tabelas</h2>
+<p>Um vetor de registros, como Aluno turma[60];, é uma tabela: cada elemento é uma linha, e cada campo é uma coluna. turma[i].nota é a nota do i-ésimo aluno. Essa é a forma natural de guardar dados de um cadastro na memória.</p>
+<p>Uma tarefa típica é ordenar a tabela por um dos campos, a chave de ordenação: alunos por número USP, por nome ou por nota. Os algoritmos de ordenação são os mesmos usados para números; muda apenas a comparação (t[j].nota &lt; x.nota) e o fato de que se movem registros inteiros.</p>
+<p>É aqui que a <a href="ordenacao.html">estabilidade</a> de um algoritmo de ordenação se torna importante. Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota com um método estável, alunos com a mesma nota continuarão em ordem alfabética entre si: obtemos a ordenação por (nota, nome) &quot;de graça&quot;. Com um método instável, essa ordem secundária poderia se perder.</p>
+<p>Quando os registros são grandes, mover cada um custa caro; uma alternativa é ordenar um vetor de ponteiros (ou de índices) para os registros, mexendo apenas nos ponteiros.</p>
+<h2>Registros autorreferentes</h2>
+<p>Um campo de um registro pode ser um ponteiro para outro registro do mesmo tipo. É assim que se constroem as estruturas encadeadas:</p>
+<ul><li><a href="listas_encadeadas.html">lista encadeada</a>: struct celula { int conteudo; struct celula *prox; };</li>
+<li><a href="arvores.html">árvore binária</a>: struct no { int chave; struct no *esq, *dir; };</li></ul>
+<p>Um registro não pode conter a si mesmo como campo (teria tamanho infinito), mas pode conter um PONTEIRO para outro registro do mesmo tipo.</p>
+<h2>Registros em outras linguagens</h2>
+<p>A ideia aparece com nomes diferentes em outras linguagens: record em Pascal, tupla nomeada (namedtuple) ou dataclass em Python, e, nas linguagens orientadas a objetos, as classes, que acrescentam aos campos as funções (métodos) que operam sobre eles. Em bancos de dados, cada linha de uma tabela é um registro.</p>
+<h2>Histórico</h2>
+<p>Os registros vêm do processamento de dados comerciais: arquivos em cartões perfurados e fitas já eram organizados em registros com campos. A linguagem COBOL (1959) foi uma das primeiras a ter registros hierárquicos como tipo de dado. C. A. R. Hoare propôs em 1965-1966 os registros com referências entre si (&quot;record handling&quot;), que influenciaram ALGOL W, Pascal e C. As structs de C existem desde as primeiras versões da linguagem, por volta de 1973.</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo define o registro Aluno, altera a nota de um aluno passando um ponteiro para o registro e ordena a turma por nota (em ordem decrescente) com <a href="insertionsort.html">inserção direta</a>, que é estável.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Registros e structs. https://users.ime.usp.br/~pf/algoritmos/aulas/stru.html</li>
+<li>KERNIGHAN, B. W.; RITCHIE, D. M. C: a linguagem de programação padrão ANSI. Rio de Janeiro: Campus, 1989. Capítulo 6 (Estruturas).</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. Apêndice sobre registros.</li>
+<li>KING, K. N. C Programming: a modern approach. 2. ed. New York: W. W. Norton, 2008. Capítulo 16 (Structures, Unions, and Enumerations).</li>
+<li>HOARE, C. A. R. Record handling. ALGOL Bulletin, n. 21, p. 39-69, 1965.</li>
+<li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="registros_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

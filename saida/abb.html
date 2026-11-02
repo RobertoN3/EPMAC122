@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Árvore binária de busca (ABB) | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Árvore binária de busca (ABB)</h1><a class="botao botao-sec" href="abb_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Busca, inserção e remoção em árvore binária de busca</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#p-f-windley">P. F. Windley</a><a class="chip f-autores" href="autores.html#a-d-booth">A. D. Booth</a><a class="chip f-autores" href="autores.html#a-j-t-colin">A. J. T. Colin</a><a class="chip f-autores" href="autores.html#thomas-n-hibbard">Thomas N. Hibbard</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1960">1960</a><a class="chip f-data" href="data.html#1962">1962</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#busca-bin%C3%A1ria">Busca binária</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-conjunto-de-chaves-que-muda-durante-a-execu%C3%A7%C3%A3o-buscar-inserir-e-remover-chaves-e-list%C3%A1-las-ordenacao-em-ordem-crescente-cada-opera%C3%A7%C3%A3o-em-tempo-proporcional-%C3%A0-altura-da-arvores-%C3%A1rvore">Problema</a></dt><dd class="texto">Dado um conjunto de chaves que muda durante a execução, buscar, inserir e remover chaves e listá-las <a href="ordenacao.html">em ordem crescente</a>, cada operação em tempo proporcional à altura da <a href="arvores.html">árvore</a></dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma árvore binária de busca (ABB) é uma <a href="arvores.html">árvore binária</a> em que cada nó tem uma chave e vale, para todo nó x:</p>
+<ul><li>todas as chaves da subárvore esquerda de x são menores que a chave de x;</li>
+<li>todas as chaves da subárvore direita de x são maiores que a chave de x.</li></ul>
+<p>É a ideia da <a href="busca_binaria.html">busca binária</a> transformada em estrutura de dados. No vetor ordenado, a busca é rápida, mas inserir ou remover exige deslocar até n elementos. Na <a href="listas_encadeadas.html">lista encadeada</a>, inserir e remover é barato, mas a busca é sequencial. A ABB combina as duas vantagens: os nós são <a href="registros.html">registros</a> ligados por <a href="ponteiros.html">ponteiros</a>, e cada comparação descarta uma subárvore inteira.</p>
+<p>Exemplo, inserindo 50, 30, 70, 20, 40, 60 e 80, nessa ordem:</p>
+<pre>            50
+          /    \
+        30      70
+       /  \    /  \
+      20  40  60  80
+</pre>
+<h2>Busca</h2>
+<p>Começa na raiz. Se a chave procurada k é igual à do nó, achou; se é menor, desce para a esquerda; se é maior, desce para a direita; se chegar a NULL, k não está na árvore. Na árvore acima, buscar 60 examina 50, 70 e 60: três comparações em vez das até sete de uma busca sequencial.</p>
+<h2>Inserção</h2>
+<p>Faz a mesma descida da busca. O lugar NULL onde ela termina é exatamente onde o novo nó deve ser pendurado, como folha. Na versão <a href="recursao.html">recursiva</a>, a função devolve a raiz da subárvore depois da inserção, o que trata de forma uniforme o caso da árvore vazia.</p>
+<h2>Listagem ordenada</h2>
+<p>O percurso in-ordem (esquerda, raiz, direita) visita as chaves em ordem crescente, em tempo O(n). A prova é por indução: todas as chaves da esquerda são menores que a raiz, que é menor que todas as da direita, e cada subárvore é listada em ordem pela hipótese de indução. Inserir n chaves e fazer o percurso é, portanto, um algoritmo de <a href="ordenacao.html">ordenação</a>, o &quot;tree sort&quot;.</p>
+<h2>Mínimo, máximo e sucessor</h2>
+<p>O mínimo é o nó mais à esquerda (desce por esq até não poder mais) e o máximo, o mais à direita. O sucessor de um nó x com subárvore direita é o mínimo dessa subárvore.</p>
+<h2>Remoção</h2>
+<p>É a operação mais delicada. Seja x o nó a remover:</p>
+<ol><li>x é folha: basta retirá-lo (o ponteiro do pai passa a ser NULL).</li>
+<li>x tem um único filho: o filho ocupa o lugar de x.</li>
+<li>x tem dois filhos: copia-se para x a chave do seu sucessor s (o menor nó da subárvore direita) e remove-se s, que não tem filho esquerdo e cai no caso 1 ou 2.</li></ol>
+<p>Na árvore do exemplo, remover 50 (dois filhos) copia 60 para a raiz e remove a folha 60:</p>
+<pre>            60
+          /    \
+        30      70
+       /  \       \
+      20  40      80
+</pre>
+<h2>Complexidade</h2>
+<p>Busca, inserção e remoção custam O(h), em que h é a altura da árvore.</p>
+<ul><li>Se a árvore for balanceada, h = O(log n): com um milhão de chaves, cerca de 20 comparações.</li>
+<li>No pior caso, h = n-1 e as operações custam O(n). Isso acontece, por exemplo, ao inserir as chaves já em ordem crescente: cada nova chave vira filho direito da anterior, e a árvore degenera em uma lista.</li>
+<li>Inserindo as chaves em ordem aleatória, a altura esperada é O(log n), e o número médio de comparações de uma busca é cerca de 1,39 log2 n.</li></ul>
+<p>Para garantir O(log n) no pior caso usam-se árvores balanceadas (AVL, rubro-negras), que reorganizam a árvore com rotações. Veja a página <a href="arvores.html">arvores</a> e <a href="eficiencia.html">eficiência de algoritmos</a>.</p>
+<h2>ABB x tabela de espalhamento</h2>
+<p>Uma <a href="hash.html">tabela de espalhamento</a> faz busca, inserção e remoção em tempo médio constante, mais rápido que a ABB. Mas ela espalha as chaves sem ordem: listar em ordem crescente, achar o mínimo, o sucessor ou todas as chaves entre a e b é natural na ABB e caro na tabela.</p>
+<h2>Histórico</h2>
+<p>A árvore binária de busca foi inventada independentemente por vários grupos por volta de 1960: P. F. Windley, A. D. Booth e A. J. T. Colin publicaram em 1960, e Thomas N. Hibbard, em 1962, analisou a estrutura e propôs o algoritmo de remoção pelo sucessor. As árvores balanceadas vieram logo depois, com as árvores AVL de Adelson-Velsky e Landis (1962).</p>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo insere as chaves do exemplo com inserção recursiva, lista em ordem com o percurso in-ordem, busca uma chave presente e uma ausente com busca iterativa, remove a raiz (caso de dois filhos) e uma folha, lista de novo e libera a memória em pós-ordem.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>FEOFILOFF, P. Árvores binárias de busca. https://www.ime.usp.br/~pf/algoritmos/aulas/binst.html</li>
+<li>FEOFILOFF, P. Árvores binárias. https://www.ime.usp.br/~pf/algoritmos/aulas/bint.html</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Capítulo 12 (Árvores binárias de busca).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Seção 6.2.2 (Binary tree searching).</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Capítulo 12 (Symbol Tables and Binary Search Trees).</li>
+<li>SZWARCFITER, J. L.; MARKENZON, L. Estruturas de Dados e seus Algoritmos. 3. ed. Rio de Janeiro: LTC, 2010.</li>
+<li>HIBBARD, T. N. Some combinatorial properties of certain trees with applications to searching and sorting. Journal of the ACM, v. 9, n. 1, p. 13-28, 1962.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="abb_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

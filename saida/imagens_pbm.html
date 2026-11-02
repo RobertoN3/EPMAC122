@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imagens simples: PBM, PGM e PPM | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Imagens simples: PBM, PGM e PPM</h1><a class="botao botao-sec" href="imagens_pbm_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Gravação e transformação de imagens PBM, PGM e PPM a partir de matrizes</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#jef-poskanzer">Jef Poskanzer</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1988">1988</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#matrizes">Matrizes</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-imagem-representada-por-uma-matriz-de-pixels-grav%C3%A1-la-num-formato-simples-que-possa-ser-escrito-com-printf-e-lido-por-qualquer-programa-de-imagens-e-aplicar-a-ela-transforma%C3%A7%C3%B5es-como-o-negativo">Problema</a></dt><dd class="texto">Dada uma imagem representada por uma matriz de pixels, gravá-la num formato simples, que possa ser escrito com printf e lido por qualquer programa de imagens, e aplicar a ela transformações como o negativo</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Uma imagem digital é uma MATRIZ: uma grade de pontos, os pixels, organizada em linhas e colunas. Cada pixel guarda um número (o tom de cinza) ou três números (as intensidades de vermelho, verde e azul). Por isso o primeiro exemplo de uso de matrizes na disciplina é justamente uma imagem, e perguntas como &quot;como funciona o reconhecimento facial?&quot; começam por aí: para o computador, um rosto é uma matriz de números.</p>
+<p>Os formatos PBM, PGM e PPM são o jeito mais simples de guardar essa matriz num arquivo. Na versão em texto, o arquivo é só um cabeçalho seguido dos números da matriz, linha por linha. Dá para escrevê-lo com printf, lê-lo com scanf, abri-lo num editor de texto e, ao mesmo tempo, vê-lo como imagem.</p>
+<h2>Os três formatos</h2>
+<p>Todos começam com um &quot;número mágico&quot; que diz o tipo, seguido da largura (número de colunas) e da altura (número de linhas). Linhas que começam com # são comentários.</p>
+<ul><li>PBM (Portable BitMap), números mágicos P1 (texto) e P4 (binário): imagens em preto e branco, 1 bit por pixel; 1 é preto e 0 é branco.</li>
+<li>PGM (Portable GrayMap), P2 e P5: tons de cinza. Depois das dimensões vem o valor máximo (em geral 255); 0 é preto e o máximo é branco.</li>
+<li>PPM (Portable PixMap), P3 e P6: imagens coloridas, com três números por pixel (vermelho, verde, azul, o sistema RGB), cada um de 0 ao máximo. Por isso, com as mesmas dimensões, um PPM tem o triplo de números de um PGM.</li></ul>
+<p>Exemplo do material da disciplina, a letra L em PBM (5 x 5):</p>
+<pre>  P1
+  # Exemplo de &quot;L&quot; em PBM
+  5 5
+  1 0 0 0 0
+  1 0 0 0 0
+  1 0 0 0 0
+  1 0 0 0 0
+  1 1 1 1 1
+</pre>
+<p>A mesma letra em PGM, preta sobre fundo branco:</p>
+<pre>  P2
+  5 5
+  255
+    0 255 255 255 255
+    0 255 255 255 255
+    0 255 255 255 255
+    0 255 255 255 255
+    0   0   0   0   0
+</pre>
+<p>Note a inversão: no PBM, 1 é preto; no PGM, 0 é preto. Os formatos binários (P4, P5, P6) guardam os mesmos dados em bytes, o que deixa o arquivo bem menor, mas ilegível num editor.</p>
+<h2>Matrizes em C</h2>
+<p>Em C, uma imagem de L linhas e C colunas pode ser guardada em int img[L][C], e img[i][j] é o pixel da linha i e coluna j. A matriz fica na memória linha após linha (row-major): img[i][j] está na posição i·C + j a partir do início, o que torna eficiente percorrer a imagem com o laço das colunas por dentro.</p>
+<p>Um erro muito comum: no cabeçalho, a LARGURA (colunas) vem antes da ALTURA (linhas), ao contrário da ordem dos índices img[linha][coluna]. Trocar as duas embaralha qualquer imagem que não seja quadrada.</p>
+<p>Para imagens grandes, ou de tamanho conhecido só ao ler o arquivo, a matriz é alocada com malloc (um vetor de L·C posições, acessado como img[i*C + j]); ver <a href="ponteiros.html">ponteiros</a>.</p>
+<h2>Transformações: laços sobre a matriz</h2>
+<p>Quase todo processamento de imagem é um laço duplo que visita cada pixel, em tempo O(L · C):</p>
+<ul><li>negativo: novo[i][j] = max - img[i][j];</li>
+<li>limiarização (de cinza para preto e branco): o pixel vira 1 (preto) se img[i][j] &lt; limiar e 0 caso contrário;</li>
+<li>espelhamento horizontal: novo[i][j] = img[i][C-1-j];</li>
+<li>rotação de 90 graus: novo[j][L-1-i] = img[i][j] (a imagem nova tem C linhas e L colunas);</li>
+<li>filtros de suavização e de detecção de bordas, em que cada pixel novo depende dos vizinhos (uma pequena matriz de pesos percorre a imagem).</li></ul>
+<p>Mesmo uma foto modesta, de 4000 x 3000 pixels, tem 12 milhões de pixels (36 milhões de números em cores): a <a href="eficiencia.html">eficiência</a> dos laços sobre a matriz importa.</p>
+<h2>Como ver as imagens</h2>
+<p>Os arquivos .pbm, .pgm e .ppm abrem no GIMP, no IrfanView, no visualizador de imagens de muitas distribuições Linux e em vários editores online. O programa convert, do ImageMagick, converte para PNG: convert imagem.pgm imagem.png.</p>
+<h2>Histórico</h2>
+<p>Jef Poskanzer criou o PBM nos anos 1980 para poder enviar imagens em mensagens de correio eletrônico, que na época só aceitavam texto. No fim de 1988, no pacote Pbmplus, ele estendeu a ideia para tons de cinza (PGM) e cores (PPM). Desde 1993 o pacote é mantido por outras pessoas com o nome Netpbm, que dá nome à família de formatos.</p>
+<h2>Sobre o código</h2>
+<p>O programa monta, em matrizes, a palavra MAC do material da disciplina (em PBM), um degradê de cinza e o seu negativo (em PGM) e uma pequena imagem colorida (em PPM), e grava os quatro arquivos (mac.pbm, degrade.pgm, negativo.pgm e cores.ppm) na pasta onde é executado.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Breve introdução aos formatos de imagem: PBM, PGM, PPM e matrizes. IME-USP. https://www.ime.usp.br/~leo/intr_prog/breve_introducao_imagens_pbm_pgm_ppm.html</li>
+<li>POSKANZER, J. et al. Netpbm: user manual (formatos pbm, pgm e ppm). https://netpbm.sourceforge.net/doc/</li>
+<li>GONZALEZ, R. C.; WOODS, R. E. Processamento digital de imagens. 3. ed. São Paulo: Pearson, 2010. Capítulos 2 e 3.</li>
+<li>KERNIGHAN, B. W.; RITCHIE, D. M. C: a linguagem de programação padrão ANSI. Rio de Janeiro: Campus, 1989. Seção 5.7 (vetores multidimensionais).</li>
+<li>Wikipedia. Netpbm. https://en.wikipedia.org/wiki/Netpbm</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="imagens_pbm_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

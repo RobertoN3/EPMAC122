@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Algoritmos de ordenação | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Algoritmos de ordenação</h1><a class="botao botao-sec" href="ordenacao_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-vetor-de-n-elementos-compar%C3%A1veis-rearranj%C3%A1-lo-de-modo-que-fique-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de n elementos comparáveis, rearranjá-lo de modo que fique em ordem crescente</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Ordenar é rearranjar os elementos de um vetor v[0..n-1] de modo que v[0] &lt;= v[1] &lt;= ... &lt;= v[n-1]. É um dos problemas mais estudados da computação, por três razões:</p>
+<ul><li>é extremamente frequente: listas de contatos, resultados de busca, relatórios, índices de livros, bancos de dados;</li>
+<li>dados ordenados tornam outros problemas fáceis: <a href="busca_binaria.html">busca binária</a>, encontrar repetidos, intercalar listas, calcular a mediana, encontrar os k maiores;</li>
+<li>é um ótimo &quot;laboratório&quot; para estudar técnicas de projeto (guloso, divisão e conquista, distribuição) e de análise de algoritmos.</li></ul>
+<p>Durante décadas, estimou-se que uma parte considerável do tempo de processamento dos computadores comerciais era gasta ordenando dados.</p>
+<h2>Chaves e registros</h2>
+<p>Em geral não se ordenam números soltos, mas <a href="registros.html">registros</a> (structs) com vários campos, usando um deles como chave de ordenação: alunos por número USP, produtos por preço, arquivos por data. Os algoritmos são os mesmos; só a comparação e a cópia mudam. Quando os registros são grandes, costuma-se ordenar um vetor de <a href="ponteiros.html">ponteiros</a> ou de índices, para não copiar registros inteiros.</p>
+<h2>Estabilidade</h2>
+<p>Um algoritmo de ordenação é estável se dois elementos com a mesma chave aparecem, no vetor ordenado, na mesma ordem relativa em que estavam no vetor original.</p>
+<p>Por que isso importa? Quando os dados têm uma chave primária (mais importante) e uma secundária (menos importante), é possível ordenar pelas duas assim:</p>
+<ol><li>ordena-se primeiro pela chave secundária;</li>
+<li>depois ordena-se, com um método ESTÁVEL, pela chave primária.</li></ol>
+<p>A segunda ordenação respeita a primeira entre os elementos empatados na chave primária.</p>
+<p>Exemplo com pares (primária, secundária):</p>
+<pre>  original:            (3,6) (7,5) (3,5) (6,2) (9,1)
+  pela secundária:     (9,1) (6,2) (7,5) (3,5) (3,6)
+  depois, estável,
+  pela primária:       (3,5) (3,6) (6,2) (7,5) (9,1)
+</pre>
+<p>Os pares (3,5) e (3,6) empatam na chave primária e permanecem na ordem obtida na etapa anterior, isto é, ordenados pela secundária. Usos práticos: ordenar uma planilha por cidade e, dentro de cada cidade, por nome; ordenar índices (linha, coluna) de uma matriz; e o próprio <a href="radixsort.html">Radix Sort</a>, que ordena dígito a dígito, do menos para o mais significativo, e depende de cada passada ser estável.</p>
+<p>Qualquer algoritmo pode ser tornado estável acrescentando a posição original como critério de desempate, ao custo de memória extra. A página <a href="estabilidade.html">estabilidade em algoritmos de ordenação</a> traz um exemplo lado a lado (estável x instável), a lista dos métodos estáveis e essa técnica em detalhe.</p>
+<h2>Os principais métodos</h2>
+<p>Métodos elementares, O(n²):</p>
+<ul><li>Bolha (<a href="bubblesort.html">bubble sort</a>): troca vizinhos fora de ordem; cada passada leva o maior elemento restante para o fim. Estável. Faz muitas trocas. Pode ser vista como <a href="metodo_guloso.html">método guloso</a>.</li>
+<li><a href="selecao_direta.html">Seleção direta</a> (selection sort): a cada passo, seleciona o menor elemento restante e o troca com o primeiro da parte não ordenada. Faz sempre n(n-1)/2 comparações, mas apenas n-1 trocas. A versão com trocas NÃO é estável.</li>
+<li><a href="insertionsort.html">Inserção direta</a> (insertion sort): como quem organiza cartas na mão, insere cada novo elemento na posição correta entre os anteriores, já ordenados, deslocando os maiores para a direita. Estável. Muito rápida para vetores pequenos ou quase ordenados: o custo é O(n + número de inversões), e um vetor já ordenado custa O(n).</li></ul>
+<p>Métodos eficientes, O(n log n):</p>
+<ul><li><a href="mergesort.html">Merge Sort</a> (von Neumann, 1945): <a href="divisao_conquista.html">divisão e conquista</a>; divide ao meio, ordena as metades recursivamente e intercala. O(n log n) em todos os casos, estável, mas usa O(n) de memória extra.</li>
+<li><a href="quicksort.html">Quick Sort</a> (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona o vetor em &quot;menores&quot; e &quot;maiores&quot; que ele, ordenando cada parte recursivamente. O(n log n) em média, mas O(n²) no pior caso (pivô sempre extremo, por exemplo com vetor já ordenado e pivô no início). Escolher o pivô ao acaso ou pela mediana de três torna o pior caso muito improvável. Em geral é o mais rápido na prática. Não é estável.</li>
+<li><a href="heapsort.html">Heap Sort</a> (Williams, 1964): monta um heap (<a href="arvores.html">árvore binária</a> guardada no vetor, em que cada pai é maior que os filhos) e retira repetidamente o máximo. O(n log n) no pior caso e memória O(1). Não é estável.</li></ul>
+<p>Métodos por distribuição (não comparam elementos entre si):</p>
+<ul><li>Counting Sort: conta quantas vezes cada chave aparece; O(n + k) para chaves inteiras entre 0 e k-1.</li>
+<li>Radix Sort (Hollerith, 1887): ordena dígito a dígito, com um método estável (em geral, counting sort) em cada passada; O(d (n + k)) para chaves de d dígitos na base k.</li></ul>
+<p>Resumo:</p>
+<pre>  Algoritmo       Técnica              Pior caso    Médio       Memória  Estável
+  Bolha           método guloso        O(n²)        O(n²)       O(1)     sim
+  Seleção direta  método guloso        O(n²)        O(n²)       O(1)     não
+  Inserção        incremental          O(n²)        O(n²)       O(1)     sim
+  Merge Sort      divisão e conquista  O(n log n)   O(n log n)  O(n)     sim
+  Quick Sort      divisão e conquista  O(n²)        O(n log n)  O(log n) não
+  Heap Sort       seleção com heap     O(n log n)   O(n log n)  O(1)     não
+  Radix Sort      distribuição         O(d(n+k))    O(d(n+k))   O(n+k)   sim
+</pre>
+<p>(A memória do Quick Sort é a da <a href="pilhas.html">pilha</a> de <a href="recursao.html">recursão</a>, quando se ordena recursivamente primeiro a parte menor.)</p>
+<h2>Limite inferior para ordenação por comparação</h2>
+<p>Todo algoritmo que obtém informação sobre a ordem APENAS comparando pares de elementos precisa, no pior caso, de pelo menos log2(n!) comparações, que é da ordem de n log n.</p>
+<p>O argumento usa uma árvore de decisão: cada nó interno é uma comparação &quot;v[i] &lt; v[j]?&quot;, e cada folha corresponde a uma ordem final. Como há n! ordens possíveis da entrada e cada uma precisa de uma folha diferente, a árvore tem pelo menos n! folhas; uma árvore binária com n! folhas tem altura pelo menos log2(n!), e log2(n!) ~ n log2 n - 1,44 n (fórmula de Stirling).</p>
+<p>Consequências:</p>
+<ul><li>Merge Sort e Heap Sort são assintoticamente ótimos entre os métodos por comparação;</li>
+<li>Counting Sort e Radix Sort escapam desse limite porque usam a estrutura das chaves (dígitos), e não só comparações.</li></ul>
+<h2>Na prática</h2>
+<ul><li>Para vetores pequenos (algumas dezenas de elementos) ou quase ordenados, a inserção direta é imbatível; por isso implementações profissionais usam inserção nos pedaços pequenos gerados pela recursão.</li>
+<li>A função qsort da biblioteca padrão do C ordena qualquer vetor recebendo uma função de comparação; o padrão não exige que ela seja estável.</li>
+<li>O std::sort de C++ costuma usar o Introsort (Musser, 1997): Quick Sort que troca para Heap Sort se a recursão ficar profunda demais, garantindo O(n log n).</li>
+<li>Python e Java (para objetos) usam o Timsort (Tim Peters, 2002), um Merge Sort adaptativo e estável, muito rápido em dados reais, que costumam ter trechos já ordenados.</li></ul>
+<h2>Sobre o código</h2>
+<p>O programa de exemplo demonstra a estabilidade: ordena pares por inserção direta (estável), primeiro pela chave secundária e depois pela primária, imprimindo as três listas do exemplo desta página.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 3: Sorting and Searching. 2. ed. Reading: Addison-Wesley, 1998. Capítulo 5 (Sorting).</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Parte II (Ordenação e estatísticas de ordem), especialmente seção 8.1 (limites inferiores).</li>
+<li>FEOFILOFF, P. Ordenação. https://www.ime.usp.br/~pf/algoritmos/aulas/ordena.html</li>
+<li>SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Parte 3 (Sorting).</li>
+<li>ZIVIANI, N. Projeto de Algoritmos com implementações em Pascal e C. 3. ed. São Paulo: Cengage Learning, 2011. Capítulo 4 (Ordenação).</li>
+<li>MUSSER, D. R. Introspective sorting and selection algorithms. Software: Practice and Experience, v. 27, n. 8, p. 983-993, 1997.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="ordenacao_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

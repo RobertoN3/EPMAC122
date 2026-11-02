@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Representação de conjuntos | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Representação de conjuntos</h1><a class="botao botao-sec" href="conjuntos_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Conjunto em vetor linear e em vetor de bits</dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#representa%C3%A7%C3%A3o-de-conjuntos">Representação de conjuntos</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#hash">Hash</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dado-um-conjunto-que-muda-durante-a-execu%C3%A7%C3%A3o-com-elementos-tirados-de-um-universo-0-1-u-1-buscar-inserir-e-remover-elementos-e-esvaziar-o-conjunto">Problema</a></dt><dd class="texto">Dado um conjunto que muda durante a execução, com elementos tirados de um universo {0, 1, ..., U-1}, buscar, inserir e remover elementos e esvaziar o conjunto</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Muitos programas precisam guardar um CONJUNTO: uma coleção sem repetições, em que a ordem não importa e a pergunta principal é &quot;x pertence ao conjunto?&quot;. Exemplos: os vértices já visitados numa <a href="bfs.html">busca em largura</a>, as palavras reservadas da linguagem C, os números já sorteados num bingo, os alunos presentes numa aula.</p>
+<p>As operações básicas são:</p>
+<ul><li>pertence(x): x está no conjunto?</li>
+<li>insere(x): acrescenta x (se ainda não estiver);</li>
+<li>remove(x): retira x;</li>
+<li>esvazia(): deixa o conjunto vazio;</li>
+<li>e, às vezes, união, interseção e listagem dos elementos.</li></ul>
+<p>Não existe uma representação que seja a melhor para tudo: cada uma troca tempo por memória de um jeito. Esta página compara as duas vistas na disciplina.</p>
+<h2>Método linear: um vetor com os elementos</h2>
+<p>Guardam-se os n elementos do conjunto em v[0..n-1], sem repetição e em qualquer ordem.</p>
+<ul><li>pertence(x): <a href="busca_sequencial.html">busca sequencial</a> em v[0..n-1]: O(n).</li>
+<li>insere(x): é preciso verificar antes se x já está lá (senão o conjunto teria repetições), e depois colocá-lo em v[n]: O(n).</li>
+<li>remove(x): achar x (O(n)) e pôr no lugar dele o último elemento, v[n-1], diminuindo n. Como a ordem não importa, não é preciso deslocar nada: a remoção em si é O(1), mas a busca torna o total O(n).</li>
+<li>esvazia(): basta fazer n = 0: O(1).</li></ul>
+<p>Memória: proporcional ao número de elementos, n, e não ao tamanho do universo. Bom quando o conjunto é pequeno, mesmo que o universo seja enorme.</p>
+<h2>Vetor de bits: uma posição para cada elemento possível</h2>
+<p>Quando o universo é {0, 1, ..., U-1} e U não é grande demais, usa-se um vetor V com U posições:</p>
+<pre>  x pertence ao conjunto  &lt;=&gt;  V[x] == 1
+</pre>
+<ul><li>pertence(x): olhar V[x]: O(1).</li>
+<li>insere(x): V[x] = 1: O(1). Repetições são impossíveis por construção.</li>
+<li>remove(x): V[x] = 0: O(1).</li>
+<li>esvazia(): zerar as U posições: O(U).</li>
+<li>união e interseção de dois conjuntos: percorrer os vetores fazendo OU e E posição a posição: O(U).</li></ul>
+<p>Também chamado de vetor característico ou bitmap. O nome &quot;de bits&quot; vem do fato de cada posição só precisar de um bit: com U = 1 000 000, o conjunto cabe em 125 000 bytes. Em C, guardam-se 8 elementos por byte (ou 32 ou 64 por palavra): o elemento x fica no bit x % 8 do byte x / 8, e as operações usam deslocamentos e máscaras:</p>
+<pre>  pertence: (bits[x / 8] &gt;&gt; (x % 8)) &amp; 1
+  insere:    bits[x / 8] |=  (1 &lt;&lt; (x % 8))
+  remove:    bits[x / 8] &amp;= ~(1 &lt;&lt; (x % 8))
+</pre>
+<p>Com palavras de 64 bits, a união de dois conjuntos faz um OU de 64 elementos de uma vez.</p>
+<h2>Comparação</h2>
+<pre>  operação      método linear    vetor de bits
+  pertence      O(n)             O(1)
+  insere        O(n)             O(1)
+  remove        O(n)             O(1)
+  esvazia       O(1)             O(U)
+  memória       n inteiros       U bits
+</pre>
+<p>(n é o número de elementos no conjunto; U é o tamanho do universo.)</p>
+<p>Regra prática: universo pequeno e denso (muitos dos U valores possíveis aparecem) pede vetor de bits; universo enorme e conjunto pequeno pede o método linear, ou algo melhor.</p>
+<h2>E quando o universo não é {0, ..., U-1}?</h2>
+<p>Para conjuntos de cadeias de caracteres (nomes, palavras), não dá para ter uma posição para cada cadeia possível. A ideia, apresentada na disciplina logo depois do vetor de bits, é usar uma função que transforma cada cadeia num índice de 0 a N-1 e então usar um vetor: é a <a href="hash.html">tabela de espalhamento</a>, que mantém pertence, insere e remove em tempo médio O(1) e lida com as colisões. Se for preciso também listar os elementos em ordem, uma <a href="abb.html">árvore binária de busca</a> é a alternativa.</p>
+<p>O vetor de frequências da <a href="ordenacao_contagem.html">ordenação por contagem</a> é uma generalização do vetor de bits: em vez de 0 ou 1, cada posição conta quantas vezes o valor aparece (um multiconjunto).</p>
+<h2>Aplicações</h2>
+<ul><li>Crivo de Eratóstenes: um vetor de bits marca os números compostos; os que sobram são os primos.</li>
+<li>Vértices visitados em buscas em <a href="grafos.html">grafos</a>.</li>
+<li>Bancos de dados e mecanismos de busca usam bitmaps para saber, por exemplo, quais registros têm um certo atributo, e fazem consultas com operações E e OU sobre eles.</li>
+<li>Sistemas operacionais usam bitmaps para controlar blocos livres do disco e páginas livres da memória.</li></ul>
+<p>Uma técnica curiosa, o conjunto esparso de Briggs e Torczon (1993), usa dois vetores para ter pertence, insere e remove em O(1) e, além disso, esvaziar também em O(1).</p>
+<h2>Sobre o código</h2>
+<p>O programa representa conjuntos de inteiros de 0 a 63 das duas formas, executa as mesmas operações em cada uma, calcula a união e a interseção de dois conjuntos com o vetor de bits e usa um vetor de bits para encontrar os primos até 100 pelo crivo de Eratóstenes.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Material de MAC0122, semana 5 (representação de conjuntos: método linear e vetor de bits; espalhamento). IME-USP, e-Disciplinas, 2026.</li>
+<li>FEOFILOFF, P. Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 11.1 (tabelas de endereçamento direto) e exercício 11.1-2 (vetor de bits).</li>
+<li>BENTLEY, J. Programming Pearls. 2. ed. Reading: Addison-Wesley, 2000. Coluna 1 (ordenação com um vetor de bits).</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 4A: Combinatorial Algorithms, Part 1. Upper Saddle River: Addison-Wesley, 2011. Seção 7.1.3 (Bitwise tricks and techniques).</li>
+<li>BRIGGS, P.; TORCZON, L. An efficient representation for sparse sets. ACM Letters on Programming Languages and Systems, v. 2, n. 1-4, p. 59-69, 1993.</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="conjuntos_codigo.html">Ver o código em C</a></p>
+</main>
+<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
+</body></html>

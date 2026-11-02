@@ -1,7 +1,7 @@
 2. Algoritmo: Tabela de espalhamento com encadeamento
 3. Autores: Hans Peter Luhn
 4. Data: 1953
-5. Conceitos: Hash, Vetores, Listas encadeadas, Ponteiros, Eficiência de algoritmos
+5. Conceitos: Hash, Representação de conjuntos, Vetores, Listas encadeadas, Ponteiros, Eficiência de algoritmos
 6. Problema: Dado um conjunto de chaves que muda durante a execução, inserir, buscar e remover chaves em tempo médio constante
 7. Titulo: Hash e espalhamento
 
