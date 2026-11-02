@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <dirent.h>
 #include "slug.h"
+#include "layout.h"
 
 #define PASTA_ENTRADA "entradatxt"
 #define PASTA_SAIDA   "saida"
@@ -42,18 +43,14 @@ static const struct { const char *conceito, *pagina; } VOCABULARIO[] = {
 };
 #define N_VOCAB ((int)(sizeof VOCABULARIO / sizeof VOCABULARIO[0]))
 
-static const char *CSS =
-    "body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}"
-    "a{color:#2b6cb0}"
-    ".botoes{display:flex;flex-wrap:wrap;gap:12px}"
-    ".botao{display:inline-block;padding:14px 24px;background:#2b6cb0;color:#fff;"
-    "border-radius:8px;text-decoration:none;font-size:1.1rem}"
-    ".botao:hover{background:#1e4e8c}"
-    "details{margin:8px 0;border:1px solid #ccc;border-radius:8px;padding:8px 14px}"
-    "details:target{border-color:#2b6cb0;background:#f0f6ff}"
-    "summary{cursor:pointer;font-weight:600;font-size:1.05rem}"
-    "ul{margin:8px 0 4px}li{margin:4px 0}.n{color:#777;font-weight:400}"
-    ".exp{margin:8px 0 0;font-size:.95rem;color:#555}";
+/* palavras para os resumos: "4 técnicas", "1 autor" */
+static const char *const SINGULAR[NUM_CAT] = {"técnica", "algoritmo", "autor", "ano", "conceito", "problema"};
+static const char *const PLURAL[NUM_CAT]   = {"técnicas", "algoritmos", "autores", "anos", "conceitos", "problemas"};
+
+/* posição de cada índice no grafo da página inicial (viewBox 800 x 480);
+   o nó central fica em (400, 240) */
+static const int NO_X[NUM_CAT] = {400, 660, 660, 400, 140, 140};
+static const int NO_Y[NUM_CAT] = { 72, 156, 324, 408, 324, 156};
 
 /* ---------- estruturas ---------- */
 
@@ -336,24 +333,83 @@ static int achar_arquivo(const char *base) {
 
 /* ---------- geração dos HTMLs ---------- */
 
-static void cabecalho(FILE *o, const char *titulo) {
-    fputs("<!DOCTYPE html>\n<html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n"
-          "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>", o);
-    esc(o, titulo);
-    fprintf(o, "</title>\n<style>%s</style></head><body>\n", CSS);
+/* quantos arquivos têm o campo c preenchido */
+static int paginas_com(int c) {
+    int n = 0;
+    for (int i = 0; i < n_arq; i++) if (arq[i].campo[c][0]) n++;
+    return n;
 }
 
+/* Página inicial: os seis índices desenhados como um grafo (uma "roda": o
+   nó central MAC0122 ligado aos seis, que formam um anel). Cada nó é um
+   link. No celular, o grafo dá lugar a uma lista com os mesmos links. */
 static void gerar_index(void) {
     char caminho[1024];
     snprintf(caminho, sizeof caminho, "%s/index.html", PASTA_SAIDA);
     FILE *o = fopen(caminho, "w");
     if (!o) { perror(caminho); return; }
 
-    cabecalho(o, "Catálogo de algoritmos");
-    fputs("<h1>Catálogo de algoritmos</h1>\n<p>Navegue por:</p>\n<div class=\"botoes\">\n", o);
-    for (int c = 0; c < NUM_CAT; c++)
-        fprintf(o, "  <a class=\"botao\" href=\"%s.html\">%s</a>\n", CAT_SLUG[c], CAT_ROTULO[c]);
-    fputs("</div>\n</body></html>\n", o);
+    abrir_pagina(o, "Algoritmos de MAC0122", "pagina-inicio", -1, 0, NULL);
+    fprintf(o, "<main class=\"inicio\">\n<div class=\"heroi\">\n<div class=\"heroi-texto\">"
+               "<h1>Algoritmos de MAC0122</h1>\n"
+               "<p class=\"intro\">%d páginas sobre técnicas de projeto, algoritmos e "
+               "estruturas de dados da disciplina, cada uma com explicação, referências "
+               "e código em C. Elas estão ligadas entre si como um grafo: escolha por "
+               "onde entrar.</p>\n</div>\n", n_arq);
+
+    /* o grafo */
+    fputs("<svg class=\"grafo\" viewBox=\"0 0 800 480\" role=\"group\" "
+          "aria-label=\"Os seis índices do site\">\n", o);
+    for (int c = 0; c < NUM_CAT; c++) {          /* anel entre índices vizinhos */
+        int d = (c + 1) % NUM_CAT;
+        fprintf(o, "<line class=\"anel\" x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\"/>\n",
+                NO_X[c], NO_Y[c], NO_X[d], NO_Y[d]);
+    }
+    for (int c = 0; c < NUM_CAT; c++) {
+        int n = cat[c].n;
+        fprintf(o, "<a class=\"no f-%s\" href=\"%s.html\" style=\"--i:%d\" "
+                   "aria-label=\"%s: %d %s\">\n", CAT_SLUG[c], CAT_SLUG[c], c,
+                CAT_ROTULO[c], n, n == 1 ? SINGULAR[c] : PLURAL[c]);
+        fprintf(o, "<line class=\"aresta\" pathLength=\"1\" x1=\"400\" y1=\"240\" "
+                   "x2=\"%d\" y2=\"%d\"/>\n", NO_X[c], NO_Y[c]);
+        fprintf(o, "<circle cx=\"%d\" cy=\"%d\" r=\"60\"/>\n", NO_X[c], NO_Y[c]);
+        fprintf(o, "<text class=\"num\" x=\"%d\" y=\"%d\">%d</text>\n", NO_X[c], NO_Y[c] + 4, n);
+        fprintf(o, "<text class=\"rot\" x=\"%d\" y=\"%d\">%s</text>\n</a>\n",
+                NO_X[c], NO_Y[c] + 30, CAT_ROTULO[c]);
+    }
+    fprintf(o, "<g class=\"centro\"><circle cx=\"400\" cy=\"240\" r=\"74\"/>"
+               "<text x=\"400\" y=\"238\">MAC0122</text>"
+               "<text class=\"sub\" x=\"400\" y=\"262\">%d páginas</text></g>\n</svg>\n</div>\n",
+            n_arq);
+
+    /* a mesma navegação em lista, para telas estreitas */
+    fputs("<ul class=\"lista-facetas\">\n", o);
+    for (int c = 0; c < NUM_CAT; c++) {
+        int n = cat[c].n;
+        fprintf(o, "<li><a class=\"f-%s\" href=\"%s.html\"><span class=\"qtd\">%d</span>"
+                   "<span class=\"nome\">%s</span><span class=\"desc\">%d %s em %d páginas"
+                   "</span></a></li>\n", CAT_SLUG[c], CAT_SLUG[c], n, CAT_ROTULO[c],
+                n, n == 1 ? SINGULAR[c] : PLURAL[c], paginas_com(c));
+    }
+    fputs("</ul>\n", o);
+
+    /* atalhos: as técnicas da disciplina */
+    if (cat[C_TECNICA].n > 0) {
+        Categoria *T = &cat[C_TECNICA];
+        qsort(T->v, T->n, sizeof *T->v, cmp_valor);
+        fputs("<section class=\"atalhos\">\n<h2>As técnicas de projeto da disciplina</h2>\n"
+              "<ul class=\"chips\">\n", o);
+        for (int i = 0; i < T->n; i++) {
+            fputs("<li><a class=\"chip f-tecnica\" href=\"tecnica.html#", o);
+            escrever_slug(o, T->v[i].texto, 1);
+            fputs("\">", o);
+            esc(o, T->v[i].texto);
+            fputs("</a></li>\n", o);
+        }
+        fputs("</ul>\n</section>\n", o);
+    }
+    fputs("</main>\n", o);
+    fechar_pagina(o, 0, NULL);
     fclose(o);
 }
 
@@ -366,11 +422,29 @@ static void gerar_categoria(int c) {
     Categoria *C = &cat[c];
     qsort(C->v, C->n, sizeof *C->v, cmp_valor);
 
-    cabecalho(o, CAT_ROTULO[c]);
-    fputs("<p><a href=\"index.html\">&larr; Início</a></p>\n", o);
-    fprintf(o, "<h1>%s</h1>\n", CAT_ROTULO[c]);
+    char classe[64];
+    snprintf(classe, sizeof classe, "pagina-indice f-%s", CAT_SLUG[c]);
+    abrir_pagina(o, CAT_ROTULO[c], classe, c, 0, NULL);
 
-    if (C->n == 0) fputs("<p>Nenhum item encontrado.</p>\n", o);
+    int np = paginas_com(c);
+    fprintf(o, "<main class=\"indice\">\n<header class=\"cab-indice\">"
+               "<span class=\"no-cat\" aria-hidden=\"true\"></span>"
+               "<h1>%s</h1>\n<p class=\"resumo\">%d %s em %d %s. ",
+            CAT_ROTULO[c], C->n, C->n == 1 ? SINGULAR[c] : PLURAL[c],
+            np, np == 1 ? "página" : "páginas");
+    fputs(c == C_CONCEITOS
+          ? "Abra um conceito para ver a página que o explica e as que o usam."
+          : "Abra um item para ver as páginas.", o);
+    fputs("</p>\n</header>\n", o);
+
+    if (C->n == 0) {
+        fputs("<p class=\"vazio\">Nenhum TXT preenche este campo ainda. Acrescente-o no "
+              "cabeçalho de um arquivo em entradatxt e gere as páginas de novo.</p>\n", o);
+    } else {
+        fputs("<div class=\"acoes\"><button class=\"acao\" type=\"button\" data-acao=\"abrir\">"
+              "Abrir todos</button><button class=\"acao\" type=\"button\" data-acao=\"fechar\">"
+              "Fechar todos</button></div>\n<div class=\"grupos\">\n", o);
+    }
 
     cat_atual = c;
     for (int i = 0; i < C->n; i++) {
@@ -378,12 +452,13 @@ static void gerar_categoria(int c) {
         qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
 
         /* id: âncora usada pela ficha das páginas de conteúdo (slug.h) */
-        fputs("<details id=\"", o);
+        fputs("<details class=\"grupo\" id=\"", o);
         escrever_slug(o, v->texto, 0);
-        fputs("\"><summary>", o);
+        fputs("\"><summary><span class=\"valor\">", o);
         if (c == C_PROBLEMA) esc_links(o, v->texto);   /* [[alvo|texto]] vira link */
         else                 esc(o, v->texto);
-        fprintf(o, " <span class=\"n\">(%d)</span></summary>\n", v->n);
+        fprintf(o, "</span><span class=\"qtd\" title=\"%d %s\">%d</span></summary>\n",
+                v->n, v->n == 1 ? "página" : "páginas", v->n);
 
         /* Conceitos: liga o nome do conceito à página que o explica */
         if (c == C_CONCEITOS) {
@@ -398,7 +473,7 @@ static void gerar_categoria(int c) {
             }
         }
 
-        fputs("<ul>\n", o);
+        fputs("<ul class=\"paginas\">\n", o);
         for (int j = 0; j < v->n; j++) {
             Arquivo *a = &arq[v->idx[j]];
             fputs("  <li><a href=\"", o);
@@ -409,12 +484,19 @@ static void gerar_categoria(int c) {
         }
         fputs("</ul></details>\n", o);
     }
-    /* chegando por um link com #âncora, abre e mostra o grupo correspondente */
-    fputs("<script>function abrir(){var e=location.hash&&document.getElementById("
-          "decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){"
-          "e.open=true;e.scrollIntoView();}}abrir();addEventListener('hashchange',abrir);"
-          "</script>\n", o);
-    fputs("</body></html>\n", o);
+    if (C->n > 0) fputs("</div>\n", o);
+    fputs("</main>\n", o);
+
+    /* Chegando por um link com #âncora, abre e mostra o grupo correspondente;
+       os botões abrem ou fecham todos os grupos. */
+    fechar_pagina(o, 0,
+        "function abrir(){var e=location.hash&&document.getElementById("
+        "decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){"
+        "e.open=true;e.scrollIntoView({block:'center'});}}"
+        "abrir();addEventListener('hashchange',abrir);"
+        "document.querySelectorAll('[data-acao]').forEach(function(b){"
+        "b.addEventListener('click',function(){var a=b.dataset.acao==='abrir';"
+        "document.querySelectorAll('details.grupo').forEach(function(d){d.open=a;});});});");
     fclose(o);
 }
 
@@ -439,6 +521,7 @@ int main(void) {
     closedir(d);
 
     montar_categorias();
+    copiar_estilo(PASTA_SAIDA);
     gerar_index();
     for (int c = 0; c < NUM_CAT; c++) gerar_categoria(c);
 

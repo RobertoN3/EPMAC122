@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #endif
+#include "layout.h"
 
 static const char *entrada = "entradatxt", *saida = "saida";
 static int erros;
@@ -344,48 +345,51 @@ static int preparar(Texto *t) {
     return linhas;
 }
 
-static void bloco(FILE *o, Texto *t) {
+static void bloco(FILE *o, Texto *t, int numero, int nb) {
     int i, linhas;
     if (!t->s) anexar(t, "", 0);
     linhas = preparar(t);
+    fputs("<section class=\"bloco\">\n<div class=\"bloco-barra\"><span>", o);
+    if (nb > 1) fprintf(o, "Programa %d, ", numero);
+    fprintf(o, "%d %s</span>", linhas, linhas == 1 ? "linha" : "linhas");
+    fputs("<button class=\"copiar\" type=\"button\">Copiar código</button></div>\n", o);
     fputs("<div class=\"codigo\"><pre class=\"nl\" aria-hidden=\"true\">", o);
     for (i = 1; i <= linhas; i++) fprintf(o, "%d%s", i, i < linhas ? "\n" : "");
     fputs("</pre><pre class=\"c\"><code>", o);
     colorir(o, t->s);
-    fputs("</code></pre></div>\n", o);
+    fputs("</code></pre></div>\n</section>\n", o);
 }
 
-/* base == NULL no modo filtro: sem links para as outras páginas */
-static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos, int nb) {
-    int c, b;
-    fputs("<!DOCTYPE html>\n<html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n"
-          "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Código: ", o);
-    esc(o, titulo, strlen(titulo));
-    fputs("</title>\n<style>"
-          "body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;"
-          "padding:0 16px;color:#222;line-height:1.6}"
-          "a{color:#2b6cb0}nav a{margin-right:20px}"
-          ".codigo{display:flex;background:#f8f8f8;border:1px solid #ddd;"
-          "border-radius:8px;overflow-x:auto;margin:16px 0}"
-          ".codigo pre{margin:0;padding:12px 14px;font:14px/1.45 ui-monospace,"
-          "SFMono-Regular,Consolas,monospace;tab-size:4}"
-          ".nl{color:#999;text-align:right;border-right:1px solid #ddd;user-select:none}"
-          ".legenda{list-style:none;padding:0;display:flex;flex-wrap:wrap;"
-          "gap:4px 18px;font-size:.9rem;color:#555}"
-          ".legenda code{font:13px ui-monospace,Consolas,monospace;background:#f8f8f8;"
-          "border:1px solid #e5e5e5;padding:0 5px;border-radius:4px}", o);
-    for (c = 0; c < N_CATS; c++) fprintf(o, ".%s{%s}", CATS[c].classe, CATS[c].css);
-    fputs("</style></head><body>\n", o);
+/* botão "Copiar código": copia o texto do bloco e confirma no próprio botão */
+static const char *SCRIPT_COPIAR =
+    "function reserva(t){var a=document.createElement('textarea');a.value=t;"
+    "a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();"
+    "try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}"
+    "document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',"
+    "function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;"
+    "function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){"
+    "b.textContent='Copiar código';b.classList.remove('feito');},1800);}"
+    "if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t)"
+    ".then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});";
 
-    if (base) {
-        fputs("<nav><a href=\"index.html\">&larr; Início</a>", o);
-        fprintf(o, "<a href=\"%s.html\">&larr; Explicação: ", base);
-        esc(o, titulo, strlen(titulo));
-        fputs("</a></nav>\n", o);
-    }
-    fputs("<main><h1>Código em C: ", o);
+/* base == NULL no modo filtro: página avulsa, sem links para o resto do site */
+static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos, int nb) {
+    char css[1024], titulo_aba[600];
+    size_t n = 0;
+    int c, b;
+
+    /* cores dos itens léxicos (tabela CATS): ficam na própria página */
+    for (c = 0; c < N_CATS && n < sizeof css; c++)
+        n += (size_t)snprintf(css + n, sizeof css - n, ".%s{%s}", CATS[c].classe, CATS[c].css);
+    snprintf(titulo_aba, sizeof titulo_aba, "Código: %s", titulo);
+    abrir_pagina(o, titulo_aba, "pagina-codigo", -1, base == NULL, css);
+
+    fputs("<main class=\"codigo-pagina\">\n<header class=\"titulo-artigo\"><h1>", o);
     esc(o, titulo, strlen(titulo));
-    fputs("</h1>\n<ul class=\"legenda\">\n", o);
+    fputs(": código em C</h1>", o);
+    if (base)
+        fprintf(o, "<a class=\"botao botao-sec\" href=\"%s.html\">Voltar para a explicação</a>", base);
+    fputs("</header>\n<ul class=\"legenda\" aria-label=\"Cores usadas no código\">\n", o);
     for (c = 0; c < N_CATS; c++) {
         fprintf(o, "<li><code class=\"%s\">", CATS[c].classe);
         esc(o, CATS[c].exemplo, strlen(CATS[c].exemplo));
@@ -393,11 +397,9 @@ static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos,
     }
     fputs("</ul>\n", o);
 
-    for (b = 0; b < nb; b++) {
-        if (nb > 1) fprintf(o, "<h2>Programa %d</h2>\n", b + 1);
-        bloco(o, &blocos[b]);
-    }
-    fputs("</main></body></html>\n", o);
+    for (b = 0; b < nb; b++) bloco(o, &blocos[b], b + 1, nb);
+    fputs("</main>\n", o);
+    fechar_pagina(o, base == NULL, SCRIPT_COPIAR);
 }
 
 /* ---------- modo filtro ---------- */
@@ -411,7 +413,7 @@ static int filtro(void) {
     for (i = 0; i < t.n; i++)                  /* remove '\r' (Windows) */
         if (t.s[i] != '\r') t.s[k++] = t.s[i];
     if (t.s) { t.n = k; t.s[k] = '\0'; }
-    pagina(stdout, "programa", NULL, &t, 1);
+    pagina(stdout, "Programa", NULL, &t, 1);
     free(t.s);
     return ferror(stdout) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
@@ -506,6 +508,7 @@ int main(int argc, char **argv) {
 #endif
         perror(saida); closedir(d); return EXIT_FAILURE;
     }
+    copiar_estilo(saida);
 
     while ((e = readdir(d))) {
         size_t n = strlen(e->d_name);

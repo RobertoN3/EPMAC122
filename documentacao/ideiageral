@@ -46,6 +46,16 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 - Modo filtro: `colorir -f < programa.c > programa.html` colore qualquer arquivo C, sem passar pelos TXT.
 - Mesmos argumentos opcionais dos outros programas: `colorir pasta_entrada pasta_saida`.
 
+# Visual do site (estilo.css e layout.h)
+
+- Todo o visual fica em `estilo.css`. Cada programa copia esse arquivo para `saida/`; para mudar cores, fontes ou espaçamentos, basta editá-lo e rodar os programas de novo, sem mexer no C.
+- `layout.h` é incluído pelos três programas e escreve o que as páginas têm em comum: o `<head>`, a barra de navegação com os seis índices (o atual fica destacado) e o rodapé.
+- Conceito: o site é um grafo de páginas. A página inicial desenha os seis índices como nós ligados ao nó central MAC0122; cada nó é um link e mostra quantos itens o índice tem. No celular, o grafo vira uma lista com os mesmos links.
+- Cada índice tem a sua cor (Técnica violeta, Algoritmo verde-azulado, Autores framboesa, Data âmbar, Conceitos verde, Problema azul), usada no grafo, na barra, no topo do índice e nas etiquetas da ficha. O amarelo de marca-texto destaca o grupo procurado e o texto selecionado.
+- Fontes: Bricolage Grotesque (títulos e interface), Source Serif 4 (texto das explicações) e JetBrains Mono (código), carregadas do Google Fonts. Sem internet, o navegador usa fontes parecidas do sistema e o site continua funcionando.
+- Interações: botões com um nó que se expande ao passar o mouse; "Abrir todos" e "Fechar todos" nos índices; "Copiar código" nas páginas de código. Quem pede menos movimento no sistema não vê as animações.
+- As cores do código C continuam no `colorir.c` e vão dentro de cada página de código, para não depender do `estilo.css`.
+
 # Como gerar o site
 
 ```
@@ -55,7 +65,7 @@ gcc -Wall -Wextra -pedantic -std=c99 colorir.c -o colorir
 ./gerador && ./gerador_conteudo && ./colorir
 ```
 
-Os três leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Abrir `saida/index.html`.
+Os três leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Rode-os na pasta do repositório, onde estão `estilo.css`, `layout.h` e `slug.h`. Abrir `saida/index.html`.
 
 # Arquivo auxiliar: sugestão ainda não adotada
 

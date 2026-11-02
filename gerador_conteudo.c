@@ -10,6 +10,7 @@
 #include <direct.h>
 #endif
 #include "slug.h"
+#include "layout.h"
 
 static const char *entrada = "entradatxt", *saida = "saida";
 static int erros;
@@ -118,7 +119,7 @@ static void texto(FILE *o, const char *s, const char *origem) {
 }
 
 typedef struct {
-    int paragrafo, pre, codigo, blocos, nivel;
+    int paragrafo, pre, codigo, blocos, nivel, refs;
     struct { int recuo, ordenada; } lista[64];
 } Estado;
 
@@ -160,7 +161,11 @@ static void corpo(FILE *o, FILE *f, const char *nome, const char *base) {
             fechar(o, &e); e.codigo = 1; e.blocos++;
         } else if (!*s) fechar(o, &e);
         else if (!strcmp(s, "REFERENCIAS:") || !strcmp(s, "Referências:")) {
-            fechar(o, &e); fputs("<h2>Referências</h2>\n", o);
+            fechar(o, &e);
+            if (!e.refs) {
+                fputs("<section class=\"referencias\">\n<h2>Referências</h2>\n", o);
+                e.refs = 1;
+            }
         } else if (!strncmp(s, "## ", 3)) {
             fechar(o, &e); fputs("<h2>", o); texto(o, s + 3, nome); fputs("</h2>\n", o);
         } else {
@@ -204,9 +209,25 @@ static void corpo(FILE *o, FILE *f, const char *nome, const char *base) {
     if (e.codigo || e.pre) {
         fprintf(stderr, "%s: bloco sem marcador de fechamento\n", nome); erros++;
     }
+    if (e.refs) fputs("</section>\n", o);
     if (e.blocos)
-        fprintf(o, "<p class=\"codigo\"><a href=\"%s_codigo.html\">"
-                "Ver código em C</a></p>\n", base);
+        fprintf(o, "<p class=\"ir-codigo\"><a class=\"botao\" href=\"%s_codigo.html\">"
+                "Ver o código em C</a></p>\n", base);
+}
+
+/* o resto do arquivo tem um bloco de código C? (volta para onde estava) */
+static int tem_codigo(FILE *f) {
+    long pos = ftell(f);
+    char *linha;
+    int achou = 0;
+    if (pos < 0) return 0;
+    while (!achou && (linha = ler_linha(f))) {
+        char *s = trim(linha);
+        achou = !strcmp(s, "INICIO_CODIGO_C") || !strcmp(s, "[codigo]");
+        free(linha);
+    }
+    fseek(f, pos, SEEK_SET);
+    return achou;
 }
 
 /* Ficha com os campos do cabeçalho, no topo da página. Cada valor leva ao
@@ -225,25 +246,25 @@ static void ficha(FILE *o, char *campo[], const char *origem) {
         if (!v || !*v) continue;
 
         if (k == 6) {
-            fprintf(o, "<dt><a href=\"%s.html#", INDICE[k]);
+            fprintf(o, "<dt class=\"f-%s\"><a href=\"%s.html#", INDICE[k], INDICE[k]);
             escrever_slug(o, v, 1);
-            fprintf(o, "\">%s</a></dt><dd>", ROTULO[k]);
+            fprintf(o, "\">%s</a></dt><dd class=\"texto\">", ROTULO[k]);
             texto(o, v, origem);
         } else {
-            fprintf(o, "<dt><a href=\"%s.html\">%s</a></dt><dd>", INDICE[k], ROTULO[k]);
+            fprintf(o, "<dt class=\"f-%s\"><a href=\"%s.html\">%s</a></dt>",
+                    INDICE[k], INDICE[k], ROTULO[k]);
             if (!MULTI[k]) {
+                fputs("<dd class=\"texto\">", o);
                 texto(o, v, origem);
             } else {
                 char *copia = malloc(strlen(v) + 1), *tok;
-                int primeiro = 1;
                 if (!copia) { perror("malloc"); exit(EXIT_FAILURE); }
                 strcpy(copia, v);
+                fputs("<dd>", o);
                 for (tok = strtok(copia, ","); tok; tok = strtok(NULL, ",")) {
                     char *t = trim(tok);
                     if (!*t) continue;
-                    if (!primeiro) fputs(", ", o);
-                    primeiro = 0;
-                    fprintf(o, "<a href=\"%s.html#", INDICE[k]);
+                    fprintf(o, "<a class=\"chip f-%s\" href=\"%s.html#", INDICE[k], INDICE[k]);
                     escrever_slug(o, t, 1);
                     fputs("\">", o);
                     escapar(o, t, strlen(t));
@@ -295,27 +316,17 @@ static int gerar(const char *base) {
         perror(out); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
         fclose(f); free(in); free(out); return 0;
     }
-    fputs("<!DOCTYPE html>\n<html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n"
-          "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>", o);
+    abrir_pagina(o, titulo, "pagina-conteudo", -1, 0, NULL);
+    fputs("<main class=\"artigo\">\n<header class=\"titulo-artigo\"><h1>", o);
     escapar(o, titulo, strlen(titulo));
-    fputs("</title><style>body{font-family:system-ui,sans-serif;max-width:720px;"
-          "margin:40px auto;padding:0 16px;color:#222;line-height:1.6;"
-          "overflow-wrap:break-word}"   /* URLs longos não alargam a página */
-          "pre{overflow:auto;background:#f3f4f6;padding:16px;line-height:1.4}"
-          "a{color:#2b6cb0}"
-          ".ficha{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;"
-          "margin:0 0 28px;padding:12px 16px;background:#f7f9fc;border:1px solid #dde3ea;"
-          "border-radius:8px;font-size:.95rem}"
-          ".ficha dt{font-weight:600}.ficha dt a{color:#222;text-decoration:none}"
-          ".ficha dt a:hover{text-decoration:underline}.ficha dd{margin:0}"
-          "@media(max-width:520px){.ficha{grid-template-columns:1fr;gap:0}"
-          ".ficha dd{margin-bottom:8px}}"
-          "</style></head><body>\n"
-          "<nav><a href=\"index.html\">&larr; Início</a></nav>\n<main><h1>", o);
-    escapar(o, titulo, strlen(titulo)); fputs("</h1>\n", o);
+    fputs("</h1>", o);
+    if (tem_codigo(f))
+        fprintf(o, "<a class=\"botao botao-sec\" href=\"%s_codigo.html\">Ver o código em C</a>", base);
+    fputs("</header>\n", o);
     ficha(o, campo, in);
     corpo(o, f, in, base);
-    fputs("</main></body></html>\n", o);
+    fputs("</main>\n", o);
+    fechar_pagina(o, 0, NULL);
     falha = ferror(f) || ferror(o);
     if (fclose(o)) falha = 1;
     fclose(f); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
@@ -340,6 +351,7 @@ int main(int argc, char **argv) {
 #endif
         perror(saida); closedir(d); return EXIT_FAILURE;
     }
+    copiar_estilo(saida);
     while ((e = readdir(d))) {
         size_t n = strlen(e->d_name);
         char *base;
