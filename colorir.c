@@ -345,19 +345,28 @@ static int preparar(Texto *t) {
     return linhas;
 }
 
-static void bloco(FILE *o, Texto *t, int numero, int nb) {
+/* arquivo: nome do .c gravado em codigos/ (NULL no modo filtro) */
+static void bloco(FILE *o, Texto *t, int numero, int nb, const char *arquivo) {
     int i, linhas;
     if (!t->s) anexar(t, "", 0);
     linhas = preparar(t);
     fputs("<section class=\"bloco\">\n<div class=\"bloco-barra\"><span>", o);
     if (nb > 1) fprintf(o, "Programa %d, ", numero);
-    fprintf(o, "%d %s</span>", linhas, linhas == 1 ? "linha" : "linhas");
-    fputs("<button class=\"copiar\" type=\"button\">Copiar código</button></div>\n", o);
+    fprintf(o, "%d %s</span><span class=\"bloco-acoes\">", linhas, linhas == 1 ? "linha" : "linhas");
+    if (arquivo)
+        fprintf(o, "<a class=\"baixar\" href=\"codigos/%s\" download>Baixar %s</a>", arquivo, arquivo);
+    fputs("<button class=\"copiar\" type=\"button\">Copiar código</button></span></div>\n", o);
     fputs("<div class=\"codigo\"><pre class=\"nl\" aria-hidden=\"true\">", o);
     for (i = 1; i <= linhas; i++) fprintf(o, "%d%s", i, i < linhas ? "\n" : "");
     fputs("</pre><pre class=\"c\"><code>", o);
     colorir(o, t->s);
     fputs("</code></pre></div>\n</section>\n", o);
+}
+
+/* nome do arquivo .c do bloco: kruskal.c, ou kruskal_2.c a partir do 2º */
+static void nome_arquivo(char *dest, size_t tam, const char *base, int numero) {
+    if (numero == 1) snprintf(dest, tam, "%s.c", base);
+    else             snprintf(dest, tam, "%s_%d.c", base, numero);
 }
 
 /* botão "Copiar código": copia o texto do bloco e confirma no próprio botão */
@@ -397,7 +406,11 @@ static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos,
     }
     fputs("</ul>\n", o);
 
-    for (b = 0; b < nb; b++) bloco(o, &blocos[b], b + 1, nb);
+    for (b = 0; b < nb; b++) {
+        char arquivo[300];
+        if (base) nome_arquivo(arquivo, sizeof arquivo, base, b + 1);
+        bloco(o, &blocos[b], b + 1, nb, base ? arquivo : NULL);
+    }
     fputs("</main>\n", o);
     fechar_pagina(o, base == NULL, SCRIPT_COPIAR);
 }
@@ -418,14 +431,166 @@ static int filtro(void) {
     return ferror(stdout) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
+/* ---------- arquivos .c e COMO_COMPILAR.txt ---------- */
+
+#define PASTA_CODIGOS "codigos"
+
+/* o que o COMO_COMPILAR.txt diz de cada TXT com código */
+typedef struct {
+    char *base, *titulo, *sobre;   /* sobre: texto da seção "Sobre o código" */
+    int nb, usa_math;
+} Programa;
+
+static Programa *progs;
+static int nprogs, cap_progs;
+
+static char *copia(const char *s) {
+    char *c = checar(malloc(strlen(s) + 1));
+    strcpy(c, s);
+    return c;
+}
+
+static int criar_pasta(const char *p) {
+#ifdef _WIN32
+    if (_mkdir(p) && errno != EEXIST) { perror(p); return -1; }
+#else
+    if (mkdir(p, 0777) && errno != EEXIST) { perror(p); return -1; }
+#endif
+    return 0;
+}
+
+/* grava o texto do bloco em saida/codigos/<arquivo> */
+static int gravar_c(const char *arquivo, const Texto *t) {
+    char *pasta = caminho(saida, PASTA_CODIGOS, ""), *nome = caminho(pasta, arquivo, "");
+    FILE *o = fopen(nome, "w");
+    int ok = 1;
+    if (!o) { perror(nome); ok = 0; }
+    else {
+        if (t->s) fputs(t->s, o);
+        fputc('\n', o);
+        if (ferror(o)) ok = 0;
+        if (fclose(o)) ok = 0;
+        if (!ok) fprintf(stderr, "%s: erro de escrita\n", nome);
+    }
+    free(nome);
+    free(pasta);
+    return ok;
+}
+
+/* troca [[alvo|texto]] por texto e [[alvo]] por alvo (texto puro, sem links) */
+static void tirar_links(char *s) {
+    char *o = s;
+    while (*s) {
+        char *fe;
+        if (s[0] == '[' && s[1] == '[' && (fe = strstr(s + 2, "]]"))) {
+            char *ini = s + 2, *barra = memchr(ini, '|', (size_t)(fe - ini));
+            if (barra) ini = barra + 1;
+            memmove(o, ini, (size_t)(fe - ini));
+            o += fe - ini;
+            s = fe + 2;
+        } else {
+            *o++ = *s++;
+        }
+    }
+    *o = '\0';
+}
+
+/* escreve texto quebrado em linhas de até 76 colunas, com recuo */
+static void quebrar(FILE *o, const char *s, const char *recuo) {
+    int col = 0;
+    while (*s) {
+        size_t n;
+        while (*s == ' ') s++;
+        n = strcspn(s, " ");
+        if (!n) break;
+        if (col && col + 1 + (int)n > 76) { fputc('\n', o); col = 0; }
+        if (!col) { fputs(recuo, o); col = (int)strlen(recuo); }
+        else { fputc(' ', o); col++; }
+        fwrite(s, 1, n, o);
+        col += (int)n;
+        s += n;
+    }
+    if (col) fputc('\n', o);
+}
+
+static int cmp_prog(const void *a, const void *b) {
+    return strcmp(((const Programa *)a)->base, ((const Programa *)b)->base);
+}
+
+static void como_compilar(void) {
+    char *pasta = caminho(saida, PASTA_CODIGOS, ""), *nome = caminho(pasta, "COMO_COMPILAR.txt", "");
+    FILE *o = fopen(nome, "w");
+    int i, b;
+    if (!o) { perror(nome); erros++; free(nome); free(pasta); return; }
+    qsort(progs, (size_t)nprogs, sizeof *progs, cmp_prog);
+
+    fputs("COMO COMPILAR E RODAR OS CÓDIGOS C\n"
+          "==================================\n\n", o);
+    quebrar(o, "Estes arquivos são gerados pelo colorir.c a partir dos TXT de entradatxt/: "
+               "cada código C fica entre as linhas INICIO_CODIGO_C e FIM_CODIGO_C do TXT, "
+               "e o arquivo .c tem exatamente o mesmo texto. Cada programa é um único "
+               "arquivo .c e não lê arquivos auxiliares nem a entrada padrão: os dados de "
+               "exemplo estão no próprio código, na função main.", "");
+    fputs("\n", o);
+    quebrar(o, "Todos compilam sem avisos com as opções abaixo (gcc em Linux, macOS ou "
+               "Windows com MinGW). No Windows, o programa gerado se chama nome.exe e "
+               "roda com nome.exe em vez de ./nome.", "");
+    fputs("\nExemplo, para o algoritmo de Kruskal (na pasta onde está kruskal.c):\n\n"
+          "    gcc -Wall -Wextra -pedantic -std=c99 -o kruskal kruskal.c\n"
+          "    ./kruskal\n\n", o);
+    fputs("OS TRÊS PROGRAMAS DO EP (geram o site)\n"
+          "--------------------------------------\n", o);
+    quebrar(o, "Na pasta do repositório, onde estão também slug.h, layout.h e estilo.css "
+               "(incluídos ou copiados pelos programas) e a pasta entradatxt/ com os TXT:", "");
+    fputs("\n    gcc -Wall -Wextra -pedantic -std=c99 -o gerador gerador.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c99 -o gerador_conteudo gerador_conteudo.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c99 -o colorir colorir.c\n"
+          "    ./gerador\n    ./gerador_conteudo\n    ./colorir\n\n", o);
+    quebrar(o, "gerador gera index.html e as seis páginas indexadoras; gerador_conteudo, "
+               "uma página de explicação por TXT; colorir, uma página com o código C "
+               "colorido por TXT, e também os arquivos .c e este COMO_COMPILAR.txt em "
+               "saida/codigos/. Os três escrevem em saida/; o site começa em "
+               "saida/index.html. O colorir também funciona como filtro para qualquer "
+               "arquivo C: ./colorir -f < programa.c > programa.html", "");
+    fprintf(o, "\n\nOS CÓDIGOS DE EXEMPLO DAS PÁGINAS (%d programas)\n"
+               "------------------------------------------------\n", nprogs);
+
+    for (i = 0; i < nprogs; i++) {
+        Programa *p = &progs[i];
+        fputs("\n------------------------------------------------------------------------\n", o);
+        for (b = 1; b <= p->nb; b++) {
+            char arquivo[300], exe[300];
+            nome_arquivo(arquivo, sizeof arquivo, p->base, b);
+            snprintf(exe, sizeof exe, "%s", arquivo);
+            exe[strlen(exe) - 2] = '\0';                  /* tira o ".c" */
+            if (b == 1) fprintf(o, "%s\n", p->titulo);
+            fprintf(o, "  Arquivo:  %s\n", arquivo);
+            fprintf(o, "  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o %s %s%s\n",
+                    exe, arquivo, p->usa_math ? " -lm" : "");
+            fprintf(o, "  Rodar:    ./%s\n", exe);
+        }
+        if (p->usa_math)
+            quebrar(o, "Usa math.h: no Linux, o -lm no fim do comando liga a biblioteca "
+                       "matemática.", "  ");
+        if (p->sobre && *p->sobre) {
+            fputs("  O que faz:\n", o);
+            quebrar(o, p->sobre, "    ");
+        }
+        fprintf(o, "  Explicação no site: %s.html\n", p->base);
+    }
+    if (ferror(o) | fclose(o)) { fprintf(stderr, "%s: erro de escrita\n", nome); erros++; }
+    free(nome);
+    free(pasta);
+}
+
 /* ---------- modo TXT ---------- */
 
 /* devolve 1 se gerou a página, 0 se o TXT não tem código, -1 em erro */
 static int gerar(const char *base) {
     char *in = caminho(entrada, base, ".txt"), *out, *linha, *titulo = NULL;
     FILE *f = fopen(in, "r"), *o;
-    Texto *blocos = NULL;
-    int nb = 0, dentro = 0, cabecalho = 1, primeira = 1, ok = 1, b;
+    Texto *blocos = NULL, sobre = {0};
+    int nb = 0, dentro = 0, cabecalho = 1, primeira = 1, ok = 1, b, em_sobre = 0;
 
     if (!f) { perror(in); free(in); return -1; }
     while ((linha = ler_linha(f))) {
@@ -443,6 +608,23 @@ static int gerar(const char *base) {
                     free(titulo);
                     titulo = checar(malloc(strlen(fim + 1) + 1));
                     strcpy(titulo, trim(fim + 1));
+                }
+                free(linha);
+                continue;
+            }
+        }
+
+        /* texto da seção "## Sobre o código", para o COMO_COMPILAR.txt */
+        if (!dentro) {
+            if (eh_marca(s, "## Sobre o código")) { em_sobre = 1; free(linha); continue; }
+            if (em_sobre && (!strncmp(s, "## ", 3) || eh_marca(s, "REFERENCIAS:") ||
+                             eh_marca(s, "INICIO_CODIGO_C") || eh_marca(s, "[codigo]")))
+                em_sobre = 0;
+            if (em_sobre) {
+                char *t = trim(s);
+                if (*t) {
+                    if (sobre.n) anexar(&sobre, " ", 1);
+                    anexar(&sobre, t, strlen(t));
                 }
                 free(linha);
                 continue;
@@ -477,9 +659,31 @@ static int gerar(const char *base) {
         }
         free(out);
     }
+    if (ok && nb > 0) {                         /* os .c e o registro do programa */
+        Programa *p;
+        int usa_math = 0;
+        for (b = 0; b < nb; b++) {
+            char arquivo[300];
+            nome_arquivo(arquivo, sizeof arquivo, base, b + 1);
+            if (!gravar_c(arquivo, &blocos[b])) ok = 0;
+            if (blocos[b].s && strstr(blocos[b].s, "<math.h>")) usa_math = 1;
+        }
+        if (nprogs == cap_progs) {
+            cap_progs = cap_progs ? cap_progs * 2 : 32;
+            progs = checar(realloc(progs, (size_t)cap_progs * sizeof *progs));
+        }
+        p = &progs[nprogs++];
+        p->base = copia(base);
+        p->titulo = copia(titulo && *titulo ? titulo : base);
+        p->sobre = copia(sobre.s ? sobre.s : "");
+        tirar_links(p->sobre);
+        p->nb = nb;
+        p->usa_math = usa_math;
+    }
 
     for (b = 0; b < nb; b++) free(blocos[b].s);
     free(blocos);
+    free(sobre.s);
     free(titulo);
     free(in);
     if (!ok) return -1;
@@ -509,6 +713,11 @@ int main(int argc, char **argv) {
         perror(saida); closedir(d); return EXIT_FAILURE;
     }
     copiar_estilo(saida);
+    {
+        char *pasta = caminho(saida, PASTA_CODIGOS, "");
+        if (criar_pasta(pasta)) { free(pasta); closedir(d); return EXIT_FAILURE; }
+        free(pasta);
+    }
 
     while ((e = readdir(d))) {
         size_t n = strlen(e->d_name);
@@ -527,9 +736,12 @@ int main(int argc, char **argv) {
         free(base);
     }
     closedir(d);
+    como_compilar();
 
     printf("%d página(s) de código gerada(s) em '%s'", total, saida);
     if (sem_codigo) printf("; %d TXT sem código C", sem_codigo);
-    printf(".\n");
+    printf(".\nArquivos .c e COMO_COMPILAR.txt em '%s/%s'.\n", saida, PASTA_CODIGOS);
+    for (int i = 0; i < nprogs; i++) { free(progs[i].base); free(progs[i].titulo); free(progs[i].sobre); }
+    free(progs);
     return erros ? EXIT_FAILURE : EXIT_SUCCESS;
 }

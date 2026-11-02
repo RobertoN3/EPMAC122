@@ -44,6 +44,7 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 - Cores: estilo "default" do Pygments, que é o realce aplicado aos exemplos de código da Wikipédia. A página traz uma legenda com as cores.
 - Escapa `<`, `>` e `&`; o texto da página, sem as tags, é idêntico ao código do TXT.
 - Modo filtro: `colorir -f < programa.c > programa.html` colore qualquer arquivo C, sem passar pelos TXT.
+- Também grava cada código como arquivo `.c` em `saida/codigos/` (um TXT com vários blocos gera `nome.c`, `nome_2.c`...) e gera ali o `COMO_COMPILAR.txt`, com o comando para compilar e rodar cada programa (inclusive os três geradores) e o que cada um faz, tirado da seção "Sobre o código" do TXT. Os arquivos `.c` têm exatamente o texto do TXT, então nunca ficam desatualizados. A página de código tem um botão para baixar o `.c`.
 - Mesmos argumentos opcionais dos outros programas: `colorir pasta_entrada pasta_saida`.
 
 # Visual do site (estilo.css e layout.h)
