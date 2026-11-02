@@ -9,9 +9,19 @@
 #ifdef _WIN32
 #include <direct.h>
 #endif
+#include "slug.h"
 
 static const char *entrada = "entradatxt", *saida = "saida";
 static int erros;
+
+/* campos 1 a 6 do cabeçalho: rótulo exibido e página indexadora (gerador.c) */
+#define N_CAMPOS 7
+static const char *const ROTULO[N_CAMPOS] =
+    {NULL, "Técnica", "Algoritmo", "Autores", "Data", "Conceitos", "Problema"};
+static const char *const INDICE[N_CAMPOS] =
+    {NULL, "tecnica", "algoritmo", "autores", "data", "conceitos", "problema"};
+/* campos com vários valores separados por vírgula, como no gerador.c */
+static const int MULTI[N_CAMPOS] = {0, 1, 0, 1, 1, 1, 0};
 
 /* Leitura dinâmica: uma linha longa nunca vira dois parágrafos por acidente. */
 static char *ler_linha(FILE *f) {
@@ -199,11 +209,59 @@ static void corpo(FILE *o, FILE *f, const char *nome, const char *base) {
                 "Ver código em C</a></p>\n", base);
 }
 
+/* Ficha com os campos do cabeçalho, no topo da página. Cada valor leva ao
+   seu grupo na página indexadora (tecnica.html#método-guloso); o rótulo
+   leva à página indexadora inteira. Algoritmo é o próprio assunto da página
+   e fica sem link; no Problema, que já pode conter [[links]], quem leva ao
+   índice é o rótulo. */
+static void ficha(FILE *o, char *campo[], const char *origem) {
+    int k, algum = 0;
+    for (k = 1; k <= 6; k++) if (campo[k] && *campo[k]) algum = 1;
+    if (!algum) return;
+
+    fputs("<dl class=\"ficha\">\n", o);
+    for (k = 1; k <= 6; k++) {
+        const char *v = campo[k];
+        if (!v || !*v) continue;
+
+        if (k == 6) {
+            fprintf(o, "<dt><a href=\"%s.html#", INDICE[k]);
+            escrever_slug(o, v, 1);
+            fprintf(o, "\">%s</a></dt><dd>", ROTULO[k]);
+            texto(o, v, origem);
+        } else {
+            fprintf(o, "<dt><a href=\"%s.html\">%s</a></dt><dd>", INDICE[k], ROTULO[k]);
+            if (!MULTI[k]) {
+                texto(o, v, origem);
+            } else {
+                char *copia = malloc(strlen(v) + 1), *tok;
+                int primeiro = 1;
+                if (!copia) { perror("malloc"); exit(EXIT_FAILURE); }
+                strcpy(copia, v);
+                for (tok = strtok(copia, ","); tok; tok = strtok(NULL, ",")) {
+                    char *t = trim(tok);
+                    if (!*t) continue;
+                    if (!primeiro) fputs(", ", o);
+                    primeiro = 0;
+                    fprintf(o, "<a href=\"%s.html#", INDICE[k]);
+                    escrever_slug(o, t, 1);
+                    fputs("\">", o);
+                    escapar(o, t, strlen(t));
+                    fputs("</a>", o);
+                }
+                free(copia);
+            }
+        }
+        fputs("</dd>\n", o);
+    }
+    fputs("</dl>\n", o);
+}
+
 static int gerar(const char *base) {
     char *in = caminho(entrada, base, ".txt"), *out = caminho(saida, base, ".html");
-    char *linha, *titulo = NULL;
+    char *linha, *titulo, *campo[N_CAMPOS + 1] = {NULL};
     FILE *f = fopen(in, "r"), *o;
-    int primeira = 1, falha;
+    int primeira = 1, falha, k;
     if (!f) { perror(in); free(in); free(out); return 0; }
     while ((linha = ler_linha(f))) {
         char *s = linha, *fim;
@@ -215,36 +273,53 @@ static int gerar(const char *base) {
         numero = strtol(s, &fim, 10);
         if (fim == s || *fim != '.' || !(fim = strchr(fim, ':'))) {
             fprintf(stderr, "%s: cabeçalho inválido\n", in);
-            free(linha); free(titulo); fclose(f); free(in); free(out); return 0;
+            free(linha); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
+            fclose(f); free(in); free(out); return 0;
         }
-        if (numero == 7) {
+        if (numero >= 1 && numero <= N_CAMPOS) {      /* campos 1 a 6 e Titulo */
             s = trim(fim + 1);
-            free(titulo); titulo = malloc(strlen(s) + 1);
-            if (!titulo) { perror("malloc"); exit(EXIT_FAILURE); }
-            strcpy(titulo, s);
+            free(campo[numero]); campo[numero] = malloc(strlen(s) + 1);
+            if (!campo[numero]) { perror("malloc"); exit(EXIT_FAILURE); }
+            strcpy(campo[numero], s);
         }
         free(linha);
     }
+    titulo = campo[7];
     if (!titulo || !*titulo) {
         fprintf(stderr, "%s: Titulo obrigatório ausente\n", in);
-        free(titulo); fclose(f); free(in); free(out); return 0;
+        for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
+        fclose(f); free(in); free(out); return 0;
     }
     o = fopen(out, "w");
-    if (!o) { perror(out); free(titulo); fclose(f); free(in); free(out); return 0; }
+    if (!o) {
+        perror(out); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
+        fclose(f); free(in); free(out); return 0;
+    }
     fputs("<!DOCTYPE html>\n<html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n"
           "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>", o);
     escapar(o, titulo, strlen(titulo));
     fputs("</title><style>body{font-family:system-ui,sans-serif;max-width:720px;"
-          "margin:40px auto;padding:0 16px;color:#222;line-height:1.6}"
+          "margin:40px auto;padding:0 16px;color:#222;line-height:1.6;"
+          "overflow-wrap:break-word}"   /* URLs longos não alargam a página */
           "pre{overflow:auto;background:#f3f4f6;padding:16px;line-height:1.4}"
-          "a{color:#2b6cb0}</style></head><body>\n"
+          "a{color:#2b6cb0}"
+          ".ficha{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;"
+          "margin:0 0 28px;padding:12px 16px;background:#f7f9fc;border:1px solid #dde3ea;"
+          "border-radius:8px;font-size:.95rem}"
+          ".ficha dt{font-weight:600}.ficha dt a{color:#222;text-decoration:none}"
+          ".ficha dt a:hover{text-decoration:underline}.ficha dd{margin:0}"
+          "@media(max-width:520px){.ficha{grid-template-columns:1fr;gap:0}"
+          ".ficha dd{margin-bottom:8px}}"
+          "</style></head><body>\n"
           "<nav><a href=\"index.html\">&larr; Início</a></nav>\n<main><h1>", o);
     escapar(o, titulo, strlen(titulo)); fputs("</h1>\n", o);
+    ficha(o, campo, in);
     corpo(o, f, in, base);
     fputs("</main></body></html>\n", o);
     falha = ferror(f) || ferror(o);
     if (fclose(o)) falha = 1;
-    fclose(f); free(titulo); free(in); free(out);
+    fclose(f); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
+    free(in); free(out);
     return !falha;
 }
 
