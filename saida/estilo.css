@@ -344,6 +344,14 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 16px 72px; }
   padding: 8px 10px 8px 16px; background: var(--folha); border-bottom: 1px solid var(--linha);
   font-size: 14px; color: var(--grafite);
 }
+.bloco-barra > span:first-child { white-space: nowrap; }
+.bloco-acoes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.baixar {
+  font: 600 14px var(--sans); padding: 6px 14px; border-radius: 8px;
+  border: 1.5px solid var(--linha); background: var(--folha); color: var(--tinta); text-decoration: none;
+  transition: border-color .2s, background .2s;
+}
+.baixar:hover { border-color: var(--tinta); background: var(--papel); text-decoration: none; }
 .copiar {
   font: 600 14px var(--sans); padding: 6px 14px; border-radius: 8px; cursor: pointer;
   border: 1.5px solid var(--tinta); background: var(--folha); color: var(--tinta);
