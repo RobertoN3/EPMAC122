@@ -67,14 +67,14 @@ técnica em detalhe.
 
 Métodos elementares, O(n²):
 
-- Bolha ([[bubblesort|bubble sort]]): troca vizinhos fora de ordem; cada passada leva o
+- [[bubblesort|Bubble Sort]] (bolha): troca vizinhos fora de ordem; cada passada leva o
   maior elemento restante para o fim. Estável. Faz muitas trocas.
   Pode ser vista como [[metodo_guloso|método guloso]].
-- [[selecao_direta|Seleção direta]] (selection sort): a cada passo, seleciona o menor elemento
+- [[selecao_direta|Selection Sort]] (seleção direta): a cada passo, seleciona o menor elemento
   restante e o troca com o primeiro da parte não ordenada. Faz sempre
   n(n-1)/2 comparações, mas apenas n-1 trocas. A versão com trocas NÃO é
   estável.
-- [[insertionsort|Inserção direta]] (insertion sort): como quem organiza cartas na mão, insere
+- [[insertionsort|Insertion Sort]] (inserção direta): como quem organiza cartas na mão, insere
   cada novo elemento na posição correta entre os anteriores, já ordenados,
   deslocando os maiores para a direita. Estável. Muito rápida para vetores
   pequenos ou quase ordenados: o custo é O(n + número de inversões), e um
@@ -85,21 +85,21 @@ Métodos eficientes, O(n log n):
 - [[mergesort|Merge Sort]] (von Neumann, 1945): [[divisao_conquista|divisão e conquista]]; divide ao meio,
   ordena as metades recursivamente e intercala. O(n log n) em todos os
   casos, estável, mas usa O(n) de memória extra.
-- [[quicksort|Quick Sort]] (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona
+- [[quicksort|Quicksort]] (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona
   o vetor em "menores" e "maiores" que ele, ordenando cada parte
   recursivamente. O(n log n) em média, mas O(n²) no pior caso (pivô sempre
   extremo, por exemplo com vetor já ordenado e pivô no início). Escolher o
   pivô ao acaso ou pela mediana de três torna o pior caso muito improvável.
   Em geral é o mais rápido na prática. Não é estável.
-- [[heapsort|Heap Sort]] (Williams, 1964): monta um heap ([[arvores|árvore binária]] guardada no
+- [[heapsort|Heapsort]] (Williams, 1964): monta um heap ([[arvores|árvore binária]] guardada no
   vetor, em que cada pai é maior que os filhos) e retira repetidamente o
   máximo. O(n log n) no pior caso e memória O(1). Não é estável.
 
 Métodos por distribuição (não comparam elementos entre si):
 
-- Counting Sort: conta quantas vezes cada chave aparece; O(n + k) para chaves
+- [[ordenacao_contagem|Counting Sort]] (ordenação por contagem): conta quantas vezes cada chave aparece; O(n + k) para chaves
   inteiras entre 0 e k-1.
-- Radix Sort (Hollerith, 1887): ordena dígito a dígito, com um método estável
+- [[radixsort|Radix Sort]] (Hollerith, 1887): ordena dígito a dígito, com um método estável
   (em geral, counting sort) em cada passada; O(d (n + k)) para chaves de d
   dígitos na base k.
 
@@ -107,16 +107,17 @@ Resumo:
 
 ```
   Algoritmo       Técnica              Pior caso    Médio       Memória  Estável
-  Bolha           método guloso        O(n²)        O(n²)       O(1)     sim
-  Seleção direta  método guloso        O(n²)        O(n²)       O(1)     não
-  Inserção        incremental          O(n²)        O(n²)       O(1)     sim
+  Bubble Sort     método guloso        O(n²)        O(n²)       O(1)     sim
+  Selection Sort  método guloso        O(n²)        O(n²)       O(1)     não
+  Insertion Sort  incremental          O(n²)        O(n²)       O(1)     sim
   Merge Sort      divisão e conquista  O(n log n)   O(n log n)  O(n)     sim
-  Quick Sort      divisão e conquista  O(n²)        O(n log n)  O(log n) não
-  Heap Sort       seleção com heap     O(n log n)   O(n log n)  O(1)     não
+  Quicksort       divisão e conquista  O(n²)        O(n log n)  O(log n) não
+  Heapsort        seleção com heap     O(n log n)   O(n log n)  O(1)     não
+  Counting Sort   distribuição         O(n+k)       O(n+k)      O(n+k)   sim
   Radix Sort      distribuição         O(d(n+k))    O(d(n+k))   O(n+k)   sim
 ```
 
-(A memória do Quick Sort é a da [[pilhas|pilha]] de [[recursao|recursão]], quando se ordena
+(A memória do Quicksort é a da [[pilhas|pilha]] de [[recursao|recursão]], quando se ordena
 recursivamente primeiro a parte menor.)
 
 ## Limite inferior para ordenação por comparação
@@ -132,7 +133,7 @@ ordens possíveis da entrada e cada uma precisa de uma folha diferente, a
 pelo menos log2(n!), e log2(n!) ~ n log2 n - 1,44 n (fórmula de Stirling).
 
 Consequências:
-- Merge Sort e Heap Sort são assintoticamente ótimos entre os métodos por
+- Merge Sort e Heapsort são assintoticamente ótimos entre os métodos por
   comparação;
 - Counting Sort e Radix Sort escapam desse limite porque usam a estrutura
   das chaves (dígitos), e não só comparações.
@@ -144,18 +145,12 @@ Consequências:
   inserção nos pedaços pequenos gerados pela recursão.
 - A função qsort da biblioteca padrão do C ordena qualquer vetor recebendo
   uma função de comparação; o padrão não exige que ela seja estável.
-- O std::sort de C++ costuma usar o Introsort (Musser, 1997): Quick Sort que
-  troca para Heap Sort se a recursão ficar profunda demais, garantindo
+- O std::sort de C++ costuma usar o Introsort (Musser, 1997): Quicksort que
+  troca para Heapsort se a recursão ficar profunda demais, garantindo
   O(n log n).
 - Python e Java (para objetos) usam o Timsort (Tim Peters, 2002), um
   Merge Sort adaptativo e estável, muito rápido em dados reais, que costumam
   ter trechos já ordenados.
-
-## Sobre o código
-
-O programa de exemplo demonstra a estabilidade: ordena pares por inserção
-direta (estável), primeiro pela chave secundária e depois pela primária,
-imprimindo as três listas do exemplo desta página.
 
 REFERENCIAS:
 - BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html
@@ -165,46 +160,3 @@ REFERENCIAS:
 - SEDGEWICK, R. Algorithms in C, Parts 1-4. 3. ed. Reading: Addison-Wesley, 1998. Parte 3 (Sorting).
 - ZIVIANI, N. Projeto de Algoritmos com implementações em Pascal e C. 3. ed. São Paulo: Cengage Learning, 2011. Capítulo 4 (Ordenação).
 - MUSSER, D. R. Introspective sorting and selection algorithms. Software: Practice and Experience, v. 27, n. 8, p. 983-993, 1997.
-
-INICIO_CODIGO_C
-#include <stdio.h>
-
-typedef struct {
-  int primaria, secundaria;
-} Par;
-
-/* inserção direta por uma das chaves: é estável, pois só desloca
-   elementos ESTRITAMENTE maiores que o elemento sendo inserido */
-void insercao(Par v[], int n, int pelaPrimaria) {
-  int i, j;
-  Par x;
-  for (i = 1; i < n; i++) {
-    x = v[i];
-    j = i - 1;
-    while (j >= 0 && (pelaPrimaria ? v[j].primaria > x.primaria
-                                   : v[j].secundaria > x.secundaria)) {
-      v[j + 1] = v[j];
-      j--;
-    }
-    v[j + 1] = x;
-  }
-}
-
-void imprime(const char *rotulo, Par v[], int n) {
-  int i;
-  printf("%s: ", rotulo);
-  for (i = 0; i < n; i++) printf("(%d,%d) ", v[i].primaria, v[i].secundaria);
-  printf("\n");
-}
-
-int main(void) {
-  Par v[] = {{3,6}, {7,5}, {3,5}, {6,2}, {9,1}};
-  int n = 5;
-  imprime("L1", v, n);
-  insercao(v, n, 0);   // primeiro pela chave secundária
-  imprime("L2", v, n);
-  insercao(v, n, 1);   // depois, de forma estável, pela primária
-  imprime("L3", v, n);
-  return 0;
-}
-FIM_CODIGO_C

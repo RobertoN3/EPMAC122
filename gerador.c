@@ -361,7 +361,7 @@ static void gerar_index(void) {
           "<h1>Algoritmos de MAC0122</h1>\n", o);
 
     /* o grafo */
-    fputs("<svg class=\"grafo\" viewBox=\"0 0 800 480\" role=\"group\" "
+    fputs("<svg class=\"grafo\" viewBox=\"58 -8 684 496\" role=\"group\" "
           "aria-label=\"Os seis índices do site\">\n", o);
     for (int c = 0; c < NUM_CAT; c++) {          /* anel entre índices vizinhos */
         int d = (c + 1) % NUM_CAT;
@@ -375,13 +375,13 @@ static void gerar_index(void) {
                 CAT_ROTULO[c], n, n == 1 ? SINGULAR[c] : PLURAL[c]);
         fprintf(o, "<line class=\"aresta\" pathLength=\"1\" x1=\"400\" y1=\"240\" "
                    "x2=\"%d\" y2=\"%d\"/>\n", NO_X[c], NO_Y[c]);
-        fprintf(o, "<circle cx=\"%d\" cy=\"%d\" r=\"60\"/>\n", NO_X[c], NO_Y[c]);
-        fprintf(o, "<text class=\"num\" x=\"%d\" y=\"%d\">%d</text>\n", NO_X[c], NO_Y[c] + 4, n);
+        fprintf(o, "<circle cx=\"%d\" cy=\"%d\" r=\"66\"/>\n", NO_X[c], NO_Y[c]);
+        fprintf(o, "<text class=\"num\" x=\"%d\" y=\"%d\">%d</text>\n", NO_X[c], NO_Y[c] + 5, n);
         fprintf(o, "<text class=\"rot\" x=\"%d\" y=\"%d\">%s</text>\n</a>\n",
-                NO_X[c], NO_Y[c] + 30, CAT_ROTULO[c]);
+                NO_X[c], NO_Y[c] + 33, CAT_ROTULO[c]);
     }
-    fputs("<g class=\"centro\"><circle cx=\"400\" cy=\"240\" r=\"74\"/>"
-          "<text x=\"400\" y=\"249\">MAC0122</text></g>\n</svg>\n</div>\n", o);
+    fputs("<g class=\"centro\"><circle cx=\"400\" cy=\"240\" r=\"82\"/>"
+          "<text x=\"400\" y=\"250\">MAC0122</text></g>\n</svg>\n</div>\n", o);
 
     /* a mesma navegação em lista, para telas estreitas */
     fputs("<ul class=\"lista-facetas\">\n", o);

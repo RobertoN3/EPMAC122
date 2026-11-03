@@ -36,7 +36,7 @@ saida/index.html. O colorir também funciona como filtro para qualquer
 arquivo C: ./colorir -f < programa.c > programa.html
 
 
-OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (38 programas)
+OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (37 programas)
 ------------------------------------------------
 
 ------------------------------------------------------------------------
@@ -335,17 +335,6 @@ Método guloso
     onde ocorre a escolha gulosa (o maior elemento restante chegando a
     v[fim]).
   Explicação no site: metodo_guloso.html
-
-------------------------------------------------------------------------
-Algoritmos de ordenação
-  Arquivo:  ordenacao.c
-  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ordenacao ordenacao.c
-  Rodar:    ./ordenacao
-  O que faz:
-    O programa de exemplo demonstra a estabilidade: ordena pares por
-    inserção direta (estável), primeiro pela chave secundária e depois
-    pela primária, imprimindo as três listas do exemplo desta página.
-  Explicação no site: ordenacao.html
 
 ------------------------------------------------------------------------
 Counting Sort
