@@ -2,7 +2,7 @@
 2. Algoritmo: Mochila binária por programação dinâmica
 3. Autores: Richard Bellman
 4. Data: 1952
-5. Conceitos: Recursão, Subestrutura ótima, Memorização, Vetores
+5. Conceitos: Recursão, Subestrutura ótima, Memoização, Vetores
 6. Problema: Dados n objetos, cada um com peso e valor, e uma mochila de capacidade C, escolher objetos de peso total no máximo C que maximizem o valor total
 7. Titulo: Programação dinâmica
 
@@ -63,7 +63,7 @@ condições:
 
 ## Duas formas de implementar
 
-- De cima para baixo (top-down) com memorização (memoization): escreve-se a
+- De cima para baixo (top-down) com memoização (memoization): escreve-se a
   recursão natural e, antes de calcular, verifica-se se o resultado já está
   na tabela. Só são calculados os subproblemas realmente necessários.
 - De baixo para cima (bottom-up): preenche-se a tabela iterativamente, dos

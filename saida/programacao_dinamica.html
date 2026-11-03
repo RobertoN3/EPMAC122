@@ -19,7 +19,7 @@
 <dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Mochila binária por programação dinâmica</dd>
 <dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#richard-bellman">Richard Bellman</a></dd>
 <dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1952">1952</a></dd>
-<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#subestrutura-%C3%B3tima">Subestrutura ótima</a><a class="chip f-conceitos" href="conceitos.html#memoriza%C3%A7%C3%A3o">Memorização</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#subestrutura-%C3%B3tima">Subestrutura ótima</a><a class="chip f-conceitos" href="conceitos.html#memoiza%C3%A7%C3%A3o">Memoização</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a></dd>
 <dt class="f-problema"><a href="problema.html#dados-n-objetos-cada-um-com-peso-e-valor-e-uma-mochila-de-capacidade-c-escolher-objetos-de-peso-total-no-m%C3%A1ximo-c-que-maximizem-o-valor-total">Problema</a></dt><dd class="texto">Dados n objetos, cada um com peso e valor, e uma mochila de capacidade C, escolher objetos de peso total no máximo C que maximizem o valor total</dd>
 </dl>
 <h2>Ideia geral</h2>
@@ -37,7 +37,7 @@
 <h2>Roteiro para projetar um algoritmo de programação dinâmica</h2>
 <p>1. Caracterizar a estrutura de uma solução ótima. 2. Definir os subproblemas e escrever uma recorrência que exprima o valor ótimo de um subproblema em função de subproblemas menores. 3. Calcular os valores, guardando-os em uma tabela, em uma ordem em que os subproblemas menores fiquem prontos antes dos maiores. 4. (Opcional) Reconstruir a solução ótima, e não só seu valor, guardando ou recalculando qual escolha produziu cada ótimo.</p>
 <h2>Duas formas de implementar</h2>
-<ul><li>De cima para baixo (top-down) com memorização (memoization): escreve-se a recursão natural e, antes de calcular, verifica-se se o resultado já está na tabela. Só são calculados os subproblemas realmente necessários.</li>
+<ul><li>De cima para baixo (top-down) com memoização (memoization): escreve-se a recursão natural e, antes de calcular, verifica-se se o resultado já está na tabela. Só são calculados os subproblemas realmente necessários.</li>
 <li>De baixo para cima (bottom-up): preenche-se a tabela iterativamente, dos subproblemas menores para os maiores, sem recursão. Costuma ser mais rápida (sem custo de chamadas) e permite economizar memória quando só as últimas linhas da tabela são necessárias.</li></ul>
 <h2>Exemplo introdutório: Fibonacci</h2>
 <p>A recursão fib(n) = fib(n-1) + fib(n-2), com fib(0) = 0 e fib(1) = 1, é correta mas desastrosa. Para calcular fib(5) calcula-se fib(3) duas vezes, fib(2) três vezes, e assim por diante. O número de chamadas cresce como a própria sequência, aproximadamente 1,618^n: para n = 50 seriam dezenas de bilhões de chamadas.</p>
