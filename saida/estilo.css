@@ -140,13 +140,16 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 16px 72px; }
 
 /* ---------- página inicial ---------- */
 
-.heroi { display: grid; gap: 8px 32px; align-items: center; }
+.heroi { display: grid; gap: 8px 40px; align-items: center; }
 @media (min-width: 1000px) {
-  .heroi { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
-  .heroi .grafo { margin: 0; }
+  /* o grafo ocupa a maior parte da tela, centralizado na altura */
+  .heroi { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); min-height: calc(100svh - 160px); }
+  .heroi .grafo { margin: 0; max-width: none; max-height: calc(100svh - 120px); }
 }
+main.inicio { max-width: 1240px; }   /* a página inicial usa mais largura */
 .inicio h1 {
-  font-size: clamp(42px, 7.5vw, 76px); line-height: .98; letter-spacing: -.04em;
+  overflow-wrap: normal; hyphens: none;   /* nunca quebra no meio da palavra */
+  font-size: clamp(42px, 6vw, 80px); line-height: .98; letter-spacing: -.04em;
   font-weight: 800; margin: 0 0 20px; max-width: 11ch;
 }
 
@@ -160,15 +163,15 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 16px 72px; }
   transition: transform .3s cubic-bezier(.3, 1.6, .5, 1), fill .25s;
 }
 .grafo text { text-anchor: middle; font-family: var(--sans); transition: fill .25s; }
-.grafo .num { font-size: 38px; font-weight: 800; fill: var(--f); }
-.grafo .rot { font-size: 19px; font-weight: 600; fill: var(--tinta); }
+.grafo .num { font-size: 42px; font-weight: 800; fill: var(--f); }
+.grafo .rot { font-size: 20px; font-weight: 600; fill: var(--tinta); }
 .grafo .no:hover circle, .grafo .no:focus-visible circle { fill: var(--f); transform: scale(1.12); }
 .grafo .no:hover text, .grafo .no:focus-visible text { fill: #fff; }
 .grafo .no:hover .aresta, .grafo .no:focus-visible .aresta { stroke: var(--f); stroke-width: 6; }
 .grafo .no:focus-visible { outline: none; }
 .grafo:has(.no:hover) .no:not(:hover) { opacity: .5; }
 .grafo .centro circle { fill: var(--tinta); }
-.grafo .centro text { fill: #fff; font-size: 24px; font-weight: 800; }
+.grafo .centro text { fill: #fff; font-size: 27px; font-weight: 800; }
 
 /* ao carregar: as arestas se desenham a partir do centro e os nós surgem */
 @media (prefers-reduced-motion: no-preference) {
