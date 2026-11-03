@@ -1,10 +1,10 @@
 1. Tecnica: Divisão e conquista
-2. Algoritmo: Ordenação rápida (Quick Sort)
+2. Algoritmo: Quicksort
 3. Autores: Tony Hoare
 4. Data: 1959
 5. Conceitos: Ordenação, Vetores, Recursão
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
-7. Titulo: Ordenação rápida (Quick Sort)
+7. Titulo: Quicksort
 
 ## Ideia geral
 

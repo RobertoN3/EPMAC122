@@ -357,12 +357,8 @@ static void gerar_index(void) {
     if (!o) { perror(caminho); return; }
 
     abrir_pagina(o, "Algoritmos de MAC0122", "pagina-inicio", -1, 0, NULL);
-    fprintf(o, "<main class=\"inicio\">\n<div class=\"heroi\">\n<div class=\"heroi-texto\">"
-               "<h1>Algoritmos de MAC0122</h1>\n"
-               "<p class=\"intro\">%d páginas sobre técnicas de projeto, algoritmos e "
-               "estruturas de dados da disciplina, cada uma com explicação, referências "
-               "e código em C. Elas estão ligadas entre si como um grafo: escolha por "
-               "onde entrar.</p>\n</div>\n", n_arq);
+    fputs("<main class=\"inicio\">\n<div class=\"heroi\">\n"
+          "<h1>Algoritmos de MAC0122</h1>\n", o);
 
     /* o grafo */
     fputs("<svg class=\"grafo\" viewBox=\"0 0 800 480\" role=\"group\" "
@@ -384,10 +380,8 @@ static void gerar_index(void) {
         fprintf(o, "<text class=\"rot\" x=\"%d\" y=\"%d\">%s</text>\n</a>\n",
                 NO_X[c], NO_Y[c] + 30, CAT_ROTULO[c]);
     }
-    fprintf(o, "<g class=\"centro\"><circle cx=\"400\" cy=\"240\" r=\"74\"/>"
-               "<text x=\"400\" y=\"238\">MAC0122</text>"
-               "<text class=\"sub\" x=\"400\" y=\"262\">%d páginas</text></g>\n</svg>\n</div>\n",
-            n_arq);
+    fputs("<g class=\"centro\"><circle cx=\"400\" cy=\"240\" r=\"74\"/>"
+          "<text x=\"400\" y=\"249\">MAC0122</text></g>\n</svg>\n</div>\n", o);
 
     /* a mesma navegação em lista, para telas estreitas */
     fputs("<ul class=\"lista-facetas\">\n", o);
@@ -400,25 +394,163 @@ static void gerar_index(void) {
     }
     fputs("</ul>\n", o);
 
-    /* atalhos: as técnicas da disciplina */
-    if (cat[C_TECNICA].n > 0) {
-        Categoria *T = &cat[C_TECNICA];
-        qsort(T->v, T->n, sizeof *T->v, cmp_valor);
-        fputs("<section class=\"atalhos\">\n<h2>As técnicas de projeto da disciplina</h2>\n"
-              "<ul class=\"chips\">\n", o);
-        for (int i = 0; i < T->n; i++) {
-            fputs("<li><a class=\"chip f-tecnica\" href=\"tecnica.html#", o);
-            escrever_slug(o, T->v[i].texto, 1);
-            fputs("\">", o);
-            esc(o, T->v[i].texto);
-            fputs("</a></li>\n", o);
-        }
-        fputs("</ul>\n</section>\n", o);
-    }
     fputs("</main>\n", o);
     fechar_pagina(o, 0, NULL);
     fclose(o);
 }
+
+/* escreve o texto do campo Problema sem os links: [[alvo|texto]] vira só
+   "texto" (usado quando a linha inteira já é um link) */
+static void esc_sem_links(FILE *o, const char *s) {
+    char buf[MAX_LINHA];
+    while (*s) {
+        const char *ab = strstr(s, "[[");
+        const char *fe = ab ? strstr(ab + 2, "]]") : NULL;
+        if (!ab || !fe) { esc(o, s); return; }
+        size_t n = (size_t)(ab - s);
+        memcpy(buf, s, n); buf[n] = '\0';
+        esc(o, buf);
+        n = (size_t)(fe - (ab + 2));
+        memcpy(buf, ab + 2, n); buf[n] = '\0';
+        char *barra = strchr(buf, '|');
+        esc(o, trim(barra ? barra + 1 : buf));
+        s = fe + 2;
+    }
+}
+
+/* ---------- linha do tempo (índice Data) ---------- */
+
+/* ano de um valor de Data: "1959" -> 1959, "300 a.C." -> -300 */
+static int ano_de(const char *s) {
+    int a = atoi(s);
+    if (strstr(s, "a.C.") || strstr(s, "a. C.")) a = -a;
+    return a;
+}
+
+static int cmp_ano(const void *a, const void *b) {
+    int x = ano_de(((const Valor *)a)->texto), y = ano_de(((const Valor *)b)->texto);
+    return (x > y) - (x < y);
+}
+
+/* nome do período em que o ano cai: "Antiguidade", "Século XIX", "Anos 1950" */
+static void periodo(int ano, char *buf, size_t n) {
+    static const char *const ROMANO[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII",
+        "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
+    if (ano <= 0)        snprintf(buf, n, "Antiguidade");
+    else if (ano < 1900) snprintf(buf, n, "Século %s", ROMANO[(ano - 1) / 100 + 1]);
+    else                 snprintf(buf, n, "Anos %d", ano / 10 * 10);
+}
+
+static void gerar_linha_do_tempo(FILE *o) {
+    Categoria *C = &cat[C_DATA];
+    char per[64], ultimo[64] = "";
+    qsort(C->v, C->n, sizeof *C->v, cmp_ano);
+
+    fputs("<ol class=\"linha-tempo\">\n", o);
+    for (int i = 0; i < C->n; i++) {
+        Valor *v = &C->v[i];
+        periodo(ano_de(v->texto), per, sizeof per);
+        if (strcmp(per, ultimo) != 0) {          /* começa um período novo */
+            fprintf(o, "<li class=\"periodo\"><span>%s</span></li>\n", per);
+            strcpy(ultimo, per);
+        }
+        qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
+        fputs("<li class=\"marco\" id=\"", o);
+        escrever_slug(o, v->texto, 0);           /* âncora usada pela ficha */
+        fputs("\"><span class=\"ano\">", o);
+        esc(o, v->texto);
+        fputs("</span><ul class=\"obras\">\n", o);
+        for (int j = 0; j < v->n; j++) {
+            Arquivo *a = &arq[v->idx[j]];
+            fputs("  <li><a href=\"", o);
+            href(o, a->base);
+            fputs(".html\">", o);
+            esc(o, rotulo_em(C_DATA, a));
+            fputs("</a>", o);
+            if (a->campo[C_AUTORES][0]) {
+                fputs("<span class=\"quem\">", o);
+                esc(o, a->campo[C_AUTORES]);
+                fputs("</span>", o);
+            }
+            fputs("</li>\n", o);
+        }
+        fputs("</ul></li>\n", o);
+    }
+    fputs("</ol>\n", o);
+}
+
+/* ---------- índices em lista ---------- */
+
+/* Um item com uma página só vira um link direto, sem precisar abrir.
+   Em Conceitos, só quando não há outra página de explicação para mostrar. */
+static int item_direto(int c, const Valor *v) {
+    if (v->n != 1) return 0;
+    if (c == C_CONCEITOS) {
+        int k = no_vocabulario(v->texto);
+        int p = (k >= 0 && VOCABULARIO[k].pagina) ? achar_arquivo(VOCABULARIO[k].pagina) : -1;
+        return p < 0 || p == v->idx[0];
+    }
+    return 1;
+}
+
+static void gerar_item_direto(FILE *o, int c, const Valor *v) {
+    const Arquivo *a = &arq[v->idx[0]];
+    const char *destino = rotulo_em(c, a);
+    fputs("<a class=\"grupo direto\" id=\"", o);
+    escrever_slug(o, v->texto, 0);
+    fputs("\" href=\"", o);
+    href(o, a->base);
+    fputs(".html\"><span class=\"valor\">", o);
+    if (c == C_PROBLEMA) esc_sem_links(o, v->texto);  /* não pode haver link dentro de link */
+    else                 esc(o, v->texto);
+    fputs("</span>", o);
+    if (cmp_ci(destino, v->texto) != 0) {     /* mostra a página quando o nome é outro */
+        fputs("<span class=\"destino\">", o);
+        esc(o, destino);
+        fputs("</span>", o);
+    }
+    fputs("</a>\n", o);
+}
+
+static void gerar_item_grupo(FILE *o, int c, const Valor *v) {
+    fputs("<details class=\"grupo\" id=\"", o);
+    escrever_slug(o, v->texto, 0);
+    fputs("\"><summary><span class=\"valor\">", o);
+    if (c == C_PROBLEMA) esc_links(o, v->texto);   /* [[alvo|texto]] vira link */
+    else                 esc(o, v->texto);
+    fprintf(o, "</span><span class=\"qtd\" title=\"%d %s\">%d</span></summary>\n"
+               "<div class=\"corpo\">\n",
+            v->n, v->n == 1 ? "página" : "páginas", v->n);
+
+    /* Conceitos: liga o nome do conceito à página que o explica */
+    if (c == C_CONCEITOS) {
+        int k = no_vocabulario(v->texto);
+        int p = (k >= 0 && VOCABULARIO[k].pagina) ? achar_arquivo(VOCABULARIO[k].pagina) : -1;
+        if (p >= 0) {
+            fputs("<p class=\"exp\">Explicação: <a href=\"", o);
+            href(o, arq[p].base);
+            fputs(".html\">", o);
+            esc(o, arq[p].rotulo);
+            fputs("</a></p>\n", o);
+        }
+    }
+
+    fputs("<ul class=\"paginas\">\n", o);
+    for (int j = 0; j < v->n; j++) {
+        const Arquivo *a = &arq[v->idx[j]];
+        fputs("  <li><a href=\"", o);
+        href(o, a->base);
+        fputs(".html\">", o);
+        esc(o, rotulo_em(c, a));
+        fputs("</a></li>\n", o);
+    }
+    fputs("</ul>\n</div></details>\n", o);
+}
+
+/* exemplos mostrados na caixa de busca de cada índice */
+static const char *const EXEMPLO_BUSCA[NUM_CAT] = {
+    NULL, "dijkstra, sort, árvore", "knuth, hoare", NULL, "pilha, recursão, grafo",
+    "caminho mínimo, ordenar"};
 
 static void gerar_categoria(int c) {
     char caminho[1024];
@@ -428,82 +560,52 @@ static void gerar_categoria(int c) {
 
     Categoria *C = &cat[c];
     qsort(C->v, C->n, sizeof *C->v, cmp_valor);
+    cat_atual = c;
 
     char classe[64];
     snprintf(classe, sizeof classe, "pagina-indice f-%s", CAT_SLUG[c]);
     abrir_pagina(o, CAT_ROTULO[c], classe, c, 0, NULL);
 
-    int np = paginas_com(c);
+    int np = paginas_com(c), n_grupos = 0;
+    for (int i = 0; i < C->n; i++) if (!item_direto(c, &C->v[i])) n_grupos++;
+
     fprintf(o, "<main class=\"indice\">\n<header class=\"cab-indice\">"
                "<span class=\"no-cat\" aria-hidden=\"true\"></span>"
-               "<h1>%s</h1>\n<p class=\"resumo\">%d %s em %d %s. ",
+               "<h1>%s</h1>\n<p class=\"resumo\">%d %s em %d %s",
             CAT_ROTULO[c], C->n, C->n == 1 ? SINGULAR[c] : PLURAL[c],
             np, np == 1 ? "página" : "páginas");
-    fputs(c == C_CONCEITOS
-          ? "Abra um conceito para ver a página que o explica e as que o usam."
-          : "Abra um item para ver as páginas.", o);
-    fputs("</p>\n</header>\n", o);
+    fputs(c == C_DATA ? ", em ordem cronológica.</p>\n</header>\n" : ".</p>\n</header>\n", o);
 
     if (C->n == 0) {
         fputs("<p class=\"vazio\">Nenhum TXT preenche este campo ainda. Acrescente-o no "
               "cabeçalho de um arquivo em entradatxt e gere as páginas de novo.</p>\n", o);
+    } else if (c == C_DATA) {
+        gerar_linha_do_tempo(o);
     } else {
-        fputs("<div class=\"acoes\"><button class=\"acao\" type=\"button\" data-acao=\"abrir\">"
-              "Abrir todos</button><button class=\"acao\" type=\"button\" data-acao=\"fechar\">"
-              "Fechar todos</button></div>\n<div class=\"grupos\">\n", o);
-    }
-
-    cat_atual = c;
-    for (int i = 0; i < C->n; i++) {
-        Valor *v = &C->v[i];
-        qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
-
-        /* id: âncora usada pela ficha das páginas de conteúdo (slug.h) */
-        fputs("<details class=\"grupo\" id=\"", o);
-        escrever_slug(o, v->texto, 0);
-        fputs("\"><summary><span class=\"valor\">", o);
-        if (c == C_PROBLEMA) esc_links(o, v->texto);   /* [[alvo|texto]] vira link */
-        else                 esc(o, v->texto);
-        fprintf(o, "</span><span class=\"qtd\" title=\"%d %s\">%d</span></summary>\n",
-                v->n, v->n == 1 ? "página" : "páginas", v->n);
-
-        /* Conceitos: liga o nome do conceito à página que o explica */
-        if (c == C_CONCEITOS) {
-            int k = no_vocabulario(v->texto);
-            int p = (k >= 0 && VOCABULARIO[k].pagina) ? achar_arquivo(VOCABULARIO[k].pagina) : -1;
-            if (p >= 0) {
-                fputs("<p class=\"exp\">Explicação: <a href=\"", o);
-                href(o, arq[p].base);
-                fputs(".html\">", o);
-                esc(o, arq[p].rotulo);
-                fputs("</a></p>\n", o);
-            }
+        if (EXEMPLO_BUSCA[c]) {                 /* busca tolerante a erros (indice.js) */
+            fprintf(o, "<div class=\"busca\" role=\"search\">"
+                       "<label for=\"busca\">Buscar em %s</label>"
+                       "<input id=\"busca\" type=\"search\" autocomplete=\"off\" spellcheck=\"false\" "
+                       "placeholder=\"Ex.: %s\">"
+                       "<p class=\"busca-info\" aria-live=\"polite\"></p></div>\n",
+                    CAT_ROTULO[c], EXEMPLO_BUSCA[c]);
         }
-
-        fputs("<ul class=\"paginas\">\n", o);
-        for (int j = 0; j < v->n; j++) {
-            Arquivo *a = &arq[v->idx[j]];
-            fputs("  <li><a href=\"", o);
-            href(o, a->base);
-            fputs(".html\">", o);
-            esc(o, rotulo_em(c, a));
-            fputs("</a></li>\n", o);
+        if (n_grupos >= 2)
+            fputs("<div class=\"acoes\"><button class=\"acao\" type=\"button\" data-acao=\"abrir\">"
+                  "Abrir todos</button><button class=\"acao\" type=\"button\" data-acao=\"fechar\">"
+                  "Fechar todos</button></div>\n", o);
+        fputs("<div class=\"grupos\">\n", o);
+        for (int i = 0; i < C->n; i++) {
+            Valor *v = &C->v[i];
+            qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
+            if (item_direto(c, v)) gerar_item_direto(o, c, v);
+            else                   gerar_item_grupo(o, c, v);
         }
-        fputs("</ul></details>\n", o);
+        fputs("</div>\n<p class=\"busca-vazia\" hidden>Nada encontrado. Confira a "
+              "grafia ou tente uma palavra só.</p>\n", o);
     }
-    if (C->n > 0) fputs("</div>\n", o);
-    fputs("</main>\n", o);
-
-    /* Chegando por um link com #âncora, abre e mostra o grupo correspondente;
-       os botões abrem ou fecham todos os grupos. */
-    fechar_pagina(o, 0,
-        "function abrir(){var e=location.hash&&document.getElementById("
-        "decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){"
-        "e.open=true;e.scrollIntoView({block:'center'});}}"
-        "abrir();addEventListener('hashchange',abrir);"
-        "document.querySelectorAll('[data-acao]').forEach(function(b){"
-        "b.addEventListener('click',function(){var a=b.dataset.acao==='abrir';"
-        "document.querySelectorAll('details.grupo').forEach(function(d){d.open=a;});});});");
+    fputs("</main>\n<script src=\"" SCRIPT_INDICE "\"></script>\n", o);
+    fechar_pagina(o, 0, NULL);
     fclose(o);
 }
 
@@ -538,6 +640,7 @@ int main(void) {
         return 1;
     }
     copiar_estilo(PASTA_SAIDA);
+    copiar_arquivo(SCRIPT_INDICE, PASTA_SAIDA);
     gerar_index();
     for (int c = 0; c < NUM_CAT; c++) gerar_categoria(c);
 

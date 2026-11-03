@@ -1,10 +1,10 @@
 1. Tecnica: Divisão e conquista
-2. Algoritmo: Ordenação por fusão (Merge Sort)
+2. Algoritmo: Merge Sort
 3. Autores: John von Neumann
 4. Data: 1945
 5. Conceitos: Ordenação, Vetores, Recursão, Estabilidade
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
-7. Titulo: Ordenação por fusão (Merge Sort)
+7. Titulo: Merge Sort
 
 ## Ideia geral
 

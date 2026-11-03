@@ -50,7 +50,7 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 # Visual do site (estilo.css e layout.h)
 
 - Todo o visual fica em `estilo.css`. Cada programa copia esse arquivo para `saida/`; para mudar cores, fontes ou espaçamentos, basta editá-lo e rodar os programas de novo, sem mexer no C.
-- `layout.h` é incluído pelos três programas e escreve o que as páginas têm em comum: o `<head>`, a barra de navegação com os seis índices (o atual fica destacado) e o rodapé.
+- `layout.h` é incluído pelos três programas e escreve o que as páginas têm em comum: o `<head>`, a barra de navegação com os seis índices (o atual fica destacado). Não há rodapé.
 - Conceito: o site é um grafo de páginas. A página inicial desenha os seis índices como nós ligados ao nó central MAC0122; cada nó é um link e mostra quantos itens o índice tem. No celular, o grafo vira uma lista com os mesmos links.
 - Cada índice tem a sua cor (Técnica violeta, Algoritmo verde-azulado, Autores framboesa, Data âmbar, Conceitos verde, Problema azul), usada no grafo, na barra, no topo do índice e nas etiquetas da ficha. O amarelo de marca-texto destaca o grupo procurado e o texto selecionado.
 - Fontes: Bricolage Grotesque (títulos e interface), Source Serif 4 (texto das explicações) e JetBrains Mono (código), carregadas do Google Fonts. Sem internet, o navegador usa fontes parecidas do sistema e o site continua funcionando.
@@ -73,3 +73,11 @@ Os três leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Rode-o
 Um catálogo intermediário poderia registrar, por TXT, seu título, os nomes dos HTMLs, os campos do cabeçalho e a existência de código C. Os outros programas poderiam consultá-lo em vez de reler os TXT.
 
 Isso não é obrigatório. A ideia original de cada programa ler os TXT continua válida e evita definir mais um formato de arquivo. A decisão permanece em discussão.
+
+## Índices: busca, itens diretos e linha do tempo
+
+- Um item de índice com uma página só vira um link direto (sem abrir). Os que têm várias páginas continuam como grupos que se abrem, agora com animação.
+- Algoritmo, Autores, Conceitos e Problema têm uma caixa de busca aproximada: ela ignora acentos e maiúsculas, aceita erros de digitação (distância de edição) e descarta resultados com semelhança abaixo de 0,7. Se a busca acha uma página dentro de um grupo, o grupo se abre e a página fica marcada.
+- O índice Data é uma linha do tempo, em ordem cronológica e dividida em períodos.
+- A busca e a animação ficam em `indice.js`, que o gerador copia para `saida/` como faz com o `estilo.css`.
+- Os algoritmos de ordenação usam o nome em inglês (Bubble Sort, Quicksort...).

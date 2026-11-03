@@ -14,37 +14,35 @@
 </header>
 <main class="indice">
 <header class="cab-indice"><span class="no-cat" aria-hidden="true"></span><h1>Técnica</h1>
-<p class="resumo">4 técnicas em 13 páginas. Abra um item para ver as páginas.</p>
+<p class="resumo">4 técnicas em 13 páginas.</p>
 </header>
 <div class="acoes"><button class="acao" type="button" data-acao="abrir">Abrir todos</button><button class="acao" type="button" data-acao="fechar">Fechar todos</button></div>
 <div class="grupos">
 <details class="grupo" id="divisão-e-conquista"><summary><span class="valor">Divisão e conquista</span><span class="qtd" title="4 páginas">4</span></summary>
+<div class="corpo">
 <ul class="paginas">
   <li><a href="busca_binaria.html">Busca binária</a></li>
   <li><a href="divisao_conquista.html">Divisão e conquista</a></li>
-  <li><a href="mergesort.html">Ordenação por fusão (Merge Sort)</a></li>
-  <li><a href="quicksort.html">Ordenação rápida (Quick Sort)</a></li>
-</ul></details>
+  <li><a href="mergesort.html">Merge Sort</a></li>
+  <li><a href="quicksort.html">Quicksort</a></li>
+</ul>
+</div></details>
 <details class="grupo" id="método-guloso"><summary><span class="valor">Método guloso</span><span class="qtd" title="7 páginas">7</span></summary>
+<div class="corpo">
 <ul class="paginas">
   <li><a href="dijkstra.html">Algoritmo de Dijkstra</a></li>
   <li><a href="kruskal.html">Algoritmo de Kruskal</a></li>
   <li><a href="prim.html">Algoritmo de Prim</a></li>
+  <li><a href="bubblesort.html">Bubble Sort</a></li>
+  <li><a href="heapsort.html">Heapsort</a></li>
   <li><a href="metodo_guloso.html">Método guloso</a></li>
-  <li><a href="bubblesort.html">Ordenação bolha (Bubble Sort)</a></li>
-  <li><a href="heapsort.html">Ordenação por heap (Heapsort)</a></li>
-  <li><a href="selecao_direta.html">Seleção direta</a></li>
-</ul></details>
-<details class="grupo" id="programação-dinâmica"><summary><span class="valor">Programação dinâmica</span><span class="qtd" title="1 página">1</span></summary>
-<ul class="paginas">
-  <li><a href="programacao_dinamica.html">Programação dinâmica</a></li>
-</ul></details>
-<details class="grupo" id="tentativa-e-erro"><summary><span class="valor">Tentativa e erro</span><span class="qtd" title="1 página">1</span></summary>
-<ul class="paginas">
-  <li><a href="tentativa_erro.html">Tentativa e erro (backtracking)</a></li>
-</ul></details>
+  <li><a href="selecao_direta.html">Selection Sort</a></li>
+</ul>
+</div></details>
+<a class="grupo direto" id="programação-dinâmica" href="programacao_dinamica.html"><span class="valor">Programação dinâmica</span></a>
+<a class="grupo direto" id="tentativa-e-erro" href="tentativa_erro.html"><span class="valor">Tentativa e erro</span><span class="destino">Tentativa e erro (backtracking)</span></a>
 </div>
+<p class="busca-vazia" hidden>Nada encontrado. Confira a grafia ou tente uma palavra só.</p>
 </main>
-<footer class="rodape">Páginas geradas a partir dos arquivos TXT do EP de MAC0122.</footer>
-<script>function abrir(){var e=location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1)));if(e&&e.tagName==='DETAILS'){e.open=true;e.scrollIntoView({block:'center'});}}abrir();addEventListener('hashchange',abrir);document.querySelectorAll('[data-acao]').forEach(function(b){b.addEventListener('click',function(){var a=b.dataset.acao==='abrir';document.querySelectorAll('details.grupo').forEach(function(d){d.open=a;});});});</script>
+<script src="indice.js"></script>
 </body></html>

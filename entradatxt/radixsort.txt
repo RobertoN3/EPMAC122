@@ -1,9 +1,9 @@
-2. Algoritmo: Ordenação digital (Radix Sort)
+2. Algoritmo: Radix Sort
 3. Autores: Herman Hollerith
 4. Data: 1887
 5. Conceitos: Ordenação, Vetores, Estabilidade
 6. Problema: Dado um vetor de números inteiros, reorganizá-lo [[ordenacao|em ordem crescente]] sem comparar os elementos entre si
-7. Titulo: Ordenação digital (Radix Sort)
+7. Titulo: Radix Sort
 
 ## Ideia geral
 

@@ -1,10 +1,10 @@
 1. Tecnica: Método guloso
-2. Algoritmo: Ordenação por heap (Heapsort)
+2. Algoritmo: Heapsort
 3. Autores: J. W. J. Williams, Robert W. Floyd
 4. Data: 1964
 5. Conceitos: Ordenação, Vetores, Árvores, Fila de prioridade, Invariante
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
-7. Titulo: Ordenação por heap (Heapsort)
+7. Titulo: Heapsort
 
 ## Ideia geral
 

@@ -103,7 +103,7 @@ Busca em largura (BFS)
   Explicação no site: bfs.html
 
 ------------------------------------------------------------------------
-Ordenação bolha (Bubble Sort)
+Bubble Sort
   Arquivo:  bubblesort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o bubblesort bubblesort.c
   Rodar:    ./bubblesort
@@ -231,7 +231,7 @@ Hash e espalhamento
   Explicação no site: hash.html
 
 ------------------------------------------------------------------------
-Ordenação por heap (Heapsort)
+Heapsort
   Arquivo:  heapsort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o heapsort heapsort.c
   Rodar:    ./heapsort
@@ -266,7 +266,7 @@ Indução finita
   Explicação no site: inducao.html
 
 ------------------------------------------------------------------------
-Inserção direta (Insertion Sort)
+Insertion Sort
   Arquivo:  insertionsort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o insertionsort insertionsort.c
   Rodar:    ./insertionsort
@@ -313,7 +313,7 @@ MDC e algoritmo de Euclides
   Explicação no site: mdc_euclides.html
 
 ------------------------------------------------------------------------
-Ordenação por fusão (Merge Sort)
+Merge Sort
   Arquivo:  mergesort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o mergesort mergesort.c
   Rodar:    ./mergesort
@@ -348,7 +348,7 @@ Algoritmos de ordenação
   Explicação no site: ordenacao.html
 
 ------------------------------------------------------------------------
-Ordenação por contagem (frequências)
+Counting Sort
   Arquivo:  ordenacao_contagem.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o ordenacao_contagem ordenacao_contagem.c
   Rodar:    ./ordenacao_contagem
@@ -420,7 +420,7 @@ Programação dinâmica
   Explicação no site: programacao_dinamica.html
 
 ------------------------------------------------------------------------
-Ordenação rápida (Quick Sort)
+Quicksort
   Arquivo:  quicksort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o quicksort quicksort.c
   Rodar:    ./quicksort
@@ -432,7 +432,7 @@ Ordenação rápida (Quick Sort)
   Explicação no site: quicksort.html
 
 ------------------------------------------------------------------------
-Ordenação digital (Radix Sort)
+Radix Sort
   Arquivo:  radixsort.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o radixsort radixsort.c
   Rodar:    ./radixsort
@@ -464,7 +464,7 @@ Registros (structs)
   Explicação no site: registros.html
 
 ------------------------------------------------------------------------
-Seleção direta
+Selection Sort
   Arquivo:  selecao_direta.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o selecao_direta selecao_direta.c
   Rodar:    ./selecao_direta

@@ -1,9 +1,9 @@
-2. Algoritmo: Ordenação por inserção direta (Insertion Sort)
+2. Algoritmo: Insertion Sort
 3. Autores: John Mauchly
 4. Data: 1946
 5. Conceitos: Ordenação, Vetores, Estabilidade, Invariante
 6. Problema: Dado um vetor de elementos comparáveis, reorganizá-lo [[ordenacao|em ordem crescente]]
-7. Titulo: Inserção direta (Insertion Sort)
+7. Titulo: Insertion Sort
 
 ## Ideia geral
 
