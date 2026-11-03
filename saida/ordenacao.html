@@ -13,7 +13,7 @@
 <nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
 </header>
 <main class="artigo">
-<header class="titulo-artigo"><h1>Algoritmos de ordenação</h1><a class="botao botao-sec" href="ordenacao_codigo.html">Ver o código em C</a></header>
+<header class="titulo-artigo"><h1>Algoritmos de ordenação</h1></header>
 <dl class="ficha">
 <dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#ordena%C3%A7%C3%A3o">Ordenação</a><a class="chip f-conceitos" href="conceitos.html#vetores">Vetores</a><a class="chip f-conceitos" href="conceitos.html#estabilidade">Estabilidade</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
 <dt class="f-problema"><a href="problema.html#dado-um-vetor-de-n-elementos-compar%C3%A1veis-rearranj%C3%A1-lo-de-modo-que-fique-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de n elementos comparáveis, rearranjá-lo de modo que fique em ordem crescente</dd>
@@ -42,40 +42,39 @@
 <p>Qualquer algoritmo pode ser tornado estável acrescentando a posição original como critério de desempate, ao custo de memória extra. A página <a href="estabilidade.html">estabilidade em algoritmos de ordenação</a> traz um exemplo lado a lado (estável x instável), a lista dos métodos estáveis e essa técnica em detalhe.</p>
 <h2>Os principais métodos</h2>
 <p>Métodos elementares, O(n²):</p>
-<ul><li>Bolha (<a href="bubblesort.html">bubble sort</a>): troca vizinhos fora de ordem; cada passada leva o maior elemento restante para o fim. Estável. Faz muitas trocas. Pode ser vista como <a href="metodo_guloso.html">método guloso</a>.</li>
-<li><a href="selecao_direta.html">Seleção direta</a> (selection sort): a cada passo, seleciona o menor elemento restante e o troca com o primeiro da parte não ordenada. Faz sempre n(n-1)/2 comparações, mas apenas n-1 trocas. A versão com trocas NÃO é estável.</li>
-<li><a href="insertionsort.html">Inserção direta</a> (insertion sort): como quem organiza cartas na mão, insere cada novo elemento na posição correta entre os anteriores, já ordenados, deslocando os maiores para a direita. Estável. Muito rápida para vetores pequenos ou quase ordenados: o custo é O(n + número de inversões), e um vetor já ordenado custa O(n).</li></ul>
+<ul><li><a href="bubblesort.html">Bubble Sort</a> (bolha): troca vizinhos fora de ordem; cada passada leva o maior elemento restante para o fim. Estável. Faz muitas trocas. Pode ser vista como <a href="metodo_guloso.html">método guloso</a>.</li>
+<li><a href="selecao_direta.html">Selection Sort</a> (seleção direta): a cada passo, seleciona o menor elemento restante e o troca com o primeiro da parte não ordenada. Faz sempre n(n-1)/2 comparações, mas apenas n-1 trocas. A versão com trocas NÃO é estável.</li>
+<li><a href="insertionsort.html">Insertion Sort</a> (inserção direta): como quem organiza cartas na mão, insere cada novo elemento na posição correta entre os anteriores, já ordenados, deslocando os maiores para a direita. Estável. Muito rápida para vetores pequenos ou quase ordenados: o custo é O(n + número de inversões), e um vetor já ordenado custa O(n).</li></ul>
 <p>Métodos eficientes, O(n log n):</p>
 <ul><li><a href="mergesort.html">Merge Sort</a> (von Neumann, 1945): <a href="divisao_conquista.html">divisão e conquista</a>; divide ao meio, ordena as metades recursivamente e intercala. O(n log n) em todos os casos, estável, mas usa O(n) de memória extra.</li>
-<li><a href="quicksort.html">Quick Sort</a> (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona o vetor em &quot;menores&quot; e &quot;maiores&quot; que ele, ordenando cada parte recursivamente. O(n log n) em média, mas O(n²) no pior caso (pivô sempre extremo, por exemplo com vetor já ordenado e pivô no início). Escolher o pivô ao acaso ou pela mediana de três torna o pior caso muito improvável. Em geral é o mais rápido na prática. Não é estável.</li>
-<li><a href="heapsort.html">Heap Sort</a> (Williams, 1964): monta um heap (<a href="arvores.html">árvore binária</a> guardada no vetor, em que cada pai é maior que os filhos) e retira repetidamente o máximo. O(n log n) no pior caso e memória O(1). Não é estável.</li></ul>
+<li><a href="quicksort.html">Quicksort</a> (Hoare, 1959): divisão e conquista; escolhe um pivô e particiona o vetor em &quot;menores&quot; e &quot;maiores&quot; que ele, ordenando cada parte recursivamente. O(n log n) em média, mas O(n²) no pior caso (pivô sempre extremo, por exemplo com vetor já ordenado e pivô no início). Escolher o pivô ao acaso ou pela mediana de três torna o pior caso muito improvável. Em geral é o mais rápido na prática. Não é estável.</li>
+<li><a href="heapsort.html">Heapsort</a> (Williams, 1964): monta um heap (<a href="arvores.html">árvore binária</a> guardada no vetor, em que cada pai é maior que os filhos) e retira repetidamente o máximo. O(n log n) no pior caso e memória O(1). Não é estável.</li></ul>
 <p>Métodos por distribuição (não comparam elementos entre si):</p>
-<ul><li>Counting Sort: conta quantas vezes cada chave aparece; O(n + k) para chaves inteiras entre 0 e k-1.</li>
-<li>Radix Sort (Hollerith, 1887): ordena dígito a dígito, com um método estável (em geral, counting sort) em cada passada; O(d (n + k)) para chaves de d dígitos na base k.</li></ul>
+<ul><li><a href="ordenacao_contagem.html">Counting Sort</a> (ordenação por contagem): conta quantas vezes cada chave aparece; O(n + k) para chaves inteiras entre 0 e k-1.</li>
+<li><a href="radixsort.html">Radix Sort</a> (Hollerith, 1887): ordena dígito a dígito, com um método estável (em geral, counting sort) em cada passada; O(d (n + k)) para chaves de d dígitos na base k.</li></ul>
 <p>Resumo:</p>
 <pre>  Algoritmo       Técnica              Pior caso    Médio       Memória  Estável
-  Bolha           método guloso        O(n²)        O(n²)       O(1)     sim
-  Seleção direta  método guloso        O(n²)        O(n²)       O(1)     não
-  Inserção        incremental          O(n²)        O(n²)       O(1)     sim
+  Bubble Sort     método guloso        O(n²)        O(n²)       O(1)     sim
+  Selection Sort  método guloso        O(n²)        O(n²)       O(1)     não
+  Insertion Sort  incremental          O(n²)        O(n²)       O(1)     sim
   Merge Sort      divisão e conquista  O(n log n)   O(n log n)  O(n)     sim
-  Quick Sort      divisão e conquista  O(n²)        O(n log n)  O(log n) não
-  Heap Sort       seleção com heap     O(n log n)   O(n log n)  O(1)     não
+  Quicksort       divisão e conquista  O(n²)        O(n log n)  O(log n) não
+  Heapsort        seleção com heap     O(n log n)   O(n log n)  O(1)     não
+  Counting Sort   distribuição         O(n+k)       O(n+k)      O(n+k)   sim
   Radix Sort      distribuição         O(d(n+k))    O(d(n+k))   O(n+k)   sim
 </pre>
-<p>(A memória do Quick Sort é a da <a href="pilhas.html">pilha</a> de <a href="recursao.html">recursão</a>, quando se ordena recursivamente primeiro a parte menor.)</p>
+<p>(A memória do Quicksort é a da <a href="pilhas.html">pilha</a> de <a href="recursao.html">recursão</a>, quando se ordena recursivamente primeiro a parte menor.)</p>
 <h2>Limite inferior para ordenação por comparação</h2>
 <p>Todo algoritmo que obtém informação sobre a ordem APENAS comparando pares de elementos precisa, no pior caso, de pelo menos log2(n!) comparações, que é da ordem de n log n.</p>
 <p>O argumento usa uma árvore de decisão: cada nó interno é uma comparação &quot;v[i] &lt; v[j]?&quot;, e cada folha corresponde a uma ordem final. Como há n! ordens possíveis da entrada e cada uma precisa de uma folha diferente, a árvore tem pelo menos n! folhas; uma árvore binária com n! folhas tem altura pelo menos log2(n!), e log2(n!) ~ n log2 n - 1,44 n (fórmula de Stirling).</p>
 <p>Consequências:</p>
-<ul><li>Merge Sort e Heap Sort são assintoticamente ótimos entre os métodos por comparação;</li>
+<ul><li>Merge Sort e Heapsort são assintoticamente ótimos entre os métodos por comparação;</li>
 <li>Counting Sort e Radix Sort escapam desse limite porque usam a estrutura das chaves (dígitos), e não só comparações.</li></ul>
 <h2>Na prática</h2>
 <ul><li>Para vetores pequenos (algumas dezenas de elementos) ou quase ordenados, a inserção direta é imbatível; por isso implementações profissionais usam inserção nos pedaços pequenos gerados pela recursão.</li>
 <li>A função qsort da biblioteca padrão do C ordena qualquer vetor recebendo uma função de comparação; o padrão não exige que ela seja estável.</li>
-<li>O std::sort de C++ costuma usar o Introsort (Musser, 1997): Quick Sort que troca para Heap Sort se a recursão ficar profunda demais, garantindo O(n log n).</li>
+<li>O std::sort de C++ costuma usar o Introsort (Musser, 1997): Quicksort que troca para Heapsort se a recursão ficar profunda demais, garantindo O(n log n).</li>
 <li>Python e Java (para objetos) usam o Timsort (Tim Peters, 2002), um Merge Sort adaptativo e estável, muito rápido em dados reais, que costumam ter trechos já ordenados.</li></ul>
-<h2>Sobre o código</h2>
-<p>O programa de exemplo demonstra a estabilidade: ordena pares por inserção direta (estável), primeiro pela chave secundária e depois pela primária, imprimindo as três listas do exemplo desta página.</p>
 <section class="referencias">
 <h2>Referências</h2>
 <ul><li>BRANDÃO, L. O. Algoritmos de ordenação estáveis. MAC122, IME-USP. https://users.ime.usp.br/~leo/mac/mac122/algoritmos_ordenacao_estaveis.html</li>
@@ -86,6 +85,5 @@
 <li>ZIVIANI, N. Projeto de Algoritmos com implementações em Pascal e C. 3. ed. São Paulo: Cengage Learning, 2011. Capítulo 4 (Ordenação).</li>
 <li>MUSSER, D. R. Introspective sorting and selection algorithms. Software: Practice and Experience, v. 27, n. 8, p. 983-993, 1997.</li></ul>
 </section>
-<p class="ir-codigo"><a class="botao" href="ordenacao_codigo.html">Ver o código em C</a></p>
 </main>
 </body></html>
