@@ -124,7 +124,7 @@ Ordens de crescimento comuns, da mais rápida para a mais lenta:
   O(1)        constante     acesso a v[i], empilhar
   O(log n)    logarítmica   busca binária
   O(n)        linear        busca sequencial, maior elemento
-  O(n log n)  "n log n"     Merge Sort, Heap Sort
+  O(n log n)  "n log n"     Merge Sort, Heapsort
   O(n²)       quadrática    bolha, seleção, inserção
   O(n³)       cúbica        multiplicação ingênua de matrizes
   O(2^n)      exponencial   subconjuntos, Fibonacci recursivo ingênuo
@@ -152,7 +152,7 @@ algoritmo O(2^n) resolver entradas só cerca de 10 unidades maiores.
 ## Memória
 
 A mesma análise vale para o espaço. Um algoritmo é "in place" se usa memória
-extra O(1) (bolha, seleção, inserção, [[heapsort|Heap Sort]]). O [[mergesort|Merge Sort]] usa O(n)
+extra O(1) (bolha, seleção, inserção, [[heapsort|Heapsort]]). O [[mergesort|Merge Sort]] usa O(n)
 extra; algoritmos recursivos usam memória de [[pilhas|pilha]] proporcional à
 profundidade da recursão. Muitas vezes é possível trocar memória por tempo,
 como na [[programacao_dinamica|programação dinâmica]] e nas [[hash|tabelas de espalhamento]].

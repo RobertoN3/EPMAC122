@@ -96,8 +96,8 @@ Nas implementações usuais:
   percorre o vetor de trás para a frente (ou mantém a ordem de chegada nos
   baldes).
 - [[selecao_direta|Seleção direta]] com trocas: instável.
-- [[quicksort|Quick Sort]] com partição no próprio vetor: instável.
-- [[heapsort|Heap Sort]]: instável.
+- [[quicksort|Quicksort]] com partição no próprio vetor: instável.
+- [[heapsort|Heapsort]]: instável.
 
 A classificação depende da implementação, não só do nome do algoritmo:
 trocar < por <= no lugar errado pode destruir a estabilidade, e existem

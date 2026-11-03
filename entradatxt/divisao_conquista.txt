@@ -63,7 +63,7 @@ Exemplo com v = (38, 27, 43, 3, 9, 82, 10):
               (3 9 10 27 38 43 82)
 ```
 
-[[ordenacao|Estabilidade]]: na intercalação, quando os dois elementos comparados são
+[[estabilidade|Estabilidade]]: na intercalação, quando os dois elementos comparados são
 iguais, copia-se primeiro o da metade esquerda (usa-se <= na comparação).
 Assim, elementos iguais preservam a ordem original e o [[mergesort|Merge Sort]] é estável.
 
@@ -116,7 +116,7 @@ Exemplos:
 - Busca binária: compara com o elemento do meio e descarta metade do vetor.
   Só um subproblema precisa ser resolvido (às vezes chamado de "diminuir e
   conquistar").
-- [[quicksort|Quick Sort]] (Hoare, 1959): divide o vetor em "menores que o pivô" e
+- [[quicksort|Quicksort]] (Hoare, 1959): divide o vetor em "menores que o pivô" e
   "maiores que o pivô"; aqui o trabalho está na DIVISÃO (partição) e a
   combinação é trivial, o oposto do Merge Sort.
 - Multiplicação de inteiros de Karatsuba (1960): multiplica números de n
@@ -135,7 +135,7 @@ Exemplos:
   fib(n) = fib(n-1) + fib(n-2), gasta tempo exponencial por isso. Nesse caso
   a técnica indicada é a [[programacao_dinamica|programação dinâmica]], que guarda os resultados.
 - Divisões desequilibradas: se uma parte fica quase do tamanho do problema
-  original (como no pior caso do Quick Sort, com pivô sempre extremo), a
+  original (como no pior caso do Quicksort, com pivô sempre extremo), a
   profundidade da recursão vira n e o tempo vira O(n²).
 - Custo da recursão: para instâncias pequenas, o custo das chamadas pode
   superar o ganho. Implementações práticas param a recursão em trechos

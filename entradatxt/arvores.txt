@@ -72,7 +72,7 @@ balanceada quando, em todo nó, as subárvores esquerda e direita têm a mesma
 quantidade de nós. É uma condição mais forte do que ter alturas próximas, e
 implica que todos os níveis estão cheios. Com altura h, uma árvore assim tem
 2^k nós no nível k, 2^h folhas e n = 1 + 2 + ... + 2^h = 2^(h+1) - 1 nós no
-total. (O heap do [[heapsort|Heap Sort]] usa uma condição mais fraca, a de
+total. (O heap do [[heapsort|Heapsort]] usa uma condição mais fraca, a de
 árvore completa: todos os níveis cheios, exceto talvez o último, preenchido
 da esquerda para a direita.)
 
@@ -158,7 +158,7 @@ remoções:
 ## Outras árvores na disciplina
 
 - Heap: árvore binária quase completa, guardada em um vetor, em que cada pai
-  é maior ou igual aos filhos. Base do Heap Sort e das [[heapsort|filas de prioridade]].
+  é maior ou igual aos filhos. Base do Heapsort e das [[heapsort|filas de prioridade]].
 - Árvore espalhada mínima de um grafo (Kruskal, [[prim|Prim]]).
 - Árvore de caminhos mínimos (Dijkstra) e árvore de busca em largura.
 - Árvore de recursão (análise de [[mergesort|Merge Sort]]) e árvore de busca do
@@ -168,9 +168,10 @@ remoções:
 
 ## Histórico
 
-O termo "árvore" foi usado pelo matemático Arthur Cayley em 1857, ao estudar
-isômeros químicos; ele também provou (1889) que há n^(n-2) árvores
-diferentes com n vértices rotulados. A árvore binária de busca foi
+O termo "árvore" foi usado pelo matemático Arthur Cayley em 1857, num
+estudo sobre operadores do cálculo diferencial; em 1875 ele aplicou as
+árvores à contagem de isômeros químicos (os alcanos) e, em 1889, provou que
+há n^(n-2) árvores diferentes com n vértices rotulados. A árvore binária de busca foi
 inventada independentemente por vários grupos por volta de 1960 (Windley;
 Booth e Colin; Hibbard), e Knuth dedica a ela boa parte do volume 3 de
 "The Art of Computer Programming".

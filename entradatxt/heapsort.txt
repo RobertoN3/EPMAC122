@@ -92,9 +92,9 @@ v = (29, 10, 14, 37, 13, 5), o mesmo da página da seleção direta.
 Comparação com as outras ordenações O(n log n) da disciplina:
 - [[mergesort|Merge Sort]]: também O(n log n) no pior caso, mas usa O(n) de
   memória extra; em compensação é estável.
-- [[quicksort|Quick Sort]]: em geral mais rápido na prática (acessos à
+- [[quicksort|Quicksort]]: em geral mais rápido na prática (acessos à
   memória mais sequenciais), mas O(n²) no pior caso. A introsort, usada em
-  bibliotecas de C++, começa com Quick Sort e passa para Heapsort se a
+  bibliotecas de C++, começa com Quicksort e passa para Heapsort se a
   [[recursao|recursão]] ficar funda demais.
 
 ## Estabilidade
@@ -102,7 +102,7 @@ Comparação com as outras ordenações O(n log n) da disciplina:
 O Heapsort não é estável: as trocas entre posições distantes podem inverter
 a ordem de elementos iguais. Exemplo: em (2a, 2b, 1), a construção não muda
 nada, e a primeira troca leva 2a para o fim, depois de 2b. Veja
-[[ordenacao|ordenação]].
+[[estabilidade|estabilidade em algoritmos de ordenação]].
 
 ## Fila de prioridade
 

@@ -71,7 +71,7 @@
 <li>caso médio (todas as ordens igualmente prováveis): n(n-1)/4 inversões em média, ou seja, O(n²) trocas, e o número de comparações também é O(n²);</li>
 <li>melhor caso (vetor já ordenado), graças à variável trocou: uma única passada, n-1 comparações e nenhuma troca: O(n).</li></ul>
 <p>Memória extra: O(1) (ordena no próprio vetor).</p>
-<p><a href="ordenacao.html">Estabilidade</a>: a troca só acontece quando v[i] &gt; v[i+1], estritamente. Dois elementos iguais nunca são trocados entre si, então mantêm sua ordem relativa: a bolha é estável.</p>
+<p><a href="estabilidade.html">Estabilidade</a>: a troca só acontece quando v[i] &gt; v[i+1], estritamente. Dois elementos iguais nunca são trocados entre si, então mantêm sua ordem relativa: a bolha é estável.</p>
 <h2>Tartarugas e coelhos</h2>
 <p>A bolha tem uma assimetria curiosa. Um elemento grande no início do vetor (&quot;coelho&quot;) chega ao fim em uma única passada. Já um elemento pequeno no fim do vetor (&quot;tartaruga&quot;) anda apenas UMA posição para a esquerda por passada. O vetor (2, 3, 4, 5, 6, 1) precisa de cinco passadas, só por causa do 1.</p>
 <p>Variações que atacam esse problema:</p>

@@ -65,9 +65,9 @@
 <li>Memória extra: O(1). A ordenação é feita no próprio vetor.</li></ul>
 <p>Comparação com as outras ordenações O(n log n) da disciplina:</p>
 <ul><li><a href="mergesort.html">Merge Sort</a>: também O(n log n) no pior caso, mas usa O(n) de memória extra; em compensação é estável.</li>
-<li><a href="quicksort.html">Quick Sort</a>: em geral mais rápido na prática (acessos à memória mais sequenciais), mas O(n²) no pior caso. A introsort, usada em bibliotecas de C++, começa com Quick Sort e passa para Heapsort se a <a href="recursao.html">recursão</a> ficar funda demais.</li></ul>
+<li><a href="quicksort.html">Quicksort</a>: em geral mais rápido na prática (acessos à memória mais sequenciais), mas O(n²) no pior caso. A introsort, usada em bibliotecas de C++, começa com Quicksort e passa para Heapsort se a <a href="recursao.html">recursão</a> ficar funda demais.</li></ul>
 <h2>Estabilidade</h2>
-<p>O Heapsort não é estável: as trocas entre posições distantes podem inverter a ordem de elementos iguais. Exemplo: em (2a, 2b, 1), a construção não muda nada, e a primeira troca leva 2a para o fim, depois de 2b. Veja <a href="ordenacao.html">ordenação</a>.</p>
+<p>O Heapsort não é estável: as trocas entre posições distantes podem inverter a ordem de elementos iguais. Exemplo: em (2a, 2b, 1), a construção não muda nada, e a primeira troca leva 2a para o fim, depois de 2b. Veja <a href="estabilidade.html">estabilidade em algoritmos de ordenação</a>.</p>
 <h2>Fila de prioridade</h2>
 <p>O heap é útil além da ordenação. Uma fila de prioridade guarda elementos com prioridades e permite inserir e retirar o de maior prioridade. Com um heap em vetor:</p>
 <ul><li>retirar o máximo: troca-se a raiz com o último, diminui-se o tamanho e desce-se a nova raiz: O(log n);</li>

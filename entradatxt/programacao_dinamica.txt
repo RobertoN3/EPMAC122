@@ -167,11 +167,10 @@ coerente com o fato de a mochila binária ser um problema NP-difícil.
 
 Richard Bellman desenvolveu o método na RAND Corporation, no início da
 década de 1950. Seu artigo "On the Theory of Dynamic Programming", publicado
-em 1952 nos Proceedings of the National Academy of Sciences, registra o uso
-do termo nesse ano; é essa a data usada no campo Data desta página (ela não
-data a criação da mochila binária, nem afirma que o termo surgiu
-exatamente ali). Por volta de 1953 o termo ganhou seu sentido moderno, e o
-livro "Dynamic Programming" foi publicado em 1957. Em sua
+em 1952 nos Proceedings of the National Academy of Sciences, é um dos
+primeiros registros do termo, e por isso é a data usada nesta página. Por
+volta de 1953 o termo ganhou seu sentido moderno, e o livro "Dynamic
+Programming" foi publicado em 1957. Em sua
 autobiografia, Bellman conta que escolheu a palavra "dinâmica" em parte
 porque soava impressionante e não poderia ser usada de forma pejorativa,
 o que o ajudava a proteger a pesquisa matemática de um secretário de Defesa

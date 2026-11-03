@@ -59,7 +59,7 @@
 <h2>Por que o algoritmo está correto</h2>
 <p>A prova se apoia na propriedade do corte. Um corte é uma divisão dos vértices em dois grupos, S e V - S; uma aresta cruza o corte se tem uma ponta em cada grupo.</p>
 <p>Propriedade do corte: para qualquer corte, a aresta mais leve que o cruza pertence a alguma árvore espalhada mínima.</p>
-<p>Ideia da prova (argumento de troca): seja T uma AEM que não contém a aresta mais leve e que cruza o corte. Acrescentando e a T forma-se um ciclo, e esse ciclo precisa cruzar o corte uma segunda vez, por uma aresta e'. Como e é a mais leve do corte, peso(e) &lt;= peso(e'). Trocando e' por e obtém-se outra árvore espalhada, de peso menor ou igual, ou seja, outra AEM, agora contendo e.</p>
+<p>Ideia da prova (argumento de troca): seja e a aresta mais leve que cruza o corte, e T uma AEM que não contém e. Acrescentando e a T forma-se um ciclo, e esse ciclo precisa cruzar o corte uma segunda vez, por uma aresta e'. Como e é a mais leve do corte, peso(e) &lt;= peso(e'). Trocando e' por e obtém-se outra árvore espalhada, de peso menor ou igual, ou seja, outra AEM, agora contendo e.</p>
 <p>No Kruskal, quando a aresta u-v é aceita, considere o corte que separa a componente de u de todo o resto. Nenhuma aresta mais leve cruza esse corte (se cruzasse, já teria sido examinada e aceita, pois liga componentes diferentes). Logo u-v é a mais leve do corte e, pela propriedade, pode fazer parte de uma AEM. Por indução, todas as escolhas são seguras.</p>
 <p>Uma propriedade &quot;espelho&quot; justifica os descartes: a aresta mais pesada de um ciclo não é necessária em nenhuma AEM (supondo pesos distintos).</p>
 <h2>A estrutura union-find</h2>

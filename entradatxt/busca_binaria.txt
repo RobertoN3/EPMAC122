@@ -71,8 +71,8 @@ Comparada à busca sequencial (até um bilhão de comparações no último caso)
 a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado:
 ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas
 no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca
-binária não funciona bem em [[listas_encadeadas|listas encadeadas]] (para isso existem as [[arvores|árvores]]
-binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).
+binária não funciona bem em [[listas_encadeadas|listas encadeadas]] (para isso existem as
+[[abb|árvores binárias de busca]], que aplicam a mesma ideia a uma estrutura dinâmica).
 
 ## Correção: o invariante
 
@@ -115,7 +115,7 @@ corretamente. Pontos que exigem atenção:
 ```
   busca(v, ini, fim, x):
       se ini > fim: devolva -1          (trecho vazio)
-      m <- (ini + fim) / 2
+      m <- ini + (fim - ini) / 2
       se v[m] == x: devolva m
       se x < v[m]: devolva busca(v, ini, m-1, x)
       senão:       devolva busca(v, m+1, fim, x)

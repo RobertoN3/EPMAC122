@@ -46,7 +46,7 @@
 <h2>Vetores de registros: tabelas</h2>
 <p>Um vetor de registros, como Aluno turma[60];, é uma tabela: cada elemento é uma linha, e cada campo é uma coluna. turma[i].nota é a nota do i-ésimo aluno. Essa é a forma natural de guardar dados de um cadastro na memória.</p>
 <p>Uma tarefa típica é ordenar a tabela por um dos campos, a chave de ordenação: alunos por número USP, por nome ou por nota. Os algoritmos de ordenação são os mesmos usados para números; muda apenas a comparação (t[j].nota &lt; x.nota) e o fato de que se movem registros inteiros.</p>
-<p>É aqui que a <a href="ordenacao.html">estabilidade</a> de um algoritmo de ordenação se torna importante. Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota com um método estável, alunos com a mesma nota continuarão em ordem alfabética entre si: obtemos a ordenação por (nota, nome) &quot;de graça&quot;. Com um método instável, essa ordem secundária poderia se perder.</p>
+<p>É aqui que a <a href="estabilidade.html">estabilidade</a> de um algoritmo de ordenação se torna importante. Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota com um método estável, alunos com a mesma nota continuarão em ordem alfabética entre si: obtemos a ordenação por (nota, nome) &quot;de graça&quot;. Com um método instável, essa ordem secundária poderia se perder.</p>
 <p>Quando os registros são grandes, mover cada um custa caro; uma alternativa é ordenar um vetor de ponteiros (ou de índices) para os registros, mexendo apenas nos ponteiros.</p>
 <h2>Registros autorreferentes</h2>
 <p>Um campo de um registro pode ser um ponteiro para outro registro do mesmo tipo. É assim que se constroem as estruturas encadeadas:</p>

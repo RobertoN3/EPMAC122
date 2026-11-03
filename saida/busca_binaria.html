@@ -51,7 +51,7 @@
   n = 1 000 000      -&gt;  no máximo 20 comparações
   n = 1 000 000 000  -&gt;  no máximo 30 comparações
 </pre>
-<p>Comparada à busca sequencial (até um bilhão de comparações no último caso), a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado: ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca binária não funciona bem em <a href="listas_encadeadas.html">listas encadeadas</a> (para isso existem as <a href="arvores.html">árvores</a> binárias de busca, que aplicam a mesma ideia a uma estrutura dinâmica).</p>
+<p>Comparada à busca sequencial (até um bilhão de comparações no último caso), a diferença é imensa. Em contrapartida, o vetor precisa estar ordenado: ordená-lo custa O(n log n), o que só compensa se forem feitas muitas buscas no mesmo vetor. Também é preciso acesso direto a v[m] em O(1): a busca binária não funciona bem em <a href="listas_encadeadas.html">listas encadeadas</a> (para isso existem as <a href="abb.html">árvores binárias de busca</a>, que aplicam a mesma ideia a uma estrutura dinâmica).</p>
 <h2>Correção: o invariante</h2>
 <p>O invariante do laço da versão iterativa, com intervalo fechado [ini, fim], é:</p>
 <pre>  se x está no vetor, então x está em v[ini..fim].
@@ -69,7 +69,7 @@
 <h2>Versão recursiva</h2>
 <pre>  busca(v, ini, fim, x):
       se ini &gt; fim: devolva -1          (trecho vazio)
-      m &lt;- (ini + fim) / 2
+      m &lt;- ini + (fim - ini) / 2
       se v[m] == x: devolva m
       se x &lt; v[m]: devolva busca(v, ini, m-1, x)
       senão:       devolva busca(v, m+1, fim, x)

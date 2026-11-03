@@ -42,7 +42,7 @@
   resultado: (3, 9, 10, 27, 38, 43, 82)
 </pre>
 <p>Cada comparação coloca um elemento no lugar definitivo, então intercalar trechos com n elementos no total faz no máximo n-1 comparações e n cópias: O(n). O preço é o vetor auxiliar, de tamanho n.</p>
-<p><a href="ordenacao.html">Estabilidade</a>: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que veio da metade ESQUERDA (comparação v[i] &lt;= v[j]). Assim, elementos iguais mantêm a ordem original e o Merge Sort é estável. Usar &lt; no lugar de &lt;= destruiria essa propriedade.</p>
+<p><a href="estabilidade.html">Estabilidade</a>: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que veio da metade ESQUERDA (comparação v[i] &lt;= v[j]). Assim, elementos iguais mantêm a ordem original e o Merge Sort é estável. Usar &lt; no lugar de &lt;= destruiria essa propriedade.</p>
 <h2>Versão recursiva (de cima para baixo)</h2>
 <pre>  mergesort(v, ini, fim):
       se ini &lt; fim:
@@ -52,7 +52,7 @@
           intercala(v, ini, meio, fim)
 </pre>
 <p>Análise: T(n) = 2T(n/2) + O(n), cuja solução é O(n log n). A <a href="arvores.html">árvore</a> de recursão tem cerca de log2(n) níveis, e em cada nível as intercalações somadas processam todos os n elementos. O número de comparações fica entre (n/2) log2 n e n log2 n, aproximadamente: é muito próximo do limite inferior de log2(n!) ~ n log2 n - 1,44n para qualquer ordenação por comparação.</p>
-<p>O tempo é O(n log n) em TODOS os casos (melhor, médio e pior): o Merge Sort não tem &quot;entradas ruins&quot;, ao contrário do <a href="quicksort.html">Quick Sort</a>. Essa previsibilidade é uma de suas principais virtudes.</p>
+<p>O tempo é O(n log n) em TODOS os casos (melhor, médio e pior): o Merge Sort não tem &quot;entradas ruins&quot;, ao contrário do <a href="quicksort.html">Quicksort</a>. Essa previsibilidade é uma de suas principais virtudes.</p>
 <h2>Versão iterativa (de baixo para cima)</h2>
 <p>Também é possível dispensar a recursão. Observa-se que a recursão acaba intercalando trechos de tamanho 1, depois de tamanho 2, 4, 8... Então:</p>
 <pre>  para largura = 1, 2, 4, 8, ... enquanto largura &lt; n:
@@ -74,10 +74,10 @@
 <li>Paralelismo: as duas metades podem ser ordenadas ao mesmo tempo por processadores diferentes.</li>
 <li>Contagem de inversões: uma pequena modificação da intercalação conta, em O(n log n), quantos pares estão fora de ordem.</li></ul>
 <p>Bibliotecas modernas usam variantes adaptativas: o Timsort (Tim Peters, 2002), padrão em Python e no Arrays.sort de objetos em Java, procura trechos já ordenados (&quot;runs&quot;) nos dados e os intercala de forma inteligente, sendo muito rápido em dados reais.</p>
-<h2>Merge Sort x Quick Sort x Heap Sort</h2>
+<h2>Merge Sort x Quicksort x Heapsort</h2>
 <ul><li>Merge Sort: O(n log n) garantido, estável, mas usa O(n) de memória extra.</li>
-<li>Quick Sort: O(n log n) em média e, em geral, o mais rápido na prática em vetores; O(n²) no pior caso; não é estável; memória O(log n).</li>
-<li><a href="heapsort.html">Heap Sort</a>: O(n log n) garantido, memória O(1), mas não é estável e costuma ser mais lento por acessar a memória de forma espalhada.</li></ul>
+<li>Quicksort: O(n log n) em média e, em geral, o mais rápido na prática em vetores; O(n²) no pior caso; não é estável; memória O(log n).</li>
+<li><a href="heapsort.html">Heapsort</a>: O(n log n) garantido, memória O(1), mas não é estável e costuma ser mais lento por acessar a memória de forma espalhada.</li></ul>
 <h2>Histórico</h2>
 <p>John von Neumann escreveu um programa de ordenação por intercalação em 1945 para o EDVAC, um dos primeiros computadores de programa armazenado; o manuscrito, analisado por Knuth em 1970, é considerado um dos primeiros programas escritos para um computador desse tipo. A intercalação já era uma operação usual nas máquinas de cartões perfurados, e a ordenação externa por intercalação de fitas foi intensamente estudada nas décadas de 1950 e 1960.</p>
 <h2>Sobre o código</h2>

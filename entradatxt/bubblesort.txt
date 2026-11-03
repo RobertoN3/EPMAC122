@@ -110,7 +110,7 @@ inversão. Logo:
 
 Memória extra: O(1) (ordena no próprio vetor).
 
-[[ordenacao|Estabilidade]]: a troca só acontece quando v[i] > v[i+1], estritamente. Dois
+[[estabilidade|Estabilidade]]: a troca só acontece quando v[i] > v[i+1], estritamente. Dois
 elementos iguais nunca são trocados entre si, então mantêm sua ordem
 relativa: a bolha é estável.
 

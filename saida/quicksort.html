@@ -23,9 +23,9 @@
 <dt class="f-problema"><a href="problema.html#dado-um-vetor-de-elementos-compar%C3%A1veis-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente">Problema</a></dt><dd class="texto">Dado um vetor de elementos comparáveis, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a></dd>
 </dl>
 <h2>Ideia geral</h2>
-<p>O Quick Sort (ordenação rápida) é, em geral, o algoritmo de ordenação por comparação mais rápido na prática, e por isso é a base de muitas funções de bibliotecas. Como o <a href="mergesort.html">Merge Sort</a>, usa <a href="divisao_conquista.html">divisão e conquista</a>, mas de um jeito &quot;invertido&quot;:</p>
+<p>O Quicksort (ordenação rápida) é, em geral, o algoritmo de ordenação por comparação mais rápido na prática, e por isso é a base de muitas funções de bibliotecas. Como o <a href="mergesort.html">Merge Sort</a>, usa <a href="divisao_conquista.html">divisão e conquista</a>, mas de um jeito &quot;invertido&quot;:</p>
 <ul><li>no Merge Sort, a divisão é trivial (cortar ao meio) e o trabalho está na COMBINAÇÃO (intercalar);</li>
-<li>no Quick Sort, o trabalho está na DIVISÃO (particionar), e a combinação é trivial: não há nada a fazer.</li></ul>
+<li>no Quicksort, o trabalho está na DIVISÃO (particionar), e a combinação é trivial: não há nada a fazer.</li></ul>
 <p>Para ordenar v[ini..fim]:</p>
 <ol><li>Escolha um elemento do trecho, o pivô.</li>
 <li>Particione: rearranje o trecho de modo que fiquem à esquerda do pivô apenas elementos menores ou iguais a ele, e à direita apenas elementos maiores ou iguais. O pivô fica, então, na sua posição definitiva p.</li>
@@ -56,8 +56,8 @@
 <li>Pior caso: o pivô é sempre o menor ou o maior elemento; uma das partes fica vazia e a outra com n-1 elementos. T(n) = T(n-1) + O(n) = O(n²), com cerca de n²/2 comparações. Com o pivô escolhido como o último elemento, isso acontece justamente quando o vetor JÁ está ordenado (ou em ordem inversa), situação muito comum na prática.</li>
 <li>Caso médio: com todas as ordens igualmente prováveis (ou com pivô aleatório), o número esperado de comparações é cerca de 2n ln n ~ 1,39 n log2 n: O(n log n), apenas 39% acima do melhor caso. Intuição: mesmo uma divisão desequilibrada, como 10% / 90%, gera uma recursão de profundidade O(log n); só divisões extremamente ruins, repetidas muitas vezes, levam ao caso quadrático.</li></ul>
 <p>Por que é rápido na prática, se o Merge Sort tem a mesma ordem? O laço interno da partição é muito simples (comparar com o pivô, que fica em um registrador, e avançar), acessa a memória de forma sequencial (bom uso da cache) e o algoritmo ordena no próprio vetor, sem vetor auxiliar.</p>
-<p>Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a <a href="pilhas.html">pilha</a> de recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a O(log n).</p>
-<p><a href="ordenacao.html">Estabilidade</a>: a partição faz trocas entre posições distantes e pode inverter a ordem de elementos iguais. O Quick Sort NÃO é estável.</p>
+<p>Memória: o Quicksort não precisa de vetor auxiliar, mas usa a <a href="pilhas.html">pilha</a> de recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a O(log n).</p>
+<p><a href="estabilidade.html">Estabilidade</a>: a partição faz trocas entre posições distantes e pode inverter a ordem de elementos iguais. O Quicksort NÃO é estável.</p>
 <h2>Escolha do pivô</h2>
 <ul><li>Primeiro ou último elemento: simples, mas quadrático para vetores já ordenados.</li>
 <li>Pivô aleatório: sorteia-se uma posição do trecho. Nenhuma entrada fixa é ruim; o tempo esperado é O(n log n) para qualquer entrada (algoritmo aleatorizado).</li>
@@ -66,14 +66,14 @@
 <h2>Melhorias usadas na prática</h2>
 <ul><li>Trechos pequenos (menos de 10 a 20 elementos) são ordenados com inserção direta, que é mais rápida para eles.</li>
 <li>Partição em três partes (menores, iguais e maiores que o pivô; problema da &quot;bandeira holandesa&quot; de Dijkstra): vetores com muitos elementos repetidos passam a ser ordenados rapidamente.</li>
-<li>Dual-pivot Quick Sort (Yaroslavskiy, 2009): usa dois pivôs e três partes; é o algoritmo usado pelo Java para tipos primitivos.</li>
-<li>Introsort (Musser, 1997): começa como Quick Sort e, se a recursão ficar profunda demais (sinal de partições ruins), troca para <a href="heapsort.html">Heap Sort</a>. Garante O(n log n) no pior caso; é o std::sort de muitas implementações de C++.</li></ul>
+<li>Dual-pivot Quicksort (Yaroslavskiy, 2009): usa dois pivôs e três partes; é o algoritmo usado pelo Java para tipos primitivos.</li>
+<li>Introsort (Musser, 1997): começa como Quicksort e, se a recursão ficar profunda demais (sinal de partições ruins), troca para <a href="heapsort.html">Heapsort</a>. Garante O(n log n) no pior caso; é o std::sort de muitas implementações de C++.</li></ul>
 <h2>Quick Select</h2>
 <p>A partição também resolve o problema da seleção: encontrar o k-ésimo menor elemento (por exemplo, a mediana) sem ordenar o vetor inteiro. Depois de particionar, se o pivô ficou na posição k, achamos; senão, continua-se apenas na parte que contém a posição k. O tempo esperado é O(n). O algoritmo foi publicado pelo próprio Hoare, com o nome &quot;Find&quot;.</p>
 <h2>Histórico</h2>
-<p>Tony Hoare (Charles Antony Richard Hoare) inventou o Quick Sort em 1959, quando era estudante visitante na Universidade Estatal de Moscou. Ele trabalhava em um projeto de tradução automática do russo para o inglês e precisava ordenar as palavras de cada frase antes de procurá-las em um dicionário guardado em fita magnética. Ao voltar à Inglaterra, implementou o algoritmo em ALGOL 60, aproveitando a recursão, e o publicou em 1961 (Algorithm 64, nas Communications of the ACM) e, com análise detalhada, em 1962, no Computer Journal. Robert Sedgewick fez, em sua tese de 1975, a análise mais completa do algoritmo e de suas variações. Hoare recebeu o prêmio Turing em 1980 e é também conhecido pela lógica de Hoare, para provar programas corretos, e pela linguagem CSP, para programação concorrente.</p>
+<p>Tony Hoare (Charles Antony Richard Hoare) inventou o Quicksort em 1959, quando era estudante visitante na Universidade Estatal de Moscou. Ele trabalhava em um projeto de tradução automática do russo para o inglês e precisava ordenar as palavras de cada frase antes de procurá-las em um dicionário guardado em fita magnética. Ao voltar à Inglaterra, implementou o algoritmo em ALGOL 60, aproveitando a recursão, e o publicou em 1961 (Algorithm 64, nas Communications of the ACM) e, com análise detalhada, em 1962, no Computer Journal. Robert Sedgewick fez, em sua tese de 1975, a análise mais completa do algoritmo e de suas variações. Hoare recebeu o prêmio Turing em 1980 e é também conhecido pela lógica de Hoare, para provar programas corretos, e pela linguagem CSP, para programação concorrente.</p>
 <h2>Sobre o código</h2>
-<p>O programa de exemplo implementa o Quick Sort com a partição de Lomuto, usando como pivô o elemento do meio do trecho (trocado para o fim antes da partição), o que evita o pior caso com vetores já ordenados.</p>
+<p>O programa de exemplo implementa o Quicksort com a partição de Lomuto, usando como pivô o elemento do meio do trecho (trocado para o fim antes da partição), o que evita o pior caso com vetores já ordenados.</p>
 <section class="referencias">
 <h2>Referências</h2>
 <ul><li>HOARE, C. A. R. Algorithm 64: Quicksort. Communications of the ACM, v. 4, n. 7, p. 321, 1961.</li>

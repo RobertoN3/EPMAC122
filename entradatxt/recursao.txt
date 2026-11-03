@@ -78,7 +78,7 @@ Cada chamada pendente "espera" a resposta da seguinte. Consequências:
 - recursão profunda demais (ou sem base) esgota a pilha, erro conhecido como
   estouro de pilha (stack overflow);
 - todo algoritmo recursivo pode ser reescrito de forma iterativa usando uma
-  pilha explícita, e é isso que o compilador faz por baixo.
+  pilha explícita, que guarda o que a pilha de execução guardaria.
 
 ## Exemplo principal: Torres de Hanói
 
@@ -149,7 +149,7 @@ contextos). Quando a chamada recursiva é a última operação da função
 
 ## Onde a recursão aparece na disciplina
 
-- Técnicas de projeto: [[divisao_conquista|divisão e conquista]] ([[mergesort|Merge Sort]], [[quicksort|Quick Sort]], busca
+- Técnicas de projeto: [[divisao_conquista|divisão e conquista]] ([[mergesort|Merge Sort]], [[quicksort|Quicksort]], busca
   binária) e [[tentativa_erro|tentativa e erro]] (backtracking).
 - Estruturas recursivas: uma [[listas_encadeadas|lista encadeada]] é vazia ou é uma célula seguida
   de uma lista; uma árvore é vazia ou é uma raiz ligada a subárvores. Os

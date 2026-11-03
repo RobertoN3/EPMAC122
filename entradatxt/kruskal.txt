@@ -93,8 +93,9 @@ em cada grupo.
 Propriedade do corte: para qualquer corte, a aresta mais leve que o cruza
 pertence a alguma árvore espalhada mínima.
 
-Ideia da prova (argumento de troca): seja T uma AEM que não contém a aresta
-mais leve e que cruza o corte. Acrescentando e a T forma-se um ciclo, e esse
+Ideia da prova (argumento de troca): seja e a aresta mais leve
+que cruza o corte, e T uma AEM que não contém e. Acrescentando e a T
+forma-se um ciclo, e esse
 ciclo precisa cruzar o corte uma segunda vez, por uma aresta e'. Como e é a
 mais leve do corte, peso(e) <= peso(e'). Trocando e' por e obtém-se outra
 árvore espalhada, de peso menor ou igual, ou seja, outra AEM, agora
