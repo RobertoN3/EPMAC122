@@ -2,8 +2,8 @@
 
    gerador.c, gerador_conteudo.c e colorir.c incluem este arquivo para
    escrever o mesmo <head>, a mesma barra de navegação (com os seis índices)
-   e o mesmo rodapé. O visual fica em estilo.css, que cada programa copia
-   para a pasta de saída. */
+   e o mesmo fim de página. O visual fica em estilo.css, que cada programa copia
+   para a pasta de saída; o gerador copia também o indice.js. */
 #ifndef LAYOUT_H
 #define LAYOUT_H
 
@@ -11,6 +11,7 @@
 #include <string.h>
 
 #define ESTILO "estilo.css"
+#define SCRIPT_INDICE "indice.js"   /* busca e animação dos índices */
 
 /* os seis índices, na ordem dos campos 1 a 6 do cabeçalho dos TXT */
 static const char *const LAYOUT_FACETA[6] =
@@ -30,20 +31,20 @@ static void layout_esc(FILE *o, const char *s) {
     }
 }
 
-/* Copia estilo.css (da pasta onde o programa roda) para a pasta de saída.
-   Devolve 0 se deu certo. Sem o arquivo, as páginas funcionam, mas sem o
-   visual: o programa só avisa. */
-static int copiar_estilo(const char *pasta) {
+/* Copia o arquivo nome (da pasta onde o programa roda) para a pasta de
+   saída. Devolve 0 se deu certo. Sem o arquivo, as páginas funcionam, mas
+   sem o visual ou sem a interação: o programa só avisa. */
+static int copiar_arquivo(const char *nome, const char *pasta) {
     char destino[1024], buf[4096];
     FILE *in, *out;
     size_t n;
     int ok = 1;
 
-    if (snprintf(destino, sizeof destino, "%s/%s", pasta, ESTILO) >= (int)sizeof destino)
+    if (snprintf(destino, sizeof destino, "%s/%s", pasta, nome) >= (int)sizeof destino)
         return -1;
-    in = fopen(ESTILO, "rb");
+    in = fopen(nome, "rb");
     if (!in) {
-        fprintf(stderr, "[aviso] %s não encontrado: as páginas ficarão sem o visual\n", ESTILO);
+        fprintf(stderr, "[aviso] %s não encontrado: copie-o para a pasta do programa\n", nome);
         return -1;
     }
     out = fopen(destino, "wb");
@@ -53,9 +54,11 @@ static int copiar_estilo(const char *pasta) {
     if (ferror(in)) ok = 0;
     fclose(in);
     if (fclose(out)) ok = 0;
-    if (!ok) fprintf(stderr, "[aviso] erro ao copiar %s\n", ESTILO);
+    if (!ok) fprintf(stderr, "[aviso] erro ao copiar %s\n", nome);
     return ok ? 0 : -1;
 }
+
+static int copiar_estilo(const char *pasta) { return copiar_arquivo(ESTILO, pasta); }
 
 /* Abre a página até o início do conteúdo.
    titulo:   texto da aba do navegador
@@ -107,9 +110,7 @@ static void abrir_pagina(FILE *o, const char *titulo, const char *classe,
 
 /* Fecha a página; script: código JavaScript da página, ou NULL */
 static void fechar_pagina(FILE *o, int avulsa, const char *script) {
-    if (!avulsa)
-        fputs("<footer class=\"rodape\">Páginas geradas a partir dos arquivos TXT "
-              "do EP de MAC0122.</footer>\n", o);
+    (void)avulsa;
     if (script) fprintf(o, "<script>%s</script>\n", script);
     fputs("</body></html>\n", o);
 }

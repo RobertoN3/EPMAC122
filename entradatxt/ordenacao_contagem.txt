@@ -1,9 +1,9 @@
-2. Algoritmo: Ordenação por contagem (frequências)
+2. Algoritmo: Counting Sort
 3. Autores: Harold H. Seward
 4. Data: 1954
 5. Conceitos: Ordenação, Estabilidade, Representação de conjuntos, Vetores, Eficiência de algoritmos
 6. Problema: Dado um vetor de n inteiros, todos entre 0 e U-1, reorganizá-lo [[ordenacao|em ordem crescente]] sem comparar os elementos entre si
-7. Titulo: Ordenação por contagem (frequências)
+7. Titulo: Counting Sort
 
 ## Ideia geral
 
