@@ -48,7 +48,7 @@ Só estes nomes, escritos exatamente assim. A coluna da direita é a página que
 | Árvores | arvores | Hash | hash |
 | Árvore espalhada mínima | kruskal | Invariante | mdc_euclides |
 | Busca binária | busca_binaria | Listas encadeadas | listas_encadeadas |
-| Caminho mínimo | dijkstra | Memorização | programacao_dinamica |
+| Caminho mínimo | dijkstra | Memoização | programacao_dinamica |
 | Conjuntos disjuntos | kruskal | Ordenação | ordenacao |
 | Eficiência de algoritmos | eficiencia | Pilhas | pilhas |
 | Estabilidade | estabilidade | Ponteiros | ponteiros |

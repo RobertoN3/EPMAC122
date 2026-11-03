@@ -128,7 +128,7 @@ são caras. Para isso, prefere-se uma [[arvores|árvore]] de busca balanceada.
 - dicionários e conjuntos das linguagens: dict e set de Python, HashMap de
   Java, unordered_map de C++, objetos de JavaScript;
 - tabelas de símbolos de compiladores e interpretadores;
-- caches (de páginas, de resultados de funções: memorização na programação
+- caches (de páginas, de resultados de funções: memoização na programação
   dinâmica) e índices de bancos de dados;
 - detecção de duplicatas e contagem de frequência de palavras;
 - busca de padrões em textos (algoritmo de Rabin-Karp, 1987);
