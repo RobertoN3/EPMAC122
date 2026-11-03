@@ -66,7 +66,7 @@
 <li>a bolha também é O(n²), mas faz muito mais trocas;</li>
 <li>na prática, a inserção direta costuma ser a mais rápida das três.</li></ul>
 <h2>Estabilidade</h2>
-<p>A versão com trocas apresentada acima NÃO é <a href="ordenacao.html">estável</a>.</p>
+<p>A versão com trocas apresentada acima NÃO é <a href="estabilidade.html">estável</a>.</p>
 <p>A busca do menor, usando comparação estrita (v[j] &lt; v[menor]), sempre escolhe o PRIMEIRO entre os elementos empatados como menores; isso, sozinho, seria compatível com a estabilidade. O problema é a troca: o elemento que estava em v[i] é levado para a posição antiga do menor, que pode ficar DEPOIS de um outro elemento com a mesma chave que ele, invertendo a ordem relativa dos dois.</p>
 <p>Contraexemplo: sejam 2a e 2b dois elementos de chave 2 (a e b indicam a ordem original) e o vetor (2a, 2b, 1).</p>
 <ul><li>i = 0: o menor é 1, na posição 2; troca v[0] com v[2] -&gt; (1, 2b, 2a).</li>
@@ -75,7 +75,7 @@
 <p>Como torná-la estável: em vez de trocar, retira-se o menor da sua posição e desloca-se todo o trecho v[i..menor-1] uma posição para a direita, inserindo o menor em v[i]. Assim os demais elementos mantêm sua ordem relativa. O custo é perder a principal vantagem do método (poucas movimentações), que passam a ser O(n²). Em <a href="listas_encadeadas.html">listas encadeadas</a> esse deslocamento não é necessário, e a seleção estável é natural.</p>
 <h2>Variações</h2>
 <ul><li>Seleção bidirecional: em cada passada encontra o menor e o maior, colocando-os nas duas pontas; reduz o número de passadas pela metade.</li>
-<li><a href="heapsort.html">Heap Sort</a>: usa a mesma ideia de &quot;selecionar o máximo e colocá-lo no lugar&quot;, mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma seleção direta com uma estrutura de dados melhor.</li></ul>
+<li><a href="heapsort.html">Heapsort</a>: usa a mesma ideia de &quot;selecionar o máximo e colocá-lo no lugar&quot;, mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma seleção direta com uma estrutura de dados melhor.</li></ul>
 <h2>Sobre o código</h2>
 <p>O programa de exemplo ordena o vetor do exemplo desta página por seleção direta, com o invariante indicado em um comentário.</p>
 <section class="referencias">

@@ -99,7 +99,7 @@ Comparação com os outros métodos elementares:
 
 ## Estabilidade
 
-A versão com trocas apresentada acima NÃO é [[ordenacao|estável]].
+A versão com trocas apresentada acima NÃO é [[estabilidade|estável]].
 
 A busca do menor, usando comparação estrita (v[j] < v[menor]), sempre escolhe
 o PRIMEIRO entre os elementos empatados como menores; isso, sozinho, seria
@@ -126,7 +126,7 @@ seleção estável é natural.
 
 - Seleção bidirecional: em cada passada encontra o menor e o maior,
   colocando-os nas duas pontas; reduz o número de passadas pela metade.
-- [[heapsort|Heap Sort]]: usa a mesma ideia de "selecionar o máximo e colocá-lo no lugar",
+- [[heapsort|Heapsort]]: usa a mesma ideia de "selecionar o máximo e colocá-lo no lugar",
   mas encontra o máximo em O(log n) com um heap, em vez de O(n) com busca
   linear. O resultado é um algoritmo O(n log n). Pode ser visto como uma
   seleção direta com uma estrutura de dados melhor.

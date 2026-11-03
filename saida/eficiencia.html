@@ -57,7 +57,7 @@
 <pre>  O(1)        constante     acesso a v[i], empilhar
   O(log n)    logarítmica   busca binária
   O(n)        linear        busca sequencial, maior elemento
-  O(n log n)  &quot;n log n&quot;     Merge Sort, Heap Sort
+  O(n log n)  &quot;n log n&quot;     Merge Sort, Heapsort
   O(n²)       quadrática    bolha, seleção, inserção
   O(n³)       cúbica        multiplicação ingênua de matrizes
   O(2^n)      exponencial   subconjuntos, Fibonacci recursivo ingênuo
@@ -74,7 +74,7 @@
 <li>Laço em que a variável é dividida por 2 a cada passo: O(log n).</li>
 <li>Algoritmos <a href="recursao.html">recursivos</a>: escreve-se uma recorrência, como T(n) = 2T(n/2) + n, e resolve-se (<a href="arvores.html">árvore</a> de recursão, substituição ou teorema mestre).</li></ul>
 <h2>Memória</h2>
-<p>A mesma análise vale para o espaço. Um algoritmo é &quot;in place&quot; se usa memória extra O(1) (bolha, seleção, inserção, <a href="heapsort.html">Heap Sort</a>). O <a href="mergesort.html">Merge Sort</a> usa O(n) extra; algoritmos recursivos usam memória de <a href="pilhas.html">pilha</a> proporcional à profundidade da recursão. Muitas vezes é possível trocar memória por tempo, como na <a href="programacao_dinamica.html">programação dinâmica</a> e nas <a href="hash.html">tabelas de espalhamento</a>.</p>
+<p>A mesma análise vale para o espaço. Um algoritmo é &quot;in place&quot; se usa memória extra O(1) (bolha, seleção, inserção, <a href="heapsort.html">Heapsort</a>). O <a href="mergesort.html">Merge Sort</a> usa O(n) extra; algoritmos recursivos usam memória de <a href="pilhas.html">pilha</a> proporcional à profundidade da recursão. Muitas vezes é possível trocar memória por tempo, como na <a href="programacao_dinamica.html">programação dinâmica</a> e nas <a href="hash.html">tabelas de espalhamento</a>.</p>
 <h2>Limites do que é possível</h2>
 <ul><li>Problemas intratáveis: para alguns problemas, todos os algoritmos conhecidos são exponenciais. O exemplo central é a satisfatibilidade (SAT): dada uma expressão booleana, como b1 E (b2 OU NÃO b3), existe uma atribuição de valores que a torne verdadeira? Para 3 variáveis basta testar 8 combinações; para 300, seriam 2^300. SAT é NP-completo, e decidir se existe algoritmo polinomial para ele é o famoso problema &quot;P = NP?&quot;, em aberto desde 1971.</li>
 <li>Problemas indecidíveis: não existe NENHUM algoritmo que os resolva. O exemplo clássico é o problema da parada (Turing, 1936): decidir, para um programa e uma entrada quaisquer, se o programa termina.</li></ul>

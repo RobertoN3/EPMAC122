@@ -99,7 +99,7 @@ as escolhas gulosas feitas até ali estão corretas.
 - Melhor caso: com a verificação de "nenhuma troca", um vetor já ordenado
   custa uma única passada, O(n).
 - Memória extra: constante (algoritmo "in place").
-- [[ordenacao|Estabilidade]]: a troca só acontece quando v[i] > v[i+1] (estritamente),
+- [[estabilidade|Estabilidade]]: a troca só acontece quando v[i] > v[i+1] (estritamente),
   então elementos iguais nunca trocam de lugar entre si: o método é estável.
 
 Por fazer muitas trocas, a bolha costuma ser mais lenta na prática do que a

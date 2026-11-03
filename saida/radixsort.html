@@ -22,7 +22,7 @@
 <dt class="f-problema"><a href="problema.html#dado-um-vetor-de-n%C3%BAmeros-inteiros-reorganiz%C3%A1-lo-ordenacao-em-ordem-crescente-sem-comparar-os-elementos-entre-si">Problema</a></dt><dd class="texto">Dado um vetor de números inteiros, reorganizá-lo <a href="ordenacao.html">em ordem crescente</a> sem comparar os elementos entre si</dd>
 </dl>
 <h2>Ideia geral</h2>
-<p>Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge Sort, <a href="quicksort.html">Quick Sort</a>, <a href="heapsort.html">Heap Sort</a>) obtêm informação apenas COMPARANDO pares de elementos. Para eles vale um limite inferior: no pior caso precisam de pelo menos da ordem de n log n comparações.</p>
+<p>Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge Sort, <a href="quicksort.html">Quicksort</a>, <a href="heapsort.html">Heapsort</a>) obtêm informação apenas COMPARANDO pares de elementos. Para eles vale um limite inferior: no pior caso precisam de pelo menos da ordem de n log n comparações.</p>
 <p>O Radix Sort (ordenação digital, ou ordenação pela base) escapa desse limite porque nunca compara dois elementos. Ele olha para a ESTRUTURA das chaves: cada número é visto como uma sequência de dígitos em uma base b (radix, em latim, &quot;raiz&quot;, é o nome da base de um sistema de numeração). Os números são distribuídos em b &quot;baldes&quot; de acordo com um dígito, depois com outro, e assim por diante.</p>
 <p>Funciona para inteiros, para cadeias de caracteres (cada caractere é um &quot;dígito&quot; na base 256) e para qualquer chave que possa ser decomposta em partes de tamanho limitado, como datas (ano, mês, dia).</p>
 <h2>Radix Sort LSD (do dígito menos significativo)</h2>
@@ -38,7 +38,7 @@
 <p>Note, na passada das dezenas, que 802 e 2 têm o mesmo dígito (0) e 802 vem antes porque já vinha antes; na passada das centenas, 2, 24, ..., 90 têm todos centena 0 e ficam na ordem deixada pela passada anterior, que já os havia ordenado pelos dois últimos dígitos.</p>
 <h2>Por que funciona: o papel da estabilidade</h2>
 <p>Invariante: depois de processar os k dígitos menos significativos, o vetor está ordenado pelo número formado por esses k dígitos.</p>
-<p>Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES ficam na ordem certa, pois a passada os ordena por esse dígito. Dois números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos anteriores; isso só é garantido se a passada for <a href="ordenacao.html">ESTÁVEL</a>, preservando a ordem que eles já tinham. Sem estabilidade, o trabalho das passadas anteriores seria perdido.</p>
+<p>Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES ficam na ordem certa, pois a passada os ordena por esse dígito. Dois números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos anteriores; isso só é garantido se a passada for <a href="estabilidade.html">ESTÁVEL</a>, preservando a ordem que eles já tinham. Sem estabilidade, o trabalho das passadas anteriores seria perdido.</p>
 <p>É a mesma técnica de ordenar por várias chaves (ordena-se primeiro pela chave menos importante e depois, de forma estável, pela mais importante), e um ótimo exemplo de por que a estabilidade de um algoritmo de ordenação importa.</p>
 <h2>A ordenação de cada passada: Counting Sort</h2>
 <p>Para ordenar por um único dígito, que só assume b valores (0 a b-1), usa-se a <a href="ordenacao_contagem.html">ordenação por contagem</a> (counting sort), que é estável e linear:</p>

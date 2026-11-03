@@ -46,7 +46,7 @@ Cada comparação coloca um elemento no lugar definitivo, então intercalar
 trechos com n elementos no total faz no máximo n-1 comparações e n cópias:
 O(n). O preço é o vetor auxiliar, de tamanho n.
 
-[[ordenacao|Estabilidade]]: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que
+[[estabilidade|Estabilidade]]: quando v[i] e v[j] são iguais, copia-se primeiro v[i], que
 veio da metade ESQUERDA (comparação v[i] <= v[j]). Assim, elementos iguais
 mantêm a ordem original e o Merge Sort é estável. Usar < no lugar de <=
 destruiria essa propriedade.
@@ -69,7 +69,7 @@ somadas processam todos os n elementos. O número de comparações fica entre
 de log2(n!) ~ n log2 n - 1,44n para qualquer ordenação por comparação.
 
 O tempo é O(n log n) em TODOS os casos (melhor, médio e pior): o Merge Sort
-não tem "entradas ruins", ao contrário do [[quicksort|Quick Sort]]. Essa previsibilidade é
+não tem "entradas ruins", ao contrário do [[quicksort|Quicksort]]. Essa previsibilidade é
 uma de suas principais virtudes.
 
 ## Versão iterativa (de baixo para cima)
@@ -121,12 +121,12 @@ Bibliotecas modernas usam variantes adaptativas: o Timsort (Tim Peters,
 já ordenados ("runs") nos dados e os intercala de forma inteligente, sendo
 muito rápido em dados reais.
 
-## Merge Sort x Quick Sort x Heap Sort
+## Merge Sort x Quicksort x Heapsort
 
 - Merge Sort: O(n log n) garantido, estável, mas usa O(n) de memória extra.
-- Quick Sort: O(n log n) em média e, em geral, o mais rápido na prática em
+- Quicksort: O(n log n) em média e, em geral, o mais rápido na prática em
   vetores; O(n²) no pior caso; não é estável; memória O(log n).
-- [[heapsort|Heap Sort]]: O(n log n) garantido, memória O(1), mas não é estável e costuma
+- [[heapsort|Heapsort]]: O(n log n) garantido, memória O(1), mas não é estável e costuma
   ser mais lento por acessar a memória de forma espalhada.
 
 ## Histórico

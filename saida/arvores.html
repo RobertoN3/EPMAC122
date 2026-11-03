@@ -47,7 +47,7 @@
 <li>uma árvore binária de altura h tem no máximo 2^(h+1) - 1 nós;</li>
 <li>portanto, uma árvore binária com n nós tem altura pelo menos log2(n+1) - 1, ou seja, no mínimo da ordem de log n. Essa altura mínima é atingida pelas árvores &quot;cheias&quot; ou &quot;quase completas&quot;;</li>
 <li>no outro extremo, a altura pode chegar a n-1 (árvore degenerada, que parece uma lista). Em resumo, para uma árvore binária não vazia com n nós e altura h: h + 1 &lt;= n &lt;= 2^(h+1) - 1.</li></ul>
-<p>O material da disciplina chama uma árvore binária de completamente balanceada quando, em todo nó, as subárvores esquerda e direita têm a mesma quantidade de nós. É uma condição mais forte do que ter alturas próximas, e implica que todos os níveis estão cheios. Com altura h, uma árvore assim tem 2^k nós no nível k, 2^h folhas e n = 1 + 2 + ... + 2^h = 2^(h+1) - 1 nós no total. (O heap do <a href="heapsort.html">Heap Sort</a> usa uma condição mais fraca, a de árvore completa: todos os níveis cheios, exceto talvez o último, preenchido da esquerda para a direita.)</p>
+<p>O material da disciplina chama uma árvore binária de completamente balanceada quando, em todo nó, as subárvores esquerda e direita têm a mesma quantidade de nós. É uma condição mais forte do que ter alturas próximas, e implica que todos os níveis estão cheios. Com altura h, uma árvore assim tem 2^k nós no nível k, 2^h folhas e n = 1 + 2 + ... + 2^h = 2^(h+1) - 1 nós no total. (O heap do <a href="heapsort.html">Heapsort</a> usa uma condição mais fraca, a de árvore completa: todos os níveis cheios, exceto talvez o último, preenchido da esquerda para a direita.)</p>
 <p>Outra relação do material: em qualquer árvore binária, n0 = n2 + 1, em que n0 é o número de folhas (nós sem filhos) e n2 o número de nós com dois filhos. Prova: sejam n1 os nós com um filho. Contando as arestas pelos filhos, há n1 + 2·n2 arestas; contando de outro modo, uma árvore com n = n0 + n1 + n2 nós tem n - 1 arestas. Igualando, n1 + 2·n2 = n0 + n1 + n2 - 1, ou seja, n0 = n2 + 1. (Aqui o &quot;grau&quot; de um nó é o número de FILHOS, e não o número de arestas que tocam o nó, como em grafos.)</p>
 <h2>Representações</h2>
 <ol><li>Com <a href="ponteiros.html">ponteiros</a>: cada nó é um registro com o valor e dois ponteiros, esq e dir; NULL indica filho ausente. Usa memória proporcional ao número de nós, qualquer que seja a forma da árvore. É a representação usada na maioria dos algoritmos.</li></ol>
@@ -73,13 +73,13 @@
 <li>árvores rubro-negras (Guibas e Sedgewick, 1978, a partir de Bayer, 1972): usadas, por exemplo, no std::map de C++ e no TreeMap de Java;</li>
 <li>árvores B (Bayer e McCreight, 1970): nós com muitos filhos, usadas em bancos de dados e sistemas de arquivos, onde cada acesso ao disco é caro.</li></ul>
 <h2>Outras árvores na disciplina</h2>
-<ul><li>Heap: árvore binária quase completa, guardada em um vetor, em que cada pai é maior ou igual aos filhos. Base do Heap Sort e das <a href="heapsort.html">filas de prioridade</a>.</li>
+<ul><li>Heap: árvore binária quase completa, guardada em um vetor, em que cada pai é maior ou igual aos filhos. Base do Heapsort e das <a href="heapsort.html">filas de prioridade</a>.</li>
 <li>Árvore espalhada mínima de um grafo (Kruskal, <a href="prim.html">Prim</a>).</li>
 <li>Árvore de caminhos mínimos (Dijkstra) e árvore de busca em largura.</li>
 <li>Árvore de recursão (análise de <a href="mergesort.html">Merge Sort</a>) e árvore de busca do <a href="tentativa_erro.html">backtracking</a>.</li>
 <li>Trie (árvore digital), para dicionários de palavras, e árvore de Huffman, para compressão.</li></ul>
 <h2>Histórico</h2>
-<p>O termo &quot;árvore&quot; foi usado pelo matemático Arthur Cayley em 1857, ao estudar isômeros químicos; ele também provou (1889) que há n^(n-2) árvores diferentes com n vértices rotulados. A árvore binária de busca foi inventada independentemente por vários grupos por volta de 1960 (Windley; Booth e Colin; Hibbard), e Knuth dedica a ela boa parte do volume 3 de &quot;The Art of Computer Programming&quot;.</p>
+<p>O termo &quot;árvore&quot; foi usado pelo matemático Arthur Cayley em 1857, num estudo sobre operadores do cálculo diferencial; em 1875 ele aplicou as árvores à contagem de isômeros químicos (os alcanos) e, em 1889, provou que há n^(n-2) árvores diferentes com n vértices rotulados. A árvore binária de busca foi inventada independentemente por vários grupos por volta de 1960 (Windley; Booth e Colin; Hibbard), e Knuth dedica a ela boa parte do volume 3 de &quot;The Art of Computer Programming&quot;.</p>
 <h2>Sobre o código</h2>
 <p>O programa de exemplo monta, com registros ligados por ponteiros, a árvore da expressão (2 + 3) * 4 e a percorre recursivamente em pré-ordem, in-ordem e pós-ordem. Em seguida calcula, também por recursão, a altura da árvore, o número de nós e o valor da expressão (um percurso em pós-ordem), e libera a memória.</p>
 <section class="referencias">

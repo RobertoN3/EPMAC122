@@ -52,7 +52,7 @@
 <p>Cada chamada pendente &quot;espera&quot; a resposta da seguinte. Consequências:</p>
 <ul><li>uma recursão de profundidade n usa memória O(n) na pilha;</li>
 <li>recursão profunda demais (ou sem base) esgota a pilha, erro conhecido como estouro de pilha (stack overflow);</li>
-<li>todo algoritmo recursivo pode ser reescrito de forma iterativa usando uma pilha explícita, e é isso que o compilador faz por baixo.</li></ul>
+<li>todo algoritmo recursivo pode ser reescrito de forma iterativa usando uma pilha explícita, que guarda o que a pilha de execução guardaria.</li></ul>
 <h2>Exemplo principal: Torres de Hanói</h2>
 <p>São três hastes, A, B e C. Na haste A há n discos de tamanhos diferentes, empilhados do maior (embaixo) para o menor (em cima). O objetivo é levar todos para a haste C, obedecendo às regras:</p>
 <ul><li>mover um disco por vez, sempre o do topo de uma haste;</li>
@@ -81,7 +81,7 @@
 <li>Mútua (indireta): f chama g e g chama f (por exemplo, par(n) e impar(n); análise de expressões aritméticas).</li>
 <li>De cauda: a chamada recursiva é a última coisa que a função faz.</li></ul>
 <h2>Onde a recursão aparece na disciplina</h2>
-<ul><li>Técnicas de projeto: <a href="divisao_conquista.html">divisão e conquista</a> (<a href="mergesort.html">Merge Sort</a>, <a href="quicksort.html">Quick Sort</a>, busca binária) e <a href="tentativa_erro.html">tentativa e erro</a> (backtracking).</li>
+<ul><li>Técnicas de projeto: <a href="divisao_conquista.html">divisão e conquista</a> (<a href="mergesort.html">Merge Sort</a>, <a href="quicksort.html">Quicksort</a>, busca binária) e <a href="tentativa_erro.html">tentativa e erro</a> (backtracking).</li>
 <li>Estruturas recursivas: uma <a href="listas_encadeadas.html">lista encadeada</a> é vazia ou é uma célula seguida de uma lista; uma árvore é vazia ou é uma raiz ligada a subárvores. Os algoritmos sobre elas são naturalmente recursivos.</li>
 <li>Geração de objetos combinatórios: todos os números binários com k bits, todas as permutações, todos os subconjuntos.</li>
 <li>Análise de expressões aritméticas segundo uma gramática recursiva.</li></ul>

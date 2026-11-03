@@ -414,10 +414,9 @@ Quicksort
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o quicksort quicksort.c
   Rodar:    ./quicksort
   O que faz:
-    O programa de exemplo implementa o Quick Sort com a partição de
-    Lomuto, usando como pivô o elemento do meio do trecho (trocado para o
-    fim antes da partição), o que evita o pior caso com vetores já
-    ordenados.
+    O programa de exemplo implementa o Quicksort com a partição de Lomuto,
+    usando como pivô o elemento do meio do trecho (trocado para o fim antes
+    da partição), o que evita o pior caso com vetores já ordenados.
   Explicação no site: quicksort.html
 
 ------------------------------------------------------------------------

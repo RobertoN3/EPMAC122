@@ -59,7 +59,7 @@
 <li>Trocas: cada troca corrige exatamente uma inversão (um par fora de ordem). Um vetor em ordem decrescente tem n(n-1)/2 inversões, então o pior caso também faz O(n²) trocas. Em média, um vetor aleatório tem n(n-1)/4 inversões.</li>
 <li>Melhor caso: com a verificação de &quot;nenhuma troca&quot;, um vetor já ordenado custa uma única passada, O(n).</li>
 <li>Memória extra: constante (algoritmo &quot;in place&quot;).</li>
-<li><a href="ordenacao.html">Estabilidade</a>: a troca só acontece quando v[i] &gt; v[i+1] (estritamente), então elementos iguais nunca trocam de lugar entre si: o método é estável.</li></ul>
+<li><a href="estabilidade.html">Estabilidade</a>: a troca só acontece quando v[i] &gt; v[i+1] (estritamente), então elementos iguais nunca trocam de lugar entre si: o método é estável.</li></ul>
 <p>Por fazer muitas trocas, a bolha costuma ser mais lenta na prática do que a <a href="insertionsort.html">inserção direta</a>, que tem a mesma complexidade assintótica. Seu valor é principalmente didático.</p>
 <h2>Outros exemplos gulosos vistos na disciplina</h2>
 <ul><li><a href="selecao_direta.html">Seleção direta</a>: a cada passo escolhe o MENOR elemento restante e o coloca na próxima posição livre do início do vetor. É o &quot;espelho&quot; da bolha.</li>

@@ -8,7 +8,7 @@
 ## Ideia geral
 
 Todos os métodos clássicos de ordenação (bolha, inserção, seleção, Merge
-Sort, [[quicksort|Quick Sort]], [[heapsort|Heap Sort]]) obtêm informação apenas COMPARANDO pares de
+Sort, [[quicksort|Quicksort]], [[heapsort|Heapsort]]) obtêm informação apenas COMPARANDO pares de
 elementos. Para eles vale um limite inferior: no pior caso precisam de pelo
 menos da ordem de n log n comparações.
 
@@ -53,7 +53,7 @@ está ordenado pelo número formado por esses k dígitos.
 Na passada seguinte (dígito k+1), dois números com dígitos k+1 DIFERENTES
 ficam na ordem certa, pois a passada os ordena por esse dígito. Dois
 números com o MESMO dígito k+1 precisam ficar ordenados pelos dígitos
-anteriores; isso só é garantido se a passada for [[ordenacao|ESTÁVEL]], preservando a
+anteriores; isso só é garantido se a passada for [[estabilidade|ESTÁVEL]], preservando a
 ordem que eles já tinham. Sem estabilidade, o trabalho das passadas
 anteriores seria perdido.
 

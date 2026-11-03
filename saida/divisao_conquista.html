@@ -46,7 +46,7 @@
               (3 27 38 43) | (9 10 82)
               (3 9 10 27 38 43 82)
 </pre>
-<p><a href="ordenacao.html">Estabilidade</a>: na intercalação, quando os dois elementos comparados são iguais, copia-se primeiro o da metade esquerda (usa-se &lt;= na comparação). Assim, elementos iguais preservam a ordem original e o <a href="mergesort.html">Merge Sort</a> é estável.</p>
+<p><a href="estabilidade.html">Estabilidade</a>: na intercalação, quando os dois elementos comparados são iguais, copia-se primeiro o da metade esquerda (usa-se &lt;= na comparação). Assim, elementos iguais preservam a ordem original e o <a href="mergesort.html">Merge Sort</a> é estável.</p>
 <h2>Análise por recorrência</h2>
 <p>Seja T(n) o tempo para ordenar n elementos. Há duas chamadas recursivas sobre metades e uma intercalação linear, então:</p>
 <pre>  T(1) = c
@@ -68,14 +68,14 @@
 <li>Karatsuba: a = 3, b = 2, f(n) = n -&gt; Theta(n^(log_2 3)) ~ Theta(n^1,585).</li></ul>
 <h2>Outros exemplos de divisão e conquista</h2>
 <ul><li>Busca binária: compara com o elemento do meio e descarta metade do vetor. Só um subproblema precisa ser resolvido (às vezes chamado de &quot;diminuir e conquistar&quot;).</li>
-<li><a href="quicksort.html">Quick Sort</a> (Hoare, 1959): divide o vetor em &quot;menores que o pivô&quot; e &quot;maiores que o pivô&quot;; aqui o trabalho está na DIVISÃO (partição) e a combinação é trivial, o oposto do Merge Sort.</li>
+<li><a href="quicksort.html">Quicksort</a> (Hoare, 1959): divide o vetor em &quot;menores que o pivô&quot; e &quot;maiores que o pivô&quot;; aqui o trabalho está na DIVISÃO (partição) e a combinação é trivial, o oposto do Merge Sort.</li>
 <li>Multiplicação de inteiros de Karatsuba (1960): multiplica números de n dígitos com 3 multiplicações de metades em vez de 4, obtendo O(n^1,585) em vez de O(n²).</li>
 <li>Multiplicação de matrizes de Strassen (1969): 7 multiplicações de blocos em vez de 8, O(n^2,81).</li>
 <li>Par de pontos mais próximos no plano: O(n log n) em vez de O(n²).</li>
 <li>Torres de Hanói, potência rápida (x^n com O(log n) multiplicações) e a Transformada Rápida de Fourier (FFT, Cooley e Tukey, 1965).</li></ul>
 <h2>Cuidados e limitações</h2>
 <ul><li>Subproblemas que se repetem: se a divisão gera muitas vezes os mesmos subproblemas, a divisão e conquista refaz cálculos. O Fibonacci recursivo, fib(n) = fib(n-1) + fib(n-2), gasta tempo exponencial por isso. Nesse caso a técnica indicada é a <a href="programacao_dinamica.html">programação dinâmica</a>, que guarda os resultados.</li>
-<li>Divisões desequilibradas: se uma parte fica quase do tamanho do problema original (como no pior caso do Quick Sort, com pivô sempre extremo), a profundidade da recursão vira n e o tempo vira O(n²).</li>
+<li>Divisões desequilibradas: se uma parte fica quase do tamanho do problema original (como no pior caso do Quicksort, com pivô sempre extremo), a profundidade da recursão vira n e o tempo vira O(n²).</li>
 <li>Custo da recursão: para instâncias pequenas, o custo das chamadas pode superar o ganho. Implementações práticas param a recursão em trechos pequenos (por exemplo, com menos de 16 elementos) e usam <a href="insertionsort.html">inserção direta</a>.</li>
 <li>Memória da <a href="pilhas.html">pilha</a>: a profundidade da recursão consome pilha de execução; no Merge Sort ela é O(log n), o que não é problema.</li></ul>
 <h2>Histórico</h2>

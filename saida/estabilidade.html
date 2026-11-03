@@ -54,8 +54,8 @@
 <li><a href="mergesort.html">Merge Sort</a>: estável, se em um empate na intercalação escolhe primeiro o elemento da metade ESQUERDA (comparação &lt;=).</li>
 <li><a href="radixsort.html">Radix Sort</a> e Counting Sort: estáveis, se a distribuição percorre o vetor de trás para a frente (ou mantém a ordem de chegada nos baldes).</li>
 <li><a href="selecao_direta.html">Seleção direta</a> com trocas: instável.</li>
-<li><a href="quicksort.html">Quick Sort</a> com partição no próprio vetor: instável.</li>
-<li><a href="heapsort.html">Heap Sort</a>: instável.</li></ul>
+<li><a href="quicksort.html">Quicksort</a> com partição no próprio vetor: instável.</li>
+<li><a href="heapsort.html">Heapsort</a>: instável.</li></ul>
 <p>A classificação depende da implementação, não só do nome do algoritmo: trocar &lt; por &lt;= no lugar errado pode destruir a estabilidade, e existem variantes estáveis de métodos que normalmente são instáveis.</p>
 <h2>Como obter um resultado estável com um método instável</h2>
 <p>Há uma técnica geral: anexar a cada elemento seu índice na entrada e comparar o par (chave, índice). Primeiro comparam-se as chaves; em caso de empate, o menor índice vem antes. Como os índices são todos distintos, não há mais empates, e os elementos de mesma chave saem obrigatoriamente na ordem de entrada. Depois da ordenação, os índices são descartados. O custo é O(n) de memória extra para guardar os índices.</p>

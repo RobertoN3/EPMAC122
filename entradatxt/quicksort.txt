@@ -8,13 +8,13 @@
 
 ## Ideia geral
 
-O Quick Sort (ordenação rápida) é, em geral, o algoritmo de ordenação por
+O Quicksort (ordenação rápida) é, em geral, o algoritmo de ordenação por
 comparação mais rápido na prática, e por isso é a base de muitas funções de
 bibliotecas. Como o [[mergesort|Merge Sort]], usa [[divisao_conquista|divisão e conquista]], mas de um jeito
 "invertido":
 - no Merge Sort, a divisão é trivial (cortar ao meio) e o trabalho está na
   COMBINAÇÃO (intercalar);
-- no Quick Sort, o trabalho está na DIVISÃO (particionar), e a combinação é
+- no Quicksort, o trabalho está na DIVISÃO (particionar), e a combinação é
   trivial: não há nada a fazer.
 
 Para ordenar v[ini..fim]:
@@ -86,13 +86,13 @@ interno da partição é muito simples (comparar com o pivô, que fica em um
 registrador, e avançar), acessa a memória de forma sequencial (bom uso da
 cache) e o algoritmo ordena no próprio vetor, sem vetor auxiliar.
 
-Memória: o Quick Sort não precisa de vetor auxiliar, mas usa a [[pilhas|pilha]] de
+Memória: o Quicksort não precisa de vetor auxiliar, mas usa a [[pilhas|pilha]] de
 recursão. No pior caso a profundidade é n; ordenando recursivamente primeiro
 a parte MENOR e tratando a maior com um laço, a profundidade fica limitada a
 O(log n).
 
-[[ordenacao|Estabilidade]]: a partição faz trocas entre posições distantes e pode inverter
-a ordem de elementos iguais. O Quick Sort NÃO é estável.
+[[estabilidade|Estabilidade]]: a partição faz trocas entre posições distantes e pode inverter
+a ordem de elementos iguais. O Quicksort NÃO é estável.
 
 ## Escolha do pivô
 
@@ -113,10 +113,10 @@ a ordem de elementos iguais. O Quick Sort NÃO é estável.
 - Partição em três partes (menores, iguais e maiores que o pivô; problema da
   "bandeira holandesa" de Dijkstra): vetores com muitos elementos repetidos
   passam a ser ordenados rapidamente.
-- Dual-pivot Quick Sort (Yaroslavskiy, 2009): usa dois pivôs e três partes;
+- Dual-pivot Quicksort (Yaroslavskiy, 2009): usa dois pivôs e três partes;
   é o algoritmo usado pelo Java para tipos primitivos.
-- Introsort (Musser, 1997): começa como Quick Sort e, se a recursão ficar
-  profunda demais (sinal de partições ruins), troca para [[heapsort|Heap Sort]]. Garante
+- Introsort (Musser, 1997): começa como Quicksort e, se a recursão ficar
+  profunda demais (sinal de partições ruins), troca para [[heapsort|Heapsort]]. Garante
   O(n log n) no pior caso; é o std::sort de muitas implementações de C++.
 
 ## Quick Select
@@ -129,7 +129,7 @@ foi publicado pelo próprio Hoare, com o nome "Find".
 
 ## Histórico
 
-Tony Hoare (Charles Antony Richard Hoare) inventou o Quick Sort em 1959,
+Tony Hoare (Charles Antony Richard Hoare) inventou o Quicksort em 1959,
 quando era estudante visitante na Universidade Estatal de Moscou. Ele
 trabalhava em um projeto de tradução automática do russo para o inglês e
 precisava ordenar as palavras de cada frase antes de procurá-las em um
@@ -143,7 +143,7 @@ programas corretos, e pela linguagem CSP, para programação concorrente.
 
 ## Sobre o código
 
-O programa de exemplo implementa o Quick Sort com a partição de Lomuto,
+O programa de exemplo implementa o Quicksort com a partição de Lomuto,
 usando como pivô o elemento do meio do trecho (trocado para o fim antes da
 partição), o que evita o pior caso com vetores já ordenados.
 

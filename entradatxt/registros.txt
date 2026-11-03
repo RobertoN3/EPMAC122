@@ -77,7 +77,7 @@ ordenação: alunos por número USP, por nome ou por nota. Os algoritmos de
 ordenação são os mesmos usados para números; muda apenas a comparação
 (t[j].nota < x.nota) e o fato de que se movem registros inteiros.
 
-É aqui que a [[ordenacao|estabilidade]] de um algoritmo de ordenação se torna importante.
+É aqui que a [[estabilidade|estabilidade]] de um algoritmo de ordenação se torna importante.
 Suponha a tabela já em ordem alfabética de nome. Se a ordenarmos por nota
 com um método estável, alunos com a mesma nota continuarão em ordem
 alfabética entre si: obtemos a ordenação por (nota, nome) "de graça". Com um

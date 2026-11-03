@@ -109,7 +109,7 @@ com um único ponteiro para a última célula (cuja prox é a primeira).
 - [[heapsort|Fila de prioridade]]: cada elemento tem uma prioridade e sai primeiro o de
   maior (ou menor) prioridade, independentemente da ordem de chegada. É
   implementada eficientemente com um heap, com inserção e remoção em
-  O(log n), e é usada nos [[dijkstra|algoritmos de Dijkstra]], de [[prim|Prim]], no Heap Sort e no
+  O(log n), e é usada nos [[dijkstra|algoritmos de Dijkstra]], de [[prim|Prim]], no Heapsort e no
   código de Huffman.
 
 ## Histórico

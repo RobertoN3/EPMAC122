@@ -96,7 +96,7 @@ o número de inversões do vetor (pares i < j com v[i] > v[j]). Portanto:
   isso a inserção é excelente para vetores "quase ordenados", com poucos
   elementos fora do lugar.
 
-Memória extra: O(1). [[ordenacao|Estabilidade]]: o laço interno só desloca elementos
+Memória extra: O(1). [[estabilidade|Estabilidade]]: o laço interno só desloca elementos
 ESTRITAMENTE maiores que x (condição v[j] > x); um elemento igual a x faz o
 laço parar, e x fica depois dele. A ordem relativa dos iguais é mantida: o
 método é estável. (Trocar > por >= tornaria o algoritmo instável.)
@@ -128,7 +128,7 @@ dados à medida que eles chegam, sem precisar conhecer o vetor inteiro.
 Entre os métodos elementares, a inserção direta é a mais rápida na prática,
 e é imbatível para vetores pequenos (até algumas dezenas de elementos),
 porque seu laço é muito simples. Por isso as implementações profissionais
-de [[mergesort|Merge Sort]] e [[quicksort|Quick Sort]], ao chegarem a trechos pequenos na recursão,
+de [[mergesort|Merge Sort]] e [[quicksort|Quicksort]], ao chegarem a trechos pequenos na recursão,
 trocam para a inserção direta. O Timsort, usado em Python e Java, aplica
 inserção binária para formar os pequenos trechos ordenados que depois
 intercala, e o Introsort, do C++, termina com inserção.
