@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Código: Multiplicação de uma cadeia de matrizes | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>.pp{color:#9C6500}.pf{color:#3D7B7B;font-style:italic}.tp{color:#B00040}.kw{color:#008000;font-weight:bold}.cm{color:#3D7B7B;font-style:italic}.st{color:#BA2121}.es{color:#AA5D1F;font-weight:bold}.nu{color:#666666}.ct{color:#008000}.op{color:#666666}</style>
+</head>
+<body class="pagina-codigo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="codigo-pagina">
+<header class="titulo-artigo"><h1>Multiplicação de uma cadeia de matrizes: código em C</h1><a class="botao botao-sec" href="cadeia_matrizes.html">Voltar para a explicação</a></header>
+<ul class="legenda" aria-label="Cores usadas no código">
+<li><code class="pp">#include</code> pragma (pré-processador)</li>
+<li><code class="pf">&lt;stdio.h&gt;</code> arquivo incluído</li>
+<li><code class="tp">int</code> tipo</li>
+<li><code class="kw">for</code> comando ou palavra reservada</li>
+<li><code class="cm">/* ... */</code> comentário</li>
+<li><code class="st">"texto"</code> cadeia de caracteres</li>
+<li><code class="es">\n</code> sequência de escape</li>
+<li><code class="nu">3.14</code> número</li>
+<li><code class="ct">NULL</code> constante da biblioteca</li>
+<li><code class="op">+=</code> operador</li>
+</ul>
+<section class="bloco">
+<div class="bloco-barra"><span>72 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/cadeia_matrizes.c" download>Baixar cadeia_matrizes.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="codigo"><pre class="nl" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+<span class="pp">#define</span><span class="pp"> MAX 10</span>
+
+<span class="cm">/* dimensões: a matriz Ai tem p[i-1] linhas e p[i] colunas */</span>
+<span class="tp">long</span> m[MAX][MAX];   <span class="cm">/* m[i][j]: menor custo para calcular Ai...Aj */</span>
+<span class="tp">int</span>  s[MAX][MAX];   <span class="cm">/* s[i][j]: onde fica o último produto nesse ótimo */</span>
+<span class="tp">long</span> chamadas <span class="op">=</span> <span class="nu">0</span>;  <span class="cm">/* chamadas da versão recursiva ingênua */</span>
+
+<span class="cm">/* recursão direta da definição: tempo exponencial */</span>
+<span class="tp">long</span> custo_rec(<span class="kw">const</span> <span class="tp">int</span> p[], <span class="tp">int</span> i, <span class="tp">int</span> j) {
+  <span class="tp">long</span> melhor <span class="op">=</span> <span class="op">-</span><span class="nu">1</span>, c;
+  <span class="tp">int</span> k;
+  chamadas<span class="op">++</span>;
+  <span class="kw">if</span> (i <span class="op">==</span> j) <span class="kw">return</span> <span class="nu">0</span>;
+  <span class="kw">for</span> (k <span class="op">=</span> i; k <span class="op">&lt;</span> j; k<span class="op">++</span>) {
+    c <span class="op">=</span> custo_rec(p, i, k) <span class="op">+</span> custo_rec(p, k <span class="op">+</span> <span class="nu">1</span>, j) <span class="op">+</span> (<span class="tp">long</span>)p[i <span class="op">-</span> <span class="nu">1</span>] <span class="op">*</span> p[k] <span class="op">*</span> p[j];
+    <span class="kw">if</span> (melhor <span class="op">&lt;</span> <span class="nu">0</span> <span class="op">||</span> c <span class="op">&lt;</span> melhor) melhor <span class="op">=</span> c;
+  }
+  <span class="kw">return</span> melhor;
+}
+
+<span class="cm">/* programação dinâmica de baixo para cima, por tamanho do trecho: O(n^3) */</span>
+<span class="tp">void</span> cadeia(<span class="kw">const</span> <span class="tp">int</span> p[], <span class="tp">int</span> n) {
+  <span class="tp">int</span> i, j, k, tam;
+  <span class="tp">long</span> c;
+  <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) m[i][i] <span class="op">=</span> <span class="nu">0</span>;
+  <span class="kw">for</span> (tam <span class="op">=</span> <span class="nu">2</span>; tam <span class="op">&lt;=</span> n; tam<span class="op">++</span>)
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">+</span> tam <span class="op">-</span> <span class="nu">1</span> <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+      j <span class="op">=</span> i <span class="op">+</span> tam <span class="op">-</span> <span class="nu">1</span>;
+      m[i][j] <span class="op">=</span> <span class="op">-</span><span class="nu">1</span>;
+      <span class="kw">for</span> (k <span class="op">=</span> i; k <span class="op">&lt;</span> j; k<span class="op">++</span>) {                    <span class="cm">/* último produto: (Ai..Ak)(Ak+1..Aj) */</span>
+        c <span class="op">=</span> m[i][k] <span class="op">+</span> m[k <span class="op">+</span> <span class="nu">1</span>][j] <span class="op">+</span> (<span class="tp">long</span>)p[i <span class="op">-</span> <span class="nu">1</span>] <span class="op">*</span> p[k] <span class="op">*</span> p[j];
+        <span class="kw">if</span> (m[i][j] <span class="op">&lt;</span> <span class="nu">0</span> <span class="op">||</span> c <span class="op">&lt;</span> m[i][j]) { m[i][j] <span class="op">=</span> c; s[i][j] <span class="op">=</span> k; }
+      }
+    }
+}
+
+<span class="cm">/* reconstrói a parentização ótima a partir de s */</span>
+<span class="tp">void</span> imprime(<span class="tp">int</span> i, <span class="tp">int</span> j) {
+  <span class="kw">if</span> (i <span class="op">==</span> j) { printf(<span class="st">"A%d"</span>, i); <span class="kw">return</span>; }
+  printf(<span class="st">"("</span>);
+  imprime(i, s[i][j]);
+  imprime(s[i][j] <span class="op">+</span> <span class="nu">1</span>, j);
+  printf(<span class="st">")"</span>);
+}
+
+<span class="tp">int</span> main(<span class="tp">void</span>) {
+  <span class="tp">int</span> p3[] <span class="op">=</span> {<span class="nu">10</span>, <span class="nu">100</span>, <span class="nu">5</span>, <span class="nu">50</span>};
+  <span class="tp">int</span> p6[] <span class="op">=</span> {<span class="nu">30</span>, <span class="nu">35</span>, <span class="nu">15</span>, <span class="nu">5</span>, <span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">25</span>};
+  <span class="tp">int</span> i, j;
+  <span class="tp">long</span> ingenuo;
+
+  cadeia(p3, <span class="nu">3</span>);
+  printf(<span class="st">"A1(10x100) A2(100x5) A3(5x50)<span class="es">\n</span>"</span>);
+  printf(<span class="st">"  (A1 A2) A3 custa %ld, A1 (A2 A3) custa %ld; ótimo = %ld: "</span>,
+         <span class="nu">10L</span> <span class="op">*</span> <span class="nu">100</span> <span class="op">*</span> <span class="nu">5</span> <span class="op">+</span> <span class="nu">10L</span> <span class="op">*</span> <span class="nu">5</span> <span class="op">*</span> <span class="nu">50</span>, <span class="nu">100L</span> <span class="op">*</span> <span class="nu">5</span> <span class="op">*</span> <span class="nu">50</span> <span class="op">+</span> <span class="nu">10L</span> <span class="op">*</span> <span class="nu">100</span> <span class="op">*</span> <span class="nu">50</span>, m[<span class="nu">1</span>][<span class="nu">3</span>]);
+  imprime(<span class="nu">1</span>, <span class="nu">3</span>);
+  printf(<span class="st">"<span class="es">\n</span><span class="es">\n</span>"</span>);
+
+  cadeia(p6, <span class="nu">6</span>);
+  printf(<span class="st">"Seis matrizes, dimensões 30 35 15 5 10 20 25. Tabela m[i][j]:<span class="es">\n</span>"</span>);
+  <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">6</span>; i<span class="op">++</span>) {
+    <span class="kw">for</span> (j <span class="op">=</span> <span class="nu">1</span>; j <span class="op">&lt;=</span> <span class="nu">6</span>; j<span class="op">++</span>)
+      <span class="kw">if</span> (j <span class="op">&lt;</span> i) printf(<span class="st">"%7s"</span>, <span class="st">""</span>); <span class="kw">else</span> printf(<span class="st">"%7ld"</span>, m[i][j]);
+    printf(<span class="st">"<span class="es">\n</span>"</span>);
+  }
+  printf(<span class="st">"Custo mínimo: %ld multiplicações. Ordem: "</span>, m[<span class="nu">1</span>][<span class="nu">6</span>]);
+  imprime(<span class="nu">1</span>, <span class="nu">6</span>);
+  ingenuo <span class="op">=</span> custo_rec(p6, <span class="nu">1</span>, <span class="nu">6</span>);          <span class="cm">/* calcula antes: a ordem dos argumentos de printf não é garantida */</span>
+  printf(<span class="st">"<span class="es">\n</span>A recursão ingênua chega ao mesmo valor (%ld) com %ld chamadas.<span class="es">\n</span>"</span>, ingenuo, chamadas);
+  <span class="kw">return</span> <span class="nu">0</span>;
+}</code></pre></div>
+</section>
+</main>
+<script>function reserva(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){b.textContent='Copiar código';b.classList.remove('feito');},1800);}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});</script>
+</body></html>

@@ -64,6 +64,12 @@
 <li>linha 2, coluna 1;</li>
 <li>linha 3: todas atacadas -&gt; volta à linha 2, que não tem mais opções -&gt; volta à linha 1, que também não -&gt; volta à linha 0;</li>
 <li>linha 0, coluna 1; linha 1, coluna 3; linha 2, coluna 0; linha 3, coluna 2: solução (1, 3, 0, 2).</li></ul>
+<h2>Exemplo da disciplina: ordenar por tentativa e erro</h2>
+<p>Para mostrar a técnica num problema conhecido, o material da disciplina ordena um vetor por tentativa e erro. A ideia é construir o vetor ordenado posição por posição:</p>
+<ul><li>na posição k, tenta-se cada elemento ainda não usado (trocando-o para v[k]) e continua-se recursivamente na posição k+1;</li>
+<li>quando todas as posições estão preenchidas, verifica-se se o vetor ficou ordenado; se não ficou, volta-se atrás, desfazendo a troca, e tenta-se o próximo candidato.</li></ul>
+<p>Sem nenhuma poda, isso é gerar as permutações do vetor até encontrar a ordenada, e o custo cresce como n!: para o vetor de 10 elementos do material, são 7 899 918 tentativas, e com 12 elementos o programa já leva minutos. É um ótimo contraexemplo: a técnica resolve o problema, mas ordenar tem algoritmos muito melhores, como o <a href="mergesort.html">Merge Sort</a>.</p>
+<p>A poda muda tudo. Se v[k-1] já foi escolhido, um candidato menor que ele para a posição k nunca levará a um vetor ordenado, então nem é tentado. Com essa única linha, o mesmo vetor de 10 elementos é ordenado com 608 tentativas, em vez de quase 8 milhões. A árvore de busca é a mesma; a poda apenas evita entrar nos ramos que certamente falham. Com a poda, o algoritmo vira, na prática, uma <a href="selecao_direta.html">seleção</a> feita por tentativas.</p>
 <h2>Complexidade</h2>
 <p>No pior caso o backtracking é exponencial, pois o número de nós da árvore de busca pode crescer exponencialmente com o tamanho da entrada. Muitos dos problemas atacados com essa técnica são NP-completos (como a soma de subconjuntos, a coloração de grafos e a satisfatibilidade), e para eles não se conhece algoritmo polinomial.</p>
 <p>Na prática, o desempenho depende muito da qualidade da poda. Técnicas para podar mais cedo:</p>
@@ -82,10 +88,11 @@
 <h2>Histórico</h2>
 <p>O problema das oito rainhas foi proposto pelo enxadrista Max Bezzel em 1848; Franz Nauck publicou as 92 soluções em 1850, e Gauss se interessou pelo problema na mesma época. O termo &quot;backtrack&quot; é atribuído ao matemático D. H. Lehmer, na década de 1950. R. J. Walker descreveu o método de forma algorítmica em 1960, e S. Golomb e L. Baumert o sistematizaram em 1965. Edsger Dijkstra usou as oito rainhas como exemplo em suas &quot;Notes on Structured Programming&quot; (1970), e Niklaus Wirth, em 1971, para ilustrar o &quot;desenvolvimento por refinamentos sucessivos&quot;.</p>
 <h2>Sobre o código</h2>
-<p>O programa de exemplo resolve as N rainhas com backtracking recursivo: imprime a primeira solução encontrada e conta todas as soluções para N = 8.</p>
+<p>O primeiro programa resolve as N rainhas com backtracking recursivo: imprime a primeira solução encontrada e conta todas as soluções para N = 8. O segundo ordena por tentativa e erro um vetor de 4 e um de 10 elementos, sem e com a poda, e mostra quantas tentativas cada versão faz.</p>
 <section class="referencias">
 <h2>Referências</h2>
-<ul><li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 3 (Algoritmos recursivos: retrocesso, oito rainhas).</li>
+<ul><li>BRANDÃO, L. O. Material de MAC0122, semana 4 (ordenação por tentativa e erro, ordena_tentativa_erro.c). IME-USP, e-Disciplinas, 2026.</li>
+<li>WIRTH, N. Algoritmos e Estruturas de Dados. Rio de Janeiro: LTC, 1989. Capítulo 3 (Algoritmos recursivos: retrocesso, oito rainhas).</li>
 <li>WIRTH, N. Program development by stepwise refinement. Communications of the ACM, v. 14, n. 4, p. 221-227, 1971.</li>
 <li>GOLOMB, S. W.; BAUMERT, L. D. Backtrack programming. Journal of the ACM, v. 12, n. 4, p. 516-524, 1965.</li>
 <li>KNUTH, D. E. The Art of Computer Programming, v. 4B: Combinatorial Algorithms, Part 2. Boston: Addison-Wesley, 2022. Seção 7.2.2 (Backtrack programming).</li>

@@ -62,7 +62,7 @@
   lê 4:  pilha 5 4
   lê *:  desempilha 4 e 5, empilha 20   -&gt; pilha 20
 </pre>
-<p>A conversão de uma expressão infixa (a notação usual) para posfixa também usa uma pilha, de operadores (algoritmo &quot;shunting-yard&quot; de Dijkstra, 1961). Calculadoras HP clássicas e a linguagem PostScript funcionam em notação posfixa, e muitos compiladores geram código para máquinas de pilha (como a máquina virtual Java).</p>
+<p>A conversão de uma expressão infixa (a notação usual) para posfixa também usa uma pilha, de operadores (algoritmo &quot;shunting-yard&quot; de Dijkstra, 1961); os dois algoritmos estão em detalhe na página de <a href="expressoes.html">expressões aritméticas</a>. Calculadoras HP clássicas e a linguagem PostScript funcionam em notação posfixa, e muitos compiladores geram código para máquinas de pilha (como a máquina virtual Java).</p>
 <h2>Aplicação 3: a pilha de execução e a recursão</h2>
 <p>Quando uma função é chamada, o computador empilha um <a href="registros.html">registro</a> de ativação com os parâmetros, as variáveis locais e o endereço para onde voltar; quando ela termina, o registro é desempilhado. Essa pilha de execução (call stack) é o que torna a <a href="recursao.html">recursão</a> possível: cada chamada recursiva tem seu próprio contexto, guardado sobre o contexto da chamada anterior.</p>
 <p>Consequências:</p>

@@ -114,8 +114,8 @@ Com n vértices e m arestas em listas de adjacência:
 
 ## Outra forma: busca em profundidade
 
-Também se obtém uma ordenação topológica com a busca em profundidade (DFS,
-descrita na página de [[grafos]]): ao terminar a exploração de um vértice
+Também se obtém uma ordenação topológica com a
+[[dfs|busca em profundidade]] (DFS): ao terminar a exploração de um vértice
 (quando todos os seus descendentes já foram visitados), ele é empilhado. No
 fim, a pilha lida do topo para a base é uma ordenação topológica. Esse
 método também custa Theta(n + m) e detecta ciclos quando encontra uma aresta

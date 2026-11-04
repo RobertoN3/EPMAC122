@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiplicação de uma cadeia de matrizes | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Multiplicação de uma cadeia de matrizes</h1><a class="botao botao-sec" href="cadeia_matrizes_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-tecnica"><a href="tecnica.html">Técnica</a></dt><dd><a class="chip f-tecnica" href="tecnica.html#programa%C3%A7%C3%A3o-din%C3%A2mica">Programação dinâmica</a></dd>
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Multiplicação ótima de uma cadeia de matrizes</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#s-s-godbole">S. S. Godbole</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1973">1973</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#subestrutura-%C3%B3tima">Subestrutura ótima</a><a class="chip f-conceitos" href="conceitos.html#memoiza%C3%A7%C3%A3o">Memoização</a><a class="chip f-conceitos" href="conceitos.html#matrizes">Matrizes</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#efici%C3%AAncia-de-algoritmos">Eficiência de algoritmos</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-sequ%C3%AAncia-de-matrizes-a1-a2-an-em-que-ai-tem-p-i-1-linhas-e-p-i-colunas-escolher-a-ordem-dos-produtos-a-parentiza%C3%A7%C3%A3o-que-calcula-a1%C2%B7a2%C2%B7-%C2%B7an-com-o-menor-n%C3%BAmero-de-multiplica%C3%A7%C3%B5es-de-n%C3%BAmeros">Problema</a></dt><dd class="texto">Dada uma sequência de matrizes A1, A2, ..., An, em que Ai tem p[i-1] linhas e p[i] colunas, escolher a ordem dos produtos (a parentização) que calcula A1·A2·...·An com o menor número de multiplicações de números</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>O produto de matrizes é associativo: (A·B)·C = A·(B·C). O resultado é o mesmo, mas o TRABALHO pode ser muito diferente. Multiplicar uma matriz p x q por uma q x r faz p·q·r multiplicações de números (cada uma das p·r posições do resultado é uma soma de q produtos).</p>
+<p>Exemplo com A1 (10 x 100), A2 (100 x 5) e A3 (5 x 50):</p>
+<pre>  (A1·A2)·A3:  10·100·5 + 10·5·50   =  5 000 +  2 500 =  7 500
+  A1·(A2·A3):  100·5·50 + 10·100·50 = 25 000 + 50 000 = 75 000
+</pre>
+<p>Só mudar a ordem dos parênteses torna o cálculo dez vezes mais barato. O problema é escolher, entre todas as parentizações, a de menor custo. Ele foi apresentado já na primeira semana da disciplina como exemplo de <a href="programacao_dinamica.html">programação dinâmica</a>, e aparece em computação gráfica, em álgebra linear numérica e em redes neurais, onde a mesma sequência de produtos é repetida milhões de vezes.</p>
+<h2>Por que não testar todas</h2>
+<p>O número de parentizações de n matrizes é o número de Catalan C(n-1): 1, 1, 2, 5, 14, 42, 132, ... Ele cresce como 4^n, então testar todas é inviável: para 20 matrizes já são mais de 1,7 bilhão de ordens diferentes.</p>
+<h2>Subestrutura ótima</h2>
+<p>Numa parentização qualquer de Ai...Aj, o ÚLTIMO produto feito divide a cadeia em duas partes, (Ai...Ak)·(Ak+1...Aj), para algum k entre i e j-1. Se a parentização inteira é ótima, as duas partes também têm de estar calculadas da melhor forma: se houvesse um jeito mais barato de calcular Ai...Ak, bastaria usá-lo para melhorar o todo. É o princípio da otimalidade de Bellman, e ele permite escrever uma recorrência.</p>
+<p>Seja m[i][j] o menor custo para calcular Ai...Aj. Então:</p>
+<pre>  m[i][i] = 0                          (uma matriz só: nada a fazer)
+  m[i][j] = min  { m[i][k] + m[k+1][j] + p[i-1]·p[k]·p[j] }
+          i&lt;=k&lt;j
+</pre>
+<p>O termo p[i-1]·p[k]·p[j] é o custo do último produto: a parte esquerda é uma matriz p[i-1] x p[k] e a direita, p[k] x p[j].</p>
+<h2>Subproblemas sobrepostos</h2>
+<p>Calcular a recorrência diretamente, com uma função recursiva, repete os mesmos subproblemas muitas e muitas vezes: o trecho A2...A3, por exemplo, aparece dentro de todas as divisões que o deixam inteiro. Para n matrizes a recursão ingênua faz 3^(n-1) chamadas (243 para n = 6), embora só existam n(n+1)/2 trechos Ai...Aj diferentes (21 para n = 6).</p>
+<p>A programação dinâmica calcula cada trecho uma única vez, guardando o resultado na tabela m. Pode ser feita de cima para baixo, com <a href="recursao.html">recursão</a> e memoização, ou de baixo para cima, preenchendo a tabela em ordem crescente de tamanho do trecho: primeiro todos os pares, depois todos os trios, e assim por diante. Assim, quando m[i][j] é calculado, os trechos menores de que ele depende já estão prontos.</p>
+<h2>Reconstruindo a resposta</h2>
+<p>O valor m[1][n] diz o custo mínimo, mas não a ordem. Para recuperá-la, guarda-se em s[i][j] o k que deu o mínimo. A parentização ótima de Ai...Aj é então (parentização de Ai...As)(parentização de As+1...Aj), com s = s[i][j], escrita recursivamente até chegar a matrizes isoladas.</p>
+<h2>Exemplo</h2>
+<p>Seis matrizes com dimensões p = (30, 35, 15, 5, 10, 20, 25), o exemplo clássico do livro de Cormen e colegas. A tabela m[i][j] (só a metade de cima faz sentido):</p>
+<pre>          j=1     2      3      4      5      6
+  i=1       0  15750   7875   9375  11875  15125
+  i=2              0   2625   4375   7125  10500
+  i=3                     0    750   2500   5375
+  i=4                            0   1000   3500
+  i=5                                   0   5000
+  i=6                                          0
+</pre>
+<p>Custo mínimo: 15 125 multiplicações, com a ordem ((A1(A2A3))((A4A5)A6)). A ordem da esquerda para a direita, (((((A1A2)A3)A4)A5)A6), custaria 40 500.</p>
+<h2>Análise</h2>
+<ul><li>A tabela tem cerca de n²/2 casas, e cada uma testa até n valores de k: tempo O(n³).</li>
+<li>Memória: as tabelas m e s, O(n²).</li>
+<li>Comparando: a força bruta é exponencial (Catalan), a recursão ingênua também (3^(n-1) chamadas), e a programação dinâmica é polinomial.</li></ul>
+<p>Existe um algoritmo O(n log n) para este problema (Hu e Shing, 1982), mas ele é muito mais complicado. Na prática, como n costuma ser pequeno e o custo real está nos produtos das matrizes, o O(n³) é mais que suficiente.</p>
+<h2>Outros problemas com a mesma forma</h2>
+<p>A mesma estrutura, em que se escolhe um ponto de divisão k num intervalo [i, j], resolve outros problemas: a árvore binária de busca ótima (dadas as frequências de busca de cada chave), a triangulação de polígonos de menor custo e a análise sintática de frases por gramáticas (algoritmo CYK). Veja também a <a href="eficiencia.html">eficiência de algoritmos</a> e a <a href="divisao_conquista.html">divisão e conquista</a>, que divide sem guardar resultados.</p>
+<h2>Histórico</h2>
+<p>O algoritmo de programação dinâmica para este problema foi publicado por S. S. Godbole em 1973, num artigo da IEEE Transactions on Computers, e se tornou um dos exemplos mais usados para ensinar a técnica. T. C. Hu e M. T. Shing encontraram em 1982 o algoritmo O(n log n), baseado numa relação entre parentizações e triangulações de polígonos.</p>
+<h2>Sobre o código</h2>
+<p>O programa resolve o exemplo de três matrizes desta página (comparando as duas ordens), preenche a tabela m para as seis matrizes do exemplo, mostra o custo mínimo e a parentização ótima e confere o resultado com a recursão ingênua, contando as suas chamadas.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Material de MAC0122, semana 1 (programação dinâmica: multiplicação ótima de sequência de matrizes). IME-USP, e-Disciplinas, 2026.</li>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 15.2 (Multiplicação de cadeias de matrizes).</li>
+<li>GODBOLE, S. S. On efficient computation of matrix chain products. IEEE Transactions on Computers, v. C-22, n. 9, p. 864-866, 1973.</li>
+<li>HU, T. C.; SHING, M. T. Computation of matrix chain products, part I. SIAM Journal on Computing, v. 11, n. 2, p. 362-373, 1982.</li>
+<li>DASGUPTA, S.; PAPADIMITRIOU, C.; VAZIRANI, U. Algoritmos. São Paulo: McGraw-Hill, 2009. Capítulo 6 (Programação dinâmica).</li>
+<li>Wikipedia. Matrix chain multiplication. https://en.wikipedia.org/wiki/Matrix_chain_multiplication</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="cadeia_matrizes_codigo.html">Ver o código em C</a></p>
+</main>
+</body></html>

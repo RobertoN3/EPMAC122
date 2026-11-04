@@ -100,6 +100,40 @@ cujo conteúdo é ignorado. A lista vazia passa a ser a cabeça com
 prox == NULL, e toda célula de verdade tem uma anterior. O código fica mais
 curto e com menos chances de erro.
 
+## Inserção em lista ordenada
+
+Muitas vezes a lista deve ficar sempre em ordem crescente, por exemplo uma
+lista de espera por prioridade ou um dicionário pequeno. Para inserir x,
+anda-se pela lista até a ÚLTIMA célula cujo conteúdo é menor que x e
+insere-se a nova célula logo depois dela:
+
+```
+  insereOrdenado(x, cabeca):
+      p <- cabeca
+      enquanto p->prox != NULL e p->prox->conteudo < x:
+          p <- p->prox
+      insira x logo depois de p
+```
+
+O laço olha sempre o conteúdo da PRÓXIMA célula, para que p pare na
+anterior ao lugar certo, que é a célula de que a inserção precisa. A
+condição p->prox != NULL vem primeiro: se a lista acabou, o C não chega a
+avaliar p->prox->conteudo, que acessaria NULL. Com a célula-cabeça, os
+casos "lista vazia" e "x menor que todos" não precisam de tratamento
+especial: p simplesmente fica na cabeça.
+
+Sem a cabeça, é preciso tratar à parte o caso em que a nova célula vira a
+primeira, e a função precisa poder mudar o ponteiro que representa a
+lista: recebe um ponteiro para esse ponteiro (Celula **lista).
+
+Exemplo: os valores chegam na ordem 42, 7, 19, 3, 25, 19, e a lista fica
+3 -> 7 -> 19 -> 19 -> 25 -> 42. Como a comparação é estrita (<), o segundo
+19 entra DEPOIS do primeiro: elementos iguais ficam na ordem de chegada, e
+inserir um a um numa lista ordenada é uma ordenação
+[[estabilidade|estável]], a [[insertionsort|inserção direta]] feita em
+lista. Cada inserção custa O(n) para achar o lugar, mas nenhum elemento é
+deslocado.
+
 ## Listas e recursão
 
 Uma lista encadeada é uma estrutura [[recursao|recursiva]]: ou é vazia (NULL), ou é uma
@@ -165,7 +199,8 @@ em 1975, em parte por essas contribuições.
 
 O programa de exemplo implementa uma lista encadeada com célula-cabeça, com
 inserção após uma célula, busca da célula anterior a x, remoção e impressão
-recursiva, liberando toda a memória ao final.
+recursiva. Depois monta uma lista ordenada com a inserção em ordem, a partir
+de valores que chegam fora de ordem, e libera toda a memória ao final.
 
 REFERENCIAS:
 - FEOFILOFF, P. Listas encadeadas. https://users.ime.usp.br/~pf/algoritmos/aulas/lista.html
@@ -191,6 +226,15 @@ void insere(int x, Celula *p) {
   nova->conteudo = x;
   nova->prox = p->prox;
   p->prox = nova;
+}
+
+/* insere x mantendo a lista em ordem crescente: anda até a última célula
+   com conteúdo menor que x e insere logo depois dela */
+void insereOrdenado(int x, Celula *cabeca) {
+  Celula *p = cabeca;
+  while (p->prox != NULL && p->prox->conteudo < x)
+    p = p->prox;
+  insere(x, p);
 }
 
 /* devolve a célula ANTERIOR à que contém x (ou NULL), em lista com cabeça */
@@ -226,6 +270,14 @@ int main(void) {
   removeX(30, &cabeca);
   imprime(cabeca.prox);
   while (cabeca.prox != NULL) removeX(cabeca.prox->conteudo, &cabeca);
+
+  /* lista ordenada: os valores chegam fora de ordem e a lista fica crescente */
+  {
+    int chegada[] = {42, 7, 19, 3, 25, 19};
+    for (i = 0; i < 6; i++) insereOrdenado(chegada[i], &cabeca);
+    imprime(cabeca.prox);
+    while (cabeca.prox != NULL) removeX(cabeca.prox->conteudo, &cabeca);
+  }
   return 0;
 }
 FIM_CODIGO_C

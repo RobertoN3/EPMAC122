@@ -14,6 +14,15 @@ void insere(int x, Celula *p) {
   p->prox = nova;
 }
 
+/* insere x mantendo a lista em ordem crescente: anda até a última célula
+   com conteúdo menor que x e insere logo depois dela */
+void insereOrdenado(int x, Celula *cabeca) {
+  Celula *p = cabeca;
+  while (p->prox != NULL && p->prox->conteudo < x)
+    p = p->prox;
+  insere(x, p);
+}
+
 /* devolve a célula ANTERIOR à que contém x (ou NULL), em lista com cabeça */
 Celula *buscaAnterior(int x, Celula *cabeca) {
   Celula *p = cabeca;
@@ -47,5 +56,13 @@ int main(void) {
   removeX(30, &cabeca);
   imprime(cabeca.prox);
   while (cabeca.prox != NULL) removeX(cabeca.prox->conteudo, &cabeca);
+
+  /* lista ordenada: os valores chegam fora de ordem e a lista fica crescente */
+  {
+    int chegada[] = {42, 7, 19, 3, 25, 19};
+    for (i = 0; i < 6; i++) insereOrdenado(chegada[i], &cabeca);
+    imprime(cabeca.prox);
+    while (cabeca.prox != NULL) removeX(cabeca.prox->conteudo, &cabeca);
+  }
   return 0;
 }

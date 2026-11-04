@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Código: Expressões aritméticas: infixa, posfixa e árvore de expressão | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>.pp{color:#9C6500}.pf{color:#3D7B7B;font-style:italic}.tp{color:#B00040}.kw{color:#008000;font-weight:bold}.cm{color:#3D7B7B;font-style:italic}.st{color:#BA2121}.es{color:#AA5D1F;font-weight:bold}.nu{color:#666666}.ct{color:#008000}.op{color:#666666}</style>
+</head>
+<body class="pagina-codigo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="codigo-pagina">
+<header class="titulo-artigo"><h1>Expressões aritméticas: infixa, posfixa e árvore de expressão: código em C</h1><a class="botao botao-sec" href="expressoes.html">Voltar para a explicação</a></header>
+<ul class="legenda" aria-label="Cores usadas no código">
+<li><code class="pp">#include</code> pragma (pré-processador)</li>
+<li><code class="pf">&lt;stdio.h&gt;</code> arquivo incluído</li>
+<li><code class="tp">int</code> tipo</li>
+<li><code class="kw">for</code> comando ou palavra reservada</li>
+<li><code class="cm">/* ... */</code> comentário</li>
+<li><code class="st">"texto"</code> cadeia de caracteres</li>
+<li><code class="es">\n</code> sequência de escape</li>
+<li><code class="nu">3.14</code> número</li>
+<li><code class="ct">NULL</code> constante da biblioteca</li>
+<li><code class="op">+=</code> operador</li>
+</ul>
+<section class="bloco">
+<div class="bloco-barra"><span>100 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/expressoes.c" download>Baixar expressoes.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="codigo"><pre class="nl" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+<span class="pp">#include</span> <span class="pf">&lt;stdlib.h&gt;</span><span class="pp"></span>
+<span class="pp">#include</span> <span class="pf">&lt;ctype.h&gt;</span><span class="pp"></span>
+<span class="pp">#define</span><span class="pp"> MAX 100</span>
+
+<span class="cm">/* precedência dos operadores: * e / antes de + e - */</span>
+<span class="tp">int</span> prec(<span class="tp">char</span> op) { <span class="kw">return</span> (op <span class="op">==</span> <span class="st">'*'</span> <span class="op">||</span> op <span class="op">==</span> <span class="st">'/'</span>) <span class="op">?</span> <span class="nu">2</span> <span class="op">:</span> (op <span class="op">==</span> <span class="st">'+'</span> <span class="op">||</span> op <span class="op">==</span> <span class="st">'-'</span>) <span class="op">?</span> <span class="nu">1</span> <span class="op">:</span> <span class="nu">0</span>; }
+
+<span class="cm">/* infixa -&gt; posfixa (algoritmo da estação de manobras, com pilha de operadores);
+   operandos de um dígito, operadores + - * / e parênteses */</span>
+<span class="tp">void</span> posfixa(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>in, <span class="tp">char</span> <span class="op">*</span>out) {
+  <span class="tp">char</span> pilha[MAX];
+  <span class="tp">int</span> topo <span class="op">=</span> <span class="nu">0</span>, k <span class="op">=</span> <span class="nu">0</span>;
+  <span class="kw">for</span> (; <span class="op">*</span>in; in<span class="op">++</span>) {
+    <span class="tp">char</span> c <span class="op">=</span> <span class="op">*</span>in;
+    <span class="kw">if</span> (isdigit((<span class="tp">unsigned</span> <span class="tp">char</span>)c)) out[k<span class="op">++</span>] <span class="op">=</span> c;           <span class="cm">/* operando: vai direto */</span>
+    <span class="kw">else</span> <span class="kw">if</span> (c <span class="op">==</span> <span class="st">'('</span>) pilha[topo<span class="op">++</span>] <span class="op">=</span> c;
+    <span class="kw">else</span> <span class="kw">if</span> (c <span class="op">==</span> <span class="st">')'</span>) {                                   <span class="cm">/* desempilha até o '(' */</span>
+      <span class="kw">while</span> (topo <span class="op">&gt;</span> <span class="nu">0</span> <span class="op">&amp;&amp;</span> pilha[topo <span class="op">-</span> <span class="nu">1</span>] <span class="op">!=</span> <span class="st">'('</span>) out[k<span class="op">++</span>] <span class="op">=</span> pilha[<span class="op">--</span>topo];
+      topo<span class="op">--</span>;                                              <span class="cm">/* descarta o '(' */</span>
+    } <span class="kw">else</span> <span class="kw">if</span> (prec(c)) {                                  <span class="cm">/* operador */</span>
+      <span class="kw">while</span> (topo <span class="op">&gt;</span> <span class="nu">0</span> <span class="op">&amp;&amp;</span> prec(pilha[topo <span class="op">-</span> <span class="nu">1</span>]) <span class="op">&gt;=</span> prec(c)) out[k<span class="op">++</span>] <span class="op">=</span> pilha[<span class="op">--</span>topo];
+      pilha[topo<span class="op">++</span>] <span class="op">=</span> c;
+    }                                                      <span class="cm">/* espaços são ignorados */</span>
+  }
+  <span class="kw">while</span> (topo <span class="op">&gt;</span> <span class="nu">0</span>) out[k<span class="op">++</span>] <span class="op">=</span> pilha[<span class="op">--</span>topo];
+  out[k] <span class="op">=</span> <span class="st">'<span class="es">\0</span>'</span>;
+}
+
+<span class="tp">int</span> aplica(<span class="tp">char</span> op, <span class="tp">int</span> a, <span class="tp">int</span> b) {
+  <span class="kw">switch</span> (op) { <span class="kw">case</span> <span class="st">'+'</span><span class="op">:</span> <span class="kw">return</span> a <span class="op">+</span> b; <span class="kw">case</span> <span class="st">'-'</span><span class="op">:</span> <span class="kw">return</span> a <span class="op">-</span> b;
+                <span class="kw">case</span> <span class="st">'*'</span><span class="op">:</span> <span class="kw">return</span> a <span class="op">*</span> b; <span class="kw">default</span><span class="op">:</span>  <span class="kw">return</span> a <span class="op">/</span> b; }
+}
+
+<span class="cm">/* avalia a posfixa com uma pilha de valores */</span>
+<span class="tp">int</span> avalia(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>pos) {
+  <span class="tp">int</span> pilha[MAX], topo <span class="op">=</span> <span class="nu">0</span>, a, b;
+  <span class="kw">for</span> (; <span class="op">*</span>pos; pos<span class="op">++</span>)
+    <span class="kw">if</span> (isdigit((<span class="tp">unsigned</span> <span class="tp">char</span>)<span class="op">*</span>pos)) pilha[topo<span class="op">++</span>] <span class="op">=</span> <span class="op">*</span>pos <span class="op">-</span> <span class="st">'0'</span>;
+    <span class="kw">else</span> { b <span class="op">=</span> pilha[<span class="op">--</span>topo]; a <span class="op">=</span> pilha[<span class="op">--</span>topo]; pilha[topo<span class="op">++</span>] <span class="op">=</span> aplica(<span class="op">*</span>pos, a, b); }
+  <span class="kw">return</span> pilha[<span class="nu">0</span>];
+}
+
+<span class="cm">/* árvore de expressão: folhas são operandos, nós internos são operadores */</span>
+<span class="kw">typedef</span> <span class="tp">struct</span> no { <span class="tp">char</span> c; <span class="tp">struct</span> no <span class="op">*</span>esq, <span class="op">*</span>dir; } No;
+
+No <span class="op">*</span>novo(<span class="tp">char</span> c, No <span class="op">*</span>e, No <span class="op">*</span>d) {
+  No <span class="op">*</span>n <span class="op">=</span> malloc(<span class="kw">sizeof</span>(No));
+  <span class="kw">if</span> (n <span class="op">==</span> <span class="ct">NULL</span>) { perror(<span class="st">"malloc"</span>); exit(<span class="nu">1</span>); }
+  n<span class="op">-&gt;</span>c <span class="op">=</span> c; n<span class="op">-&gt;</span>esq <span class="op">=</span> e; n<span class="op">-&gt;</span>dir <span class="op">=</span> d;
+  <span class="kw">return</span> n;
+}
+
+<span class="cm">/* monta a árvore lendo a posfixa com uma pilha de ponteiros para nós */</span>
+No <span class="op">*</span>arvore(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>pos) {
+  No <span class="op">*</span>pilha[MAX], <span class="op">*</span>e, <span class="op">*</span>d;
+  <span class="tp">int</span> topo <span class="op">=</span> <span class="nu">0</span>;
+  <span class="kw">for</span> (; <span class="op">*</span>pos; pos<span class="op">++</span>)
+    <span class="kw">if</span> (isdigit((<span class="tp">unsigned</span> <span class="tp">char</span>)<span class="op">*</span>pos)) pilha[topo<span class="op">++</span>] <span class="op">=</span> novo(<span class="op">*</span>pos, <span class="ct">NULL</span>, <span class="ct">NULL</span>);
+    <span class="kw">else</span> { d <span class="op">=</span> pilha[<span class="op">--</span>topo]; e <span class="op">=</span> pilha[<span class="op">--</span>topo]; pilha[topo<span class="op">++</span>] <span class="op">=</span> novo(<span class="op">*</span>pos, e, d); }
+  <span class="kw">return</span> pilha[<span class="nu">0</span>];
+}
+
+<span class="tp">void</span> pre_ordem(No <span class="op">*</span>r) { <span class="kw">if</span> (r) { printf(<span class="st">"%c "</span>, r<span class="op">-&gt;</span>c); pre_ordem(r<span class="op">-&gt;</span>esq); pre_ordem(r<span class="op">-&gt;</span>dir); } }
+<span class="tp">void</span> pos_ordem(No <span class="op">*</span>r) { <span class="kw">if</span> (r) { pos_ordem(r<span class="op">-&gt;</span>esq); pos_ordem(r<span class="op">-&gt;</span>dir); printf(<span class="st">"%c "</span>, r<span class="op">-&gt;</span>c); } }
+<span class="tp">void</span> in_ordem(No <span class="op">*</span>r) {                       <span class="cm">/* in-ordem com parênteses em volta de cada operador */</span>
+  <span class="kw">if</span> (<span class="op">!</span>r) <span class="kw">return</span>;
+  <span class="kw">if</span> (r<span class="op">-&gt;</span>esq) printf(<span class="st">"("</span>);
+  in_ordem(r<span class="op">-&gt;</span>esq); printf(<span class="st">"%c"</span>, r<span class="op">-&gt;</span>c); in_ordem(r<span class="op">-&gt;</span>dir);
+  <span class="kw">if</span> (r<span class="op">-&gt;</span>esq) printf(<span class="st">")"</span>);
+}
+<span class="tp">int</span> altura(No <span class="op">*</span>r) {                    <span class="cm">/* em arestas: uma folha tem altura 0 */</span>
+  <span class="tp">int</span> he, hd;
+  <span class="kw">if</span> (<span class="op">!</span>r) <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>;
+  he <span class="op">=</span> altura(r<span class="op">-&gt;</span>esq); hd <span class="op">=</span> altura(r<span class="op">-&gt;</span>dir);
+  <span class="kw">return</span> <span class="nu">1</span> <span class="op">+</span> (he <span class="op">&gt;</span> hd <span class="op">?</span> he <span class="op">:</span> hd);
+}
+<span class="tp">int</span> valor(No <span class="op">*</span>r) {                     <span class="cm">/* avaliação = percurso em pós-ordem */</span>
+  <span class="kw">if</span> (<span class="op">!</span>r<span class="op">-&gt;</span>esq) <span class="kw">return</span> r<span class="op">-&gt;</span>c <span class="op">-</span> <span class="st">'0'</span>;
+  <span class="kw">return</span> aplica(r<span class="op">-&gt;</span>c, valor(r<span class="op">-&gt;</span>esq), valor(r<span class="op">-&gt;</span>dir));
+}
+<span class="tp">void</span> libera(No <span class="op">*</span>r) { <span class="kw">if</span> (r) { libera(r<span class="op">-&gt;</span>esq); libera(r<span class="op">-&gt;</span>dir); free(r); } }
+
+<span class="tp">int</span> main(<span class="tp">void</span>) {
+  <span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>testes[] <span class="op">=</span> {<span class="st">"(5 + 3) * 2 - 8 / 4"</span>, <span class="st">"2 + 3 * 4"</span>, <span class="st">"(2 + 3) * 4"</span>, <span class="st">"9 - 4 - 3"</span>};
+  <span class="tp">char</span> p[MAX];
+  <span class="tp">int</span> t;
+  <span class="kw">for</span> (t <span class="op">=</span> <span class="nu">0</span>; t <span class="op">&lt;</span> <span class="nu">4</span>; t<span class="op">++</span>) {
+    No <span class="op">*</span>r;
+    posfixa(testes[t], p);
+    r <span class="op">=</span> arvore(p);
+    printf(<span class="st">"infixa: %-22s posfixa: %-10s valor: %d<span class="es">\n</span>"</span>, testes[t], p, avalia(p));
+    printf(<span class="st">"  árvore -&gt; pré: "</span>); pre_ordem(r);
+    printf(<span class="st">" pós: "</span>); pos_ordem(r);
+    printf(<span class="st">" in: "</span>); in_ordem(r);
+    printf(<span class="st">"<span class="es">\n</span>  altura %d, valor pela árvore %d<span class="es">\n</span>"</span>, altura(r), valor(r));
+    libera(r);
+  }
+  <span class="kw">return</span> <span class="nu">0</span>;
+}</code></pre></div>
+</section>
+</main>
+<script>function reserva(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){b.textContent='Copiar código';b.classList.remove('feito');},1800);}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});</script>
+</body></html>

@@ -94,7 +94,9 @@ nem de regras de precedência, e é avaliada com uma pilha:
 ```
 
 A conversão de uma expressão infixa (a notação usual) para posfixa também
-usa uma pilha, de operadores (algoritmo "shunting-yard" de Dijkstra, 1961).
+usa uma pilha, de operadores (algoritmo "shunting-yard" de Dijkstra, 1961);
+os dois algoritmos estão em detalhe na página de
+[[expressoes|expressões aritméticas]].
 Calculadoras HP clássicas e a linguagem PostScript funcionam em notação
 posfixa, e muitos compiladores geram código para máquinas de pilha (como a
 máquina virtual Java).

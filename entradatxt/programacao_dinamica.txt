@@ -146,7 +146,8 @@ coerente com o fato de a mochila binária ser um problema NP-difícil.
 - Distância de edição (Levenshtein): número mínimo de inserções, remoções e
   substituições para transformar uma palavra em outra; usada em corretores
   ortográficos.
-- Multiplicação de uma cadeia de matrizes: a melhor ordem de parentização.
+- [[cadeia_matrizes|Multiplicação de uma cadeia de matrizes]]: a melhor
+  ordem de parentização (tem página própria).
 - Caminhos mínimos: Bellman-Ford (aceita pesos negativos) e Floyd-Warshall
   (todos os pares).
 - Maior subsequência crescente e corte de hastes (rod cutting).
