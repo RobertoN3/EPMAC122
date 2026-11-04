@@ -122,7 +122,7 @@ diferem apenas na estrutura que guarda os vértices "a visitar":
 - Busca em largura ([[bfs|BFS]]): usa uma [[filas|fila]]. Visita os vértices
   em "ondas" a partir da origem e, por isso, calcula o menor número de
   arestas da origem a cada vértice. Tem página própria.
-- Busca em profundidade (DFS): usa uma [[pilhas|pilha]], ou, de forma
+- Busca em profundidade ([[dfs|DFS]]): usa uma [[pilhas|pilha]], ou, de forma
   equivalente, a [[recursao|recursão]]. Segue um caminho o mais longe
   possível; quando chega a um vértice sem vizinhos novos, volta (como no
   [[tentativa_erro|backtracking]]) e tenta outro ramo:

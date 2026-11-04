@@ -36,7 +36,7 @@ saida/index.html. O colorir também funciona como filtro para qualquer
 arquivo C: ./colorir -f < programa.c > programa.html
 
 
-OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (37 programas)
+OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (40 programas)
 ------------------------------------------------
 
 ------------------------------------------------------------------------
@@ -136,6 +136,18 @@ Busca sequencial e busca com sentinela
   Explicação no site: busca_sequencial.html
 
 ------------------------------------------------------------------------
+Multiplicação de uma cadeia de matrizes
+  Arquivo:  cadeia_matrizes.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o cadeia_matrizes cadeia_matrizes.c
+  Rodar:    ./cadeia_matrizes
+  O que faz:
+    O programa resolve o exemplo de três matrizes desta página (comparando
+    as duas ordens), preenche a tabela m para as seis matrizes do exemplo,
+    mostra o custo mínimo e a parentização ótima e confere o resultado
+    com a recursão ingênua, contando as suas chamadas.
+  Explicação no site: cadeia_matrizes.html
+
+------------------------------------------------------------------------
 Representação de conjuntos
   Arquivo:  conjuntos.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o conjuntos conjuntos.c
@@ -146,6 +158,19 @@ Representação de conjuntos
     interseção de dois conjuntos com o vetor de bits e usa um vetor de
     bits para encontrar os primos até 100 pelo crivo de Eratóstenes.
   Explicação no site: conjuntos.html
+
+------------------------------------------------------------------------
+Busca em profundidade (DFS)
+  Arquivo:  dfs.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o dfs dfs.c
+  Rodar:    ./dfs
+  O que faz:
+    O programa usa o grafo do exemplo em matriz de adjacência, executa a
+    busca em profundidade recursiva e a versão com pilha explícita a
+    partir do vértice 0, imprime a ordem de visita, o pai e os tempos de
+    entrada e saída de cada vértice, e depois encontra as componentes
+    conexas do grafo.
+  Explicação no site: dfs.html
 
 ------------------------------------------------------------------------
 Algoritmo de Dijkstra
@@ -194,6 +219,19 @@ Estabilidade em algoritmos de ordenação
     outra com a seleção direta com trocas. O nome serve para observar a
     ordem relativa de Ana e Bruno, que empatam, nas duas saídas.
   Explicação no site: estabilidade.html
+
+------------------------------------------------------------------------
+Expressões aritméticas: infixa, posfixa e árvore de expressão
+  Arquivo:  expressoes.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o expressoes expressoes.c
+  Rodar:    ./expressoes
+  O que faz:
+    O programa converte quatro expressões infixas (com operandos de um
+    dígito, os operadores + - * / e parênteses) para a posfixa, calcula o
+    valor com uma pilha, monta a árvore de expressão com uma pilha de
+    ponteiros e mostra os percursos em pré-ordem, pós-ordem e in-ordem com
+    parênteses, a altura da árvore e o valor calculado pela árvore.
+  Explicação no site: expressoes.html
 
 ------------------------------------------------------------------------
 Filas
@@ -296,8 +334,9 @@ Listas encadeadas
   O que faz:
     O programa de exemplo implementa uma lista encadeada com
     célula-cabeça, com inserção após uma célula, busca da célula
-    anterior a x, remoção e impressão recursiva, liberando toda a
-    memória ao final.
+    anterior a x, remoção e impressão recursiva. Depois monta uma lista
+    ordenada com a inserção em ordem, a partir de valores que chegam fora
+    de ordem, e libera toda a memória ao final.
   Explicação no site: listas_encadeadas.html
 
 ------------------------------------------------------------------------
@@ -466,8 +505,13 @@ Tentativa e erro (backtracking)
   Arquivo:  tentativa_erro.c
   Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o tentativa_erro tentativa_erro.c
   Rodar:    ./tentativa_erro
+  Arquivo:  tentativa_erro_2.c
+  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o tentativa_erro_2 tentativa_erro_2.c
+  Rodar:    ./tentativa_erro_2
   O que faz:
-    O programa de exemplo resolve as N rainhas com backtracking recursivo:
+    O primeiro programa resolve as N rainhas com backtracking recursivo:
     imprime a primeira solução encontrada e conta todas as soluções para
-    N = 8.
+    N = 8. O segundo ordena por tentativa e erro um vetor de 4 e um de 10
+    elementos, sem e com a poda, e mostra quantas tentativas cada versão
+    faz.
   Explicação no site: tentativa_erro.html

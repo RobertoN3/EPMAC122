@@ -94,7 +94,7 @@ A memória extra é O(n): a fila e os vetores dist e pai. Veja
 
 ## BFS x DFS
 
-A busca em profundidade (DFS, descrita na página [[grafos]]) tem exatamente
+A [[dfs|busca em profundidade]] (DFS) tem exatamente
 a mesma estrutura, mas usa uma [[pilhas|pilha]] (ou a
 [[recursao|recursão]]) no lugar da fila. Ela visita os mesmos vértices, com
 o mesmo custo, mas em outra ordem e sem calcular distâncias mínimas. Trocar

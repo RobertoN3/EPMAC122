@@ -72,7 +72,7 @@
 <h2>Percorrendo um grafo</h2>
 <p>Quase todo algoritmo em grafos começa por um percurso sistemático, que visita cada vértice alcançável uma única vez. Os dois percursos básicos diferem apenas na estrutura que guarda os vértices &quot;a visitar&quot;:</p>
 <ul><li>Busca em largura (<a href="bfs.html">BFS</a>): usa uma <a href="filas.html">fila</a>. Visita os vértices em &quot;ondas&quot; a partir da origem e, por isso, calcula o menor número de arestas da origem a cada vértice. Tem página própria.</li>
-<li>Busca em profundidade (DFS): usa uma <a href="pilhas.html">pilha</a>, ou, de forma equivalente, a <a href="recursao.html">recursão</a>. Segue um caminho o mais longe possível; quando chega a um vértice sem vizinhos novos, volta (como no <a href="tentativa_erro.html">backtracking</a>) e tenta outro ramo:</li></ul>
+<li>Busca em profundidade (<a href="dfs.html">DFS</a>): usa uma <a href="pilhas.html">pilha</a>, ou, de forma equivalente, a <a href="recursao.html">recursão</a>. Segue um caminho o mais longe possível; quando chega a um vértice sem vizinhos novos, volta (como no <a href="tentativa_erro.html">backtracking</a>) e tenta outro ramo:</li></ul>
 <pre>  dfs(u):
       marque u como visitado
       para cada vizinho v de u:

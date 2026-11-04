@@ -133,7 +133,9 @@ Exemplo: na árvore da expressão (2 + 3) * 4, com * na raiz, + à esquerda e
 - in-ordem:  2 + 3 * 4   (notação infixa, sem os parênteses)
 - pós-ordem: 2 3 + 4 *   (notação posfixa, avaliada com uma [[pilhas|pilha]])
 Calcular o valor da expressão é um percurso em pós-ordem: primeiro os
-valores das subárvores, depois o operador da raiz.
+valores das subárvores, depois o operador da raiz. A página de
+[[expressoes|expressões aritméticas]] mostra como montar essa árvore a
+partir da expressão infixa.
 
 ## Árvore binária de busca (ABB)
 

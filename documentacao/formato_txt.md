@@ -1,6 +1,6 @@
 # Formato dos arquivos TXT
 
-Regras que os 38 TXT de `entradatxt/` seguem e que o gerador deve implementar.
+Regras que os 41 TXT de `entradatxt/` seguem e que o gerador deve implementar.
 
 ## Estrutura do arquivo
 
@@ -83,9 +83,9 @@ O texto vem quebrado em linhas de ~75 colunas, então o gerador **não** pode tr
 - O código C fica entre as linhas `INICIO_CODIGO_C` e `FIM_CODIGO_C`, depois das referências. Ele vai para uma página HTML separada e colorida. Um TXT pode ter mais de um bloco.
 - Todo código compila sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e roda.
 
-## Páginas (38)
+## Páginas (41)
 
-- **Técnicas:** metodo_guloso, divisao_conquista, tentativa_erro, programacao_dinamica
-- **Fundamentos e estruturas:** eficiencia, inducao, recursao, mdc_euclides, ponteiros, registros, listas_encadeadas, pilhas, filas, conjuntos, hash, arvores, algoritmos_arvores, abb, grafos, imagens_pbm, automatos
+- **Técnicas:** metodo_guloso, divisao_conquista, tentativa_erro, programacao_dinamica, cadeia_matrizes
+- **Fundamentos e estruturas:** eficiencia, inducao, recursao, mdc_euclides, ponteiros, registros, listas_encadeadas, pilhas, filas, conjuntos, hash, arvores, algoritmos_arvores, abb, expressoes, grafos, imagens_pbm, automatos
 - **Ordenação:** ordenacao, estabilidade, bubblesort, selecao_direta, insertionsort, mergesort, quicksort, heapsort, ordenacao_contagem, radixsort
-- **Busca e grafos:** busca_sequencial, busca_binaria, bfs, ordenacao_topologica, dijkstra, kruskal, prim
+- **Busca e grafos:** busca_sequencial, busca_binaria, bfs, dfs, ordenacao_topologica, dijkstra, kruskal, prim

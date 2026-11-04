@@ -1,0 +1,220 @@
+2. Algoritmo: Busca em profundidade (DFS)
+3. Autores: Charles Pierre Trémaux, Robert Tarjan
+4. Data: 1882, 1972
+5. Conceitos: Grafos, Pilhas, Recursão, Árvores, Vetores
+6. Problema: Dado um [[grafos|grafo]] e um vértice de origem s, visitar todos os vértices alcançáveis a partir de s, seguindo cada caminho o mais longe possível antes de voltar
+7. Titulo: Busca em profundidade (DFS)
+
+## Ideia geral
+
+A busca em profundidade (em inglês, depth-first search, DFS) explora um
+grafo como quem explora um labirinto: segue por um corredor enquanto
+encontra lugares novos; quando chega a um beco sem saída, ou a um lugar
+onde já esteve, volta até a última bifurcação que ainda tem caminhos não
+explorados e segue por um deles.
+
+Ela é a "irmã" da [[bfs|busca em largura]]. As duas visitam exatamente os
+mesmos vértices e custam o mesmo, mas em ordens diferentes:
+- a busca em largura avança em ondas, por distância à origem, e usa uma
+  [[filas|fila]];
+- a busca em profundidade mergulha num caminho até o fim, e usa uma
+  [[pilhas|pilha]].
+
+Na disciplina, as duas aparecem juntas como aplicações de pilhas e filas
+(semana 9): o mesmo algoritmo de passeio, trocando a fila por uma pilha,
+passa da largura para a profundidade.
+
+## O algoritmo recursivo
+
+A forma mais natural de escrever a DFS é com [[recursao|recursão]]:
+
+```
+  dfs(u):
+      marque u como visitado
+      para cada vizinho v de u:
+          se v não foi visitado:
+              pai[v] = u
+              dfs(v)
+```
+
+A recursão já faz o papel da pilha: cada chamada pendente na pilha de
+execução é um vértice do caminho atual, esperando para examinar os seus
+outros vizinhos. Quando dfs(v) termina, a execução volta exatamente para o
+ponto onde estava em u. É o mesmo mecanismo de "voltar atrás" da
+[[tentativa_erro|tentativa e erro]].
+
+## A versão com pilha explícita
+
+```
+  empilhe s
+  enquanto a pilha não estiver vazia:
+      u <- desempilhe
+      se u já foi visitado: continue
+      marque u como visitado
+      empilhe os vizinhos de u ainda não visitados
+```
+
+Aqui o vértice é marcado ao SAIR da pilha, e não ao entrar, ao contrário
+da busca em largura: um vértice pode ser empilhado mais de uma vez, por
+caminhos diferentes, e só a primeira saída conta. Empilhando os vizinhos
+em ordem inversa, a versão iterativa tende a visitar os vértices na mesma
+ordem da recursiva (no exemplo abaixo, a ordem é igual). Ela é útil quando
+o grafo é tão grande que a recursão esgotaria a pilha de execução.
+
+## Exemplo
+
+O mesmo grafo da página da busca em largura: vértices 0 a 6, arestas 0-1,
+0-2, 1-3, 2-3, 3-4 e 4-5; o vértice 6 é isolado. Examinando os vizinhos em
+ordem crescente, a partir de 0:
+
+```
+  dfs(0) -> vizinho 1
+    dfs(1) -> vizinho 3
+      dfs(3) -> vizinho 2     (2 também é vizinho de 0, mas chega antes por 3)
+        dfs(2): vizinhos 0 e 3 já visitados, volta
+      dfs(3) -> vizinho 4
+        dfs(4) -> vizinho 5
+          dfs(5): volta
+  ordem de visita: 0 1 3 2 4 5
+```
+
+A busca em largura, no mesmo grafo, visita 0 1 2 3 4 5: o 2 vem logo
+depois do 1, porque os dois estão a distância 1 de 0. Na profundidade, o
+2 só aparece depois do 3, pois o caminho 0-1-3 é seguido até o fim antes.
+Por isso a DFS NÃO calcula menores distâncias.
+
+## Tempos de entrada e de saída
+
+Numerando os momentos em que cada vértice é descoberto (entrada) e
+terminado (saída, quando todos os seus descendentes acabaram), obtém-se
+uma estrutura de parênteses: os intervalos [entrada, saída] de dois
+vértices ou são disjuntos ou um está contido no outro. No exemplo:
+
+```
+  vértice   0     1     3     2    4    5
+  entrada   1     2     3     4    6    7
+  saída    12    11    10     5    9    8
+```
+
+O intervalo de 3, [3, 10], contém os de 2, 4 e 5, que são os seus
+descendentes na árvore de busca em profundidade. Esses tempos são a base
+de vários algoritmos.
+
+## Complexidade
+
+Cada vértice é visitado uma vez e, ao ser visitado, sua lista de vizinhos é
+examinada uma vez.
+- Com listas de adjacência: O(n + m), linear no tamanho do grafo.
+- Com matriz de adjacência: O(n²).
+- Memória: os vetores de marcação e de pais, O(n), mais a pilha (de
+  execução ou explícita), que pode chegar a O(n) num caminho longo.
+
+## Aplicações
+
+- Componentes conexas: chama-se dfs a partir de cada vértice ainda não
+  visitado; cada chamada "de fora" descobre uma componente inteira.
+- Detecção de ciclos: em grafos dirigidos, encontrar uma aresta que volta
+  para um vértice ainda "em exploração" (já entrou, ainda não saiu) indica
+  um ciclo.
+- [[ordenacao_topologica|Ordenação topológica]]: listar os vértices em
+  ordem decrescente de tempo de saída.
+- Pontes e pontos de articulação (arestas e vértices cuja remoção
+  desconecta o grafo) e componentes fortemente conexas (Tarjan, 1972).
+- Labirintos, quebra-cabeças e a busca de soluções por
+  [[tentativa_erro|tentativa e erro]], que é uma DFS na árvore de
+  escolhas.
+- Percursos em [[arvores|árvores]]: os percursos em pré-ordem e pós-ordem
+  são buscas em profundidade numa árvore.
+
+## Histórico
+
+A técnica é muito anterior aos computadores. No século XIX, o engenheiro
+francês Charles Pierre Trémaux descreveu um método para sair de qualquer
+labirinto marcando com giz os corredores percorridos, que é a busca em
+profundidade; o método foi divulgado por Édouard Lucas em 1882, nas suas
+Recreações Matemáticas. Em computação, Robert Tarjan mostrou em 1972 que a
+DFS, com os tempos de entrada e saída, resolve em tempo linear problemas
+como componentes fortemente conexas e pontos de articulação. Por esses
+trabalhos, John Hopcroft e Robert Tarjan receberam o prêmio Turing de 1986.
+
+## Sobre o código
+
+O programa usa o grafo do exemplo em matriz de adjacência, executa a busca
+em profundidade recursiva e a versão com pilha explícita a partir do
+vértice 0, imprime a ordem de visita, o pai e os tempos de entrada e saída
+de cada vértice, e depois encontra as componentes conexas do grafo.
+
+REFERENCIAS:
+- BRANDÃO, L. O. Material de MAC0122, semana 9 (aplicações de pilhas e filas: busca em profundidade e em largura em grafos). IME-USP, e-Disciplinas, 2026.
+- CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Algoritmos: teoria e prática. 3. ed. Rio de Janeiro: Elsevier, 2012. Seção 22.3 (Busca em profundidade).
+- TARJAN, R. Depth-first search and linear graph algorithms. SIAM Journal on Computing, v. 1, n. 2, p. 146-160, 1972.
+- SEDGEWICK, R. Algorithms in C, Part 5: Graph Algorithms. 3. ed. Boston: Addison-Wesley, 2002. Capítulo 18 (Graph Search).
+- FEOFILOFF, P. Busca em profundidade. https://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dfs.html
+- LUCAS, É. Récréations mathématiques, v. 1. Paris: Gauthier-Villars, 1882.
+- Wikipedia. Depth-first search. https://en.wikipedia.org/wiki/Depth-first_search
+
+INICIO_CODIGO_C
+#include <stdio.h>
+#define N 7
+
+/* mesmo grafo da página da busca em largura: 0-1, 0-2, 1-3, 2-3, 3-4, 4-5; 6 isolado */
+int adj[N][N];
+int visitado[N], pai[N], entrada[N], saida[N], relogio = 0;
+
+void aresta(int u, int v) { adj[u][v] = adj[v][u] = 1; }
+
+/* versão recursiva: a pilha de execução guarda o caminho atual */
+void dfs(int u) {
+  int v;
+  visitado[u] = 1;
+  entrada[u] = ++relogio;            /* momento em que u é descoberto */
+  printf(" %d", u);
+  for (v = 0; v < N; v++)
+    if (adj[u][v] && !visitado[v]) {
+      pai[v] = u;
+      dfs(v);
+    }
+  saida[u] = ++relogio;              /* todos os descendentes de u terminaram */
+}
+
+/* versão iterativa com pilha explícita (marca ao desempilhar) */
+void dfs_pilha(int s) {
+  int pilha[N * N], topo = 0, u, v, marcado[N] = {0};
+  pilha[topo++] = s;
+  while (topo > 0) {
+    u = pilha[--topo];
+    if (marcado[u]) continue;        /* já foi visitado por outro caminho */
+    marcado[u] = 1;
+    printf(" %d", u);
+    for (v = N - 1; v >= 0; v--)     /* empilha em ordem inversa: sai o menor primeiro */
+      if (adj[u][v] && !marcado[v]) pilha[topo++] = v;
+  }
+}
+
+int main(void) {
+  int u, comp = 0;
+  aresta(0, 1); aresta(0, 2); aresta(1, 3); aresta(2, 3); aresta(3, 4); aresta(4, 5);
+  for (u = 0; u < N; u++) pai[u] = -1;
+
+  printf("DFS recursiva a partir de 0:");
+  dfs(0);
+  printf("\nDFS com pilha a partir de 0:");
+  dfs_pilha(0);
+  printf("\n\nvértice  pai  entrada/saída\n");
+  for (u = 0; u < N; u++)
+    if (visitado[u]) printf("%5d %5d %7d/%d\n", u, pai[u], entrada[u], saida[u]);
+    else             printf("%5d     (não alcançado a partir de 0)\n", u);
+
+  /* componentes conexas: uma DFS nova a partir de cada vértice ainda não visitado */
+  for (u = 0; u < N; u++) visitado[u] = 0;
+  relogio = 0;
+  printf("\nComponentes conexas:\n");
+  for (u = 0; u < N; u++)
+    if (!visitado[u]) {
+      printf("  componente %d:", ++comp);
+      dfs(u);
+      printf("\n");
+    }
+  return 0;
+}
+FIM_CODIGO_C

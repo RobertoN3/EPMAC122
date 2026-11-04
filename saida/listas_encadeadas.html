@@ -68,6 +68,17 @@
 <p>Observe que, para inserir ou remover, precisamos de um ponteiro para a célula ANTERIOR. Por isso a busca usada para remover costuma devolver a célula anterior à que contém x.</p>
 <h2>Listas com cabeça</h2>
 <p>Inserir ou remover a PRIMEIRA célula é um caso especial: não há célula anterior, e o próprio ponteiro que representa a lista precisa mudar. Para evitar esse caso, usa-se uma célula-cabeça (ou sentinela) fixa no início, cujo conteúdo é ignorado. A lista vazia passa a ser a cabeça com prox == NULL, e toda célula de verdade tem uma anterior. O código fica mais curto e com menos chances de erro.</p>
+<h2>Inserção em lista ordenada</h2>
+<p>Muitas vezes a lista deve ficar sempre em ordem crescente, por exemplo uma lista de espera por prioridade ou um dicionário pequeno. Para inserir x, anda-se pela lista até a ÚLTIMA célula cujo conteúdo é menor que x e insere-se a nova célula logo depois dela:</p>
+<pre>  insereOrdenado(x, cabeca):
+      p &lt;- cabeca
+      enquanto p-&gt;prox != NULL e p-&gt;prox-&gt;conteudo &lt; x:
+          p &lt;- p-&gt;prox
+      insira x logo depois de p
+</pre>
+<p>O laço olha sempre o conteúdo da PRÓXIMA célula, para que p pare na anterior ao lugar certo, que é a célula de que a inserção precisa. A condição p-&gt;prox != NULL vem primeiro: se a lista acabou, o C não chega a avaliar p-&gt;prox-&gt;conteudo, que acessaria NULL. Com a célula-cabeça, os casos &quot;lista vazia&quot; e &quot;x menor que todos&quot; não precisam de tratamento especial: p simplesmente fica na cabeça.</p>
+<p>Sem a cabeça, é preciso tratar à parte o caso em que a nova célula vira a primeira, e a função precisa poder mudar o ponteiro que representa a lista: recebe um ponteiro para esse ponteiro (Celula **lista).</p>
+<p>Exemplo: os valores chegam na ordem 42, 7, 19, 3, 25, 19, e a lista fica 3 -&gt; 7 -&gt; 19 -&gt; 19 -&gt; 25 -&gt; 42. Como a comparação é estrita (&lt;), o segundo 19 entra DEPOIS do primeiro: elementos iguais ficam na ordem de chegada, e inserir um a um numa lista ordenada é uma ordenação <a href="estabilidade.html">estável</a>, a <a href="insertionsort.html">inserção direta</a> feita em lista. Cada inserção custa O(n) para achar o lugar, mas nenhum elemento é deslocado.</p>
 <h2>Listas e recursão</h2>
 <p>Uma lista encadeada é uma estrutura <a href="recursao.html">recursiva</a>: ou é vazia (NULL), ou é uma célula seguida de uma lista (a que começa em prox). Por isso muitas operações têm versões recursivas naturais:</p>
 <pre>  tamanho(lst): se lst == NULL devolva 0; senão devolva 1 + tamanho(lst-&gt;prox)
@@ -94,7 +105,7 @@
 <h2>Histórico</h2>
 <p>As listas encadeadas foram criadas em 1955-1956 por Allen Newell, Cliff Shaw e Herbert A. Simon, na RAND Corporation e no Carnegie Institute of Technology, como estrutura básica da linguagem IPL (Information Processing Language). Ela foi usada no Logic Theorist, programa que provava teoremas dos Principia Mathematica e é considerado um dos primeiros programas de inteligência artificial. John McCarthy adotou as listas como estrutura central da linguagem LISP (1958). Newell e Simon receberam o prêmio Turing em 1975, em parte por essas contribuições.</p>
 <h2>Sobre o código</h2>
-<p>O programa de exemplo implementa uma lista encadeada com célula-cabeça, com inserção após uma célula, busca da célula anterior a x, remoção e impressão recursiva, liberando toda a memória ao final.</p>
+<p>O programa de exemplo implementa uma lista encadeada com célula-cabeça, com inserção após uma célula, busca da célula anterior a x, remoção e impressão recursiva. Depois monta uma lista ordenada com a inserção em ordem, a partir de valores que chegam fora de ordem, e libera toda a memória ao final.</p>
 <section class="referencias">
 <h2>Referências</h2>
 <ul><li>FEOFILOFF, P. Listas encadeadas. https://users.ime.usp.br/~pf/algoritmos/aulas/lista.html</li>

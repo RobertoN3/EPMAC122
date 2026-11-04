@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expressões aritméticas: infixa, posfixa e árvore de expressão | MAC0122</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&amp;display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body class="pagina-conteudo">
+<header class="barra">
+<a class="marca" href="index.html"><span class="marca-no" aria-hidden="true"></span>MAC0122</a>
+<nav class="facetas" aria-label="Índices"><a class="f-tecnica" href="tecnica.html">Técnica</a><a class="f-algoritmo" href="algoritmo.html">Algoritmo</a><a class="f-autores" href="autores.html">Autores</a><a class="f-data" href="data.html">Data</a><a class="f-conceitos" href="conceitos.html">Conceitos</a><a class="f-problema" href="problema.html">Problema</a></nav>
+</header>
+<main class="artigo">
+<header class="titulo-artigo"><h1>Expressões aritméticas: infixa, posfixa e árvore de expressão</h1><a class="botao botao-sec" href="expressoes_codigo.html">Ver o código em C</a></header>
+<dl class="ficha">
+<dt class="f-algoritmo"><a href="algoritmo.html">Algoritmo</a></dt><dd class="texto">Conversão de expressão infixa para posfixa, avaliação com pilha e árvore de expressão</dd>
+<dt class="f-autores"><a href="autores.html">Autores</a></dt><dd><a class="chip f-autores" href="autores.html#jan-%C5%81ukasiewicz">Jan Łukasiewicz</a><a class="chip f-autores" href="autores.html#charles-l-hamblin">Charles L. Hamblin</a><a class="chip f-autores" href="autores.html#edsger-w-dijkstra">Edsger W. Dijkstra</a></dd>
+<dt class="f-data"><a href="data.html">Data</a></dt><dd><a class="chip f-data" href="data.html#1924">1924</a><a class="chip f-data" href="data.html#1957">1957</a><a class="chip f-data" href="data.html#1961">1961</a></dd>
+<dt class="f-conceitos"><a href="conceitos.html">Conceitos</a></dt><dd><a class="chip f-conceitos" href="conceitos.html#pilhas">Pilhas</a><a class="chip f-conceitos" href="conceitos.html#%C3%81rvores">Árvores</a><a class="chip f-conceitos" href="conceitos.html#recurs%C3%A3o">Recursão</a><a class="chip f-conceitos" href="conceitos.html#ponteiros">Ponteiros</a><a class="chip f-conceitos" href="conceitos.html#registros">Registros</a></dd>
+<dt class="f-problema"><a href="problema.html#dada-uma-express%C3%A3o-aritm%C3%A9tica-na-nota%C3%A7%C3%A3o-usual-infixa-com-par%C3%AAnteses-e-operadores-de-preced%C3%AAncias-diferentes-convert%C3%AA-la-para-a-nota%C3%A7%C3%A3o-posfixa-calcular-o-seu-valor-e-represent%C3%A1-la-por-uma-%C3%A1rvore-bin%C3%A1ria">Problema</a></dt><dd class="texto">Dada uma expressão aritmética na notação usual (infixa), com parênteses e operadores de precedências diferentes, convertê-la para a notação posfixa, calcular o seu valor e representá-la por uma árvore binária</dd>
+</dl>
+<h2>Ideia geral</h2>
+<p>Escrevemos expressões aritméticas na notação INFIXA, com o operador entre os operandos: 2 + 3 * 4. Ela é natural para nós, mas exige regras extras para não ser ambígua:</p>
+<ul><li>precedência: * e / são feitos antes de + e -, então 2 + 3 * 4 vale 14, e não 20;</li>
+<li>associatividade: operadores de mesma precedência são feitos da esquerda para a direita, então 9 - 4 - 3 vale 2, e não 8;</li>
+<li>parênteses, para mudar a ordem: (2 + 3) * 4 vale 20.</li></ul>
+<p>Há outras duas notações que dispensam tudo isso:</p>
+<ul><li>PREFIXA (ou polonesa): o operador vem antes dos operandos: + 2 * 3 4;</li>
+<li>POSFIXA (ou polonesa reversa): o operador vem depois: 2 3 4 * +.</li></ul>
+<p>Na posfixa não há parênteses nem regras de precedência: a ordem dos símbolos já diz a ordem das contas. É por isso que computadores convertem as expressões para a posfixa (ou para uma árvore) antes de calculá-las. Esta página mostra os três algoritmos que fazem isso, todos baseados em <a href="pilhas.html">pilhas</a>.</p>
+<h2>Avaliar uma expressão posfixa</h2>
+<p>Percorre-se a expressão da esquerda para a direita com uma pilha de valores:</p>
+<ul><li>ao ler um operando, empilha-o;</li>
+<li>ao ler um operador, desempilha dois valores (primeiro o da DIREITA, depois o da ESQUERDA), aplica o operador e empilha o resultado;</li>
+<li>no fim, o valor da expressão é o único elemento da pilha.</li></ul>
+<pre>  5 3 + 2 * 8 4 / -
+  lê 5, 3      pilha: 5 3
+  lê +         pilha: 8          (5 + 3)
+  lê 2, *      pilha: 16         (8 * 2)
+  lê 8, 4, /   pilha: 16 2       (8 / 4)
+  lê -         pilha: 14         (16 - 2)
+</pre>
+<p>A ordem dos dois desempilhamentos importa nas operações que não são comutativas: em &quot;8 4 /&quot;, o 4 sai primeiro, mas a conta é 8 / 4. Cada símbolo é tratado uma vez: tempo O(n).</p>
+<h2>Converter de infixa para posfixa</h2>
+<p>O algoritmo da estação de manobras (shunting-yard), de Dijkstra, usa uma pilha de OPERADORES. Os operandos vão direto para a saída, na mesma ordem; os operadores esperam na pilha até que a sua vez chegue:</p>
+<ul><li>operando: vai para a saída;</li>
+<li>&quot;(&quot;: empilha;</li>
+<li>&quot;)&quot;: desempilha para a saída até encontrar o &quot;(&quot;, que é descartado;</li>
+<li>operador op: enquanto o topo da pilha for um operador de precedência MAIOR OU IGUAL à de op, desempilha-o para a saída; depois empilha op (&quot;igual&quot; faz os operadores de mesma precedência saírem da esquerda para a direita);</li>
+<li>no fim, desempilha tudo para a saída.</li></ul>
+<p>Exemplo com (5 + 3) * 2 - 8 / 4:</p>
+<pre>  lido  saída              pilha
+  (                        (
+  5     5                  (
+  +     5                  ( +
+  3     5 3                ( +
+  )     5 3 +                       (desempilha até o &quot;(&quot;)
+  *     5 3 +              *
+  2     5 3 + 2            *
+  -     5 3 + 2 *          -        (* tem precedência maior: sai antes)
+  8     5 3 + 2 * 8        -
+  /     5 3 + 2 * 8        - /      (/ tem precedência maior que -: fica)
+  4     5 3 + 2 * 8 4      - /
+  fim   5 3 + 2 * 8 4 / -
+</pre>
+<p>O nome vem da imagem de um pátio ferroviário: os vagões (operandos) seguem em frente, e as locomotivas (operadores) esperam num desvio até poderem entrar no trem. Também é O(n).</p>
+<h2>A árvore de expressão</h2>
+<p>Uma expressão também pode ser representada por uma <a href="arvores.html">árvore binária</a>: as folhas são os operandos e cada nó interno é um operador, cujas subárvores esquerda e direita são os seus dois operandos. A expressão (5 + 3) * 2 - 8 / 4 fica:</p>
+<pre>                -
+              /   \
+             *     /
+            / \   / \
+           +   2 8   4
+          / \
+         5   3
+</pre>
+<p>O operador da raiz é o último a ser calculado. Os parênteses desaparecem: a própria forma da árvore diz o que é calculado antes.</p>
+<p>Os três percursos <a href="recursao.html">recursivos</a> dão as três notações:</p>
+<ul><li>pré-ordem (raiz, esquerda, direita): - * + 5 3 2 / 8 4, a prefixa;</li>
+<li>pós-ordem (esquerda, direita, raiz): 5 3 + 2 * 8 4 / -, a posfixa;</li>
+<li>in-ordem (esquerda, raiz, direita): 5 + 3 * 2 - 8 / 4, a infixa, mas SEM os parênteses. Lida da esquerda para a direita com as regras de precedência, ela daria 5 + 6 - 2 = 9, e não 14. Para recuperar a expressão certa, a in-ordem precisa escrever &quot;(&quot; antes de visitar a subárvore esquerda de um operador e &quot;)&quot; depois da direita: (((5 + 3) * 2) - (8 / 4)).</li></ul>
+<p>Calcular o valor pela árvore é um percurso em pós-ordem: o valor de um nó interno é o seu operador aplicado aos valores das duas subárvores, que precisam ser calculados antes. Na árvore acima, a altura (medida em arestas, com a raiz na altura 0) é 3, e há 5 folhas e 4 operadores. Numa árvore de expressão com operadores binários, o número de folhas é sempre o número de operadores mais 1.</p>
+<h2>Montar a árvore a partir da posfixa</h2>
+<p>O algoritmo é o mesmo da avaliação, trocando valores por <a href="ponteiros.html">ponteiros</a> para nós (cada nó é um <a href="registros.html">registro</a> com o símbolo e os ponteiros esq e dir):</p>
+<ul><li>operando: cria uma folha e empilha o ponteiro;</li>
+<li>operador: desempilha dois ponteiros (direita, depois esquerda), cria um nó com o operador e esses dois filhos e empilha o novo nó;</li>
+<li>no fim, a pilha contém a raiz da árvore.</li></ul>
+<p>Assim, infixa -&gt; posfixa -&gt; árvore usa duas pilhas e leva tempo linear.</p>
+<h2>Onde isso é usado</h2>
+<ul><li>Compiladores e interpretadores: o analisador sintático transforma cada expressão do programa numa árvore (a árvore sintática), da qual o código de máquina é gerado com um percurso em pós-ordem. Máquinas virtuais como a do Java executam código de pilha, que é essencialmente notação posfixa.</li>
+<li>Calculadoras: as calculadoras científicas HP usam a notação polonesa reversa diretamente, com a tecla ENTER para empilhar números.</li>
+<li>Planilhas e linguagens de consulta, que precisam avaliar fórmulas digitadas pelo usuário.</li>
+<li>A linguagem PostScript, de descrição de páginas, e a linguagem Forth são inteiramente posfixas.</li></ul>
+<h2>Histórico</h2>
+<p>O lógico polonês Jan Łukasiewicz inventou a notação prefixa por volta de 1924, para escrever fórmulas de lógica sem parênteses; por isso ela é chamada notação polonesa. Charles L. Hamblin, na Austrália, propôs em 1957 a notação posfixa (polonesa reversa) para computadores e o uso de uma pilha para avaliá-la, na mesma época em que Friedrich L. Bauer e Klaus Samelson, na Alemanha, usavam pilhas para traduzir fórmulas. Edsger W. Dijkstra descreveu o algoritmo da estação de manobras em 1961, para o primeiro compilador de ALGOL 60.</p>
+<h2>Sobre o código</h2>
+<p>O programa converte quatro expressões infixas (com operandos de um dígito, os operadores + - * / e parênteses) para a posfixa, calcula o valor com uma pilha, monta a árvore de expressão com uma pilha de ponteiros e mostra os percursos em pré-ordem, pós-ordem e in-ordem com parênteses, a altura da árvore e o valor calculado pela árvore.</p>
+<section class="referencias">
+<h2>Referências</h2>
+<ul><li>BRANDÃO, L. O. Expressões: notação infixa e posfixa. MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/expressoes_infixa2posfixa.html</li>
+<li>BRANDÃO, L. O. Árvore binária de expressão. MAC122, IME-USP. https://www.ime.usp.br/~leo/mac/mac122/arvores/arvore_bin_expressao_aleatoria.html</li>
+<li>KNUTH, D. E. The Art of Computer Programming, v. 1: Fundamental Algorithms. 3. ed. Reading: Addison-Wesley, 1997. Seção 2.3 (Trees) e 2.2.1 (Stacks).</li>
+<li>AHO, A. V.; LAM, M. S.; SETHI, R.; ULLMAN, J. D. Compiladores: princípios, técnicas e ferramentas. 2. ed. São Paulo: Pearson, 2008. Capítulo 2 (tradução dirigida por sintaxe, notação posfixa).</li>
+<li>DIJKSTRA, E. W. Algol 60 translation: an Algol 60 translator for the X1 and making a translator for Algol 60. Report MR 35, Mathematisch Centrum, Amsterdam, 1961.</li>
+<li>HAMBLIN, C. L. Computer languages. The Australian Journal of Science, v. 20, p. 135-139, 1957.</li>
+<li>FEOFILOFF, P. Pilhas: notação posfixa. https://www.ime.usp.br/~pf/algoritmos/aulas/pilha.html</li>
+<li>Wikipedia. Shunting yard algorithm. https://en.wikipedia.org/wiki/Shunting_yard_algorithm</li></ul>
+</section>
+<p class="ir-codigo"><a class="botao" href="expressoes_codigo.html">Ver o código em C</a></p>
+</main>
+</body></html>

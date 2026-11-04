@@ -28,7 +28,7 @@
 <li><code class="op">+=</code> operador</li>
 </ul>
 <section class="bloco">
-<div class="bloco-barra"><span>51 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/listas_encadeadas.c" download>Baixar listas_encadeadas.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="bloco-barra"><span>68 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/listas_encadeadas.c" download>Baixar listas_encadeadas.c</a><button class="copiar" type="button">Copiar código</button></span></div>
 <div class="codigo"><pre class="nl" aria-hidden="true">1
 2
 3
@@ -79,7 +79,24 @@
 48
 49
 50
-51</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
 <span class="pp">#include</span> <span class="pf">&lt;stdlib.h&gt;</span><span class="pp"></span>
 
 <span class="kw">typedef</span> <span class="tp">struct</span> celula {
@@ -93,6 +110,15 @@
   nova<span class="op">-&gt;</span>conteudo <span class="op">=</span> x;
   nova<span class="op">-&gt;</span>prox <span class="op">=</span> p<span class="op">-&gt;</span>prox;
   p<span class="op">-&gt;</span>prox <span class="op">=</span> nova;
+}
+
+<span class="cm">/* insere x mantendo a lista em ordem crescente: anda até a última célula
+   com conteúdo menor que x e insere logo depois dela */</span>
+<span class="tp">void</span> insereOrdenado(<span class="tp">int</span> x, Celula <span class="op">*</span>cabeca) {
+  Celula <span class="op">*</span>p <span class="op">=</span> cabeca;
+  <span class="kw">while</span> (p<span class="op">-&gt;</span>prox <span class="op">!=</span> <span class="ct">NULL</span> <span class="op">&amp;&amp;</span> p<span class="op">-&gt;</span>prox<span class="op">-&gt;</span>conteudo <span class="op">&lt;</span> x)
+    p <span class="op">=</span> p<span class="op">-&gt;</span>prox;
+  insere(x, p);
 }
 
 <span class="cm">/* devolve a célula ANTERIOR à que contém x (ou NULL), em lista com cabeça */</span>
@@ -128,6 +154,14 @@ Celula <span class="op">*</span>buscaAnterior(<span class="tp">int</span> x, Cel
   removeX(<span class="nu">30</span>, <span class="op">&amp;</span>cabeca);
   imprime(cabeca.prox);
   <span class="kw">while</span> (cabeca.prox <span class="op">!=</span> <span class="ct">NULL</span>) removeX(cabeca.prox<span class="op">-&gt;</span>conteudo, <span class="op">&amp;</span>cabeca);
+
+  <span class="cm">/* lista ordenada: os valores chegam fora de ordem e a lista fica crescente */</span>
+  {
+    <span class="tp">int</span> chegada[] <span class="op">=</span> {<span class="nu">42</span>, <span class="nu">7</span>, <span class="nu">19</span>, <span class="nu">3</span>, <span class="nu">25</span>, <span class="nu">19</span>};
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> <span class="nu">6</span>; i<span class="op">++</span>) insereOrdenado(chegada[i], <span class="op">&amp;</span>cabeca);
+    imprime(cabeca.prox);
+    <span class="kw">while</span> (cabeca.prox <span class="op">!=</span> <span class="ct">NULL</span>) removeX(cabeca.prox<span class="op">-&gt;</span>conteudo, <span class="op">&amp;</span>cabeca);
+  }
   <span class="kw">return</span> <span class="nu">0</span>;
 }</code></pre></div>
 </section>
