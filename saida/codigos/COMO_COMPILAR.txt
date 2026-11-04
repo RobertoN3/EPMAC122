@@ -1,7 +1,7 @@
 COMO COMPILAR E RODAR OS CÓDIGOS C
 ==================================
 
-Estes arquivos são gerados pelo colorir.c a partir dos TXT de entradatxt/:
+Estes arquivos são gerados pelo exportar.c a partir dos TXT de entradatxt/:
 cada código C fica entre as linhas INICIO_CODIGO_C e FIM_CODIGO_C do TXT, e
 o arquivo .c tem exatamente o mesmo texto. Cada programa é um único
 arquivo .c e não lê arquivos auxiliares nem a entrada padrão: os dados de
@@ -16,28 +16,32 @@ Exemplo, para o algoritmo de Kruskal (na pasta onde está kruskal.c):
     gcc -Wall -Wextra -pedantic -std=c99 -o kruskal kruskal.c
     ./kruskal
 
-OS TRÊS PROGRAMAS DO EP (geram o site)
---------------------------------------
-Na pasta do repositório, onde estão também slug.h, layout.h e estilo.css
-(incluídos ou copiados pelos programas) e a pasta entradatxt/ com os TXT:
+OS QUATRO PROGRAMAS DO EP (geram o site)
+----------------------------------------
+Na pasta do repositório, onde estão também slug.h, layout.h, txt.h,
+estilo.css e indice.js (incluídos ou copiados pelos programas) e a pasta
+entradatxt/ com os TXT:
 
     gcc -Wall -Wextra -pedantic -std=c99 -o gerador gerador.c
     gcc -Wall -Wextra -pedantic -std=c99 -o gerador_conteudo gerador_conteudo.c
     gcc -Wall -Wextra -pedantic -std=c99 -o colorir colorir.c
+    gcc -Wall -Wextra -pedantic -std=c99 -o exportar exportar.c
     ./gerador
     ./gerador_conteudo
     ./colorir
+    ./exportar
 
 gerador gera index.html e as seis páginas indexadoras; gerador_conteudo,
-uma página de explicação por TXT; colorir, uma página com o código C
-colorido por TXT, e também os arquivos .c e este COMO_COMPILAR.txt em
-saida/codigos/. Os três escrevem em saida/; o site começa em
+uma página de explicação por TXT; colorir, o filtro de cores, uma página
+com o código C colorido por TXT; exportar, os arquivos .c e este
+COMO_COMPILAR.txt em saida/codigos/ (os botões "Baixar" das páginas de
+código apontam para eles). Todos escrevem em saida/; o site começa em
 saida/index.html. O colorir também funciona como filtro para qualquer
 arquivo C: ./colorir -f < programa.c > programa.html
 
 
-OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (40 programas)
-------------------------------------------------
+OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (41 programas em 40 páginas)
+---------------------------------------------------------------
 
 ------------------------------------------------------------------------
 Árvore binária de busca (ABB)

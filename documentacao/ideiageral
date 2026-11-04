@@ -5,6 +5,7 @@ O desenvolvimento será feito por etapas, discutindo as decisões antes de imple
 - gerador.c já existe e gera index.html e as páginas indexadoras, com links para as páginas de conteúdo. Manter essa responsabilidade.
 - gerador_conteudo.c gera as páginas de conteúdo dos TXT.
 - colorir.c gera as páginas separadas com o código C e a coloração dos itens léxicos exigida pelo enunciado.
+- exportar.c grava cada código C como arquivo `.c` e gera o `COMO_COMPILAR.txt`.
 
 # Formato dos TXT
 
@@ -44,7 +45,12 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 - Cores: estilo "default" do Pygments, que é o realce aplicado aos exemplos de código da Wikipédia. A página traz uma legenda com as cores.
 - Escapa `<`, `>` e `&`; o texto da página, sem as tags, é idêntico ao código do TXT.
 - Modo filtro: `colorir -f < programa.c > programa.html` colore qualquer arquivo C, sem passar pelos TXT.
-- Também grava cada código como arquivo `.c` em `saida/codigos/` (um TXT com vários blocos gera `nome.c`, `nome_2.c`...) e gera ali o `COMO_COMPILAR.txt`, com o comando para compilar e rodar cada programa (inclusive os três geradores) e o que cada um faz, tirado da seção "Sobre o código" do TXT. Os arquivos `.c` têm exatamente o texto do TXT, então nunca ficam desatualizados. A página de código tem um botão para baixar o `.c`.
+- A página de código tem um botão para baixar o `.c` correspondente, que é gravado pelo `exportar.c`.
+
+# exportar.c: os arquivos .c e o COMO_COMPILAR.txt
+
+- Separado do `colorir.c` para que o filtro de cores faça só o que o enunciado pede. A leitura dos TXT (título, seção "Sobre o código" e blocos de código) é a mesma nos dois e fica em `txt.h`.
+- Grava cada código como arquivo `.c` em `saida/codigos/` (um TXT com vários blocos gera `nome.c`, `nome_2.c`...) e gera ali o `COMO_COMPILAR.txt`, com o comando para compilar e rodar cada programa (inclusive os quatro programas do EP) e o que cada um faz, tirado da seção "Sobre o código" do TXT. Os arquivos `.c` têm exatamente o texto do TXT, então nunca ficam desatualizados.
 - Mesmos argumentos opcionais dos outros programas: `colorir pasta_entrada pasta_saida`.
 
 # Visual do site (estilo.css e layout.h)
@@ -63,10 +69,11 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 gcc -Wall -Wextra -pedantic -std=c99 gerador.c -o gerador
 gcc -Wall -Wextra -pedantic -std=c99 gerador_conteudo.c -o gerador_conteudo
 gcc -Wall -Wextra -pedantic -std=c99 colorir.c -o colorir
-./gerador && ./gerador_conteudo && ./colorir
+gcc -Wall -Wextra -pedantic -std=c99 exportar.c -o exportar
+./gerador && ./gerador_conteudo && ./colorir && ./exportar
 ```
 
-Os três leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Rode-os na pasta do repositório, onde estão `estilo.css`, `layout.h` e `slug.h`. Abrir `saida/index.html`.
+Os quatro leem `entradatxt/` e escrevem em `saida/`; a ordem não importa. Rode-os na pasta do repositório, onde estão `estilo.css`, `indice.js`, `layout.h`, `slug.h` e `txt.h`. Abrir `saida/index.html`.
 
 # Arquivo auxiliar: sugestão ainda não adotada
 
