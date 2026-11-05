@@ -81,21 +81,21 @@
 <span class="cm">/* devolve 1 se os símbolos ()[]{} de s estão balanceados */</span>
 <span class="tp">int</span> balanceada(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>s) {
   <span class="tp">int</span> i;
-  <span class="tp">char</span> c;
+  <span class="tp">char</span> c, a;
   t <span class="op">=</span> <span class="nu">0</span>;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; s[i] <span class="op">!=</span> <span class="st">'<span class="es">\0</span>'</span>; i<span class="op">++</span>) {
     c <span class="op">=</span> s[i];
     <span class="kw">if</span> (c <span class="op">==</span> <span class="st">'('</span> <span class="op">||</span> c <span class="op">==</span> <span class="st">'['</span> <span class="op">||</span> c <span class="op">==</span> <span class="st">'{'</span>) {
-      <span class="kw">if</span> (t <span class="op">==</span> MAX) <span class="kw">return</span> <span class="nu">0</span>;            <span class="cm">// pilha cheia</span>
+      <span class="kw">if</span> (t <span class="op">==</span> MAX) <span class="kw">return</span> <span class="nu">0</span>;            <span class="cm">/* pilha cheia */</span>
       empilha(c);
     } <span class="kw">else</span> <span class="kw">if</span> (c <span class="op">==</span> <span class="st">')'</span> <span class="op">||</span> c <span class="op">==</span> <span class="st">']'</span> <span class="op">||</span> c <span class="op">==</span> <span class="st">'}'</span>) {
       <span class="kw">if</span> (vazia()) <span class="kw">return</span> <span class="nu">0</span>;             <span class="cm">/* fecha sem ter aberto */</span>
-      <span class="tp">char</span> a <span class="op">=</span> desempilha();
+      a <span class="op">=</span> desempilha();
       <span class="kw">if</span> ((c <span class="op">==</span> <span class="st">')'</span> <span class="op">&amp;&amp;</span> a <span class="op">!=</span> <span class="st">'('</span>) <span class="op">||</span> (c <span class="op">==</span> <span class="st">']'</span> <span class="op">&amp;&amp;</span> a <span class="op">!=</span> <span class="st">'['</span>) <span class="op">||</span>
           (c <span class="op">==</span> <span class="st">'}'</span> <span class="op">&amp;&amp;</span> a <span class="op">!=</span> <span class="st">'{'</span>)) <span class="kw">return</span> <span class="nu">0</span>;
     }
   }
-  <span class="kw">return</span> vazia();                        <span class="cm">// sobrou algo aberto?</span>
+  <span class="kw">return</span> vazia();                        <span class="cm">/* sobrou algo aberto? */</span>
 }
 
 <span class="tp">int</span> main(<span class="tp">void</span>) {

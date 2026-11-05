@@ -248,7 +248,7 @@ Celula *buscaAnterior(int x, Celula *cabeca) {
 /* remove a primeira célula com conteúdo x */
 void removeX(int x, Celula *cabeca) {
   Celula *ant = buscaAnterior(x, cabeca), *lixo;
-  if (ant == NULL) return;          // x não está na lista
+  if (ant == NULL) return;          /* x não está na lista */
   lixo = ant->prox;
   ant->prox = lixo->prox;
   free(lixo);

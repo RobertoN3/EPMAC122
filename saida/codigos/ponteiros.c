@@ -13,7 +13,7 @@ int main(void) {
   int *p = &x;          /* p guarda o endereço de x */
   int *v;
 
-  *p = 10;              // altera x através de p
+  *p = 10;              /* altera x através de p */
   printf("x = %d, endereco de x = %p\n", x, (void *)p);
 
   troca(&x, &y);
@@ -22,7 +22,7 @@ int main(void) {
   v = malloc(n * sizeof(int));   /* vetor com tamanho dado na execução */
   if (v == NULL) return 1;
   for (i = 0; i < n; i++)
-    *(v + i) = i * i;            // o mesmo que v[i] = i * i
+    *(v + i) = i * i;            /* o mesmo que v[i] = i * i */
   for (i = 0; i < n; i++) printf("%d ", v[i]);
   printf("\n");
   free(v);

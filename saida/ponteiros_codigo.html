@@ -73,7 +73,7 @@
   <span class="tp">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>x;          <span class="cm">/* p guarda o endereço de x */</span>
   <span class="tp">int</span> <span class="op">*</span>v;
 
-  <span class="op">*</span>p <span class="op">=</span> <span class="nu">10</span>;              <span class="cm">// altera x através de p</span>
+  <span class="op">*</span>p <span class="op">=</span> <span class="nu">10</span>;              <span class="cm">/* altera x através de p */</span>
   printf(<span class="st">"x = %d, endereco de x = %p<span class="es">\n</span>"</span>, x, (<span class="tp">void</span> <span class="op">*</span>)p);
 
   troca(<span class="op">&amp;</span>x, <span class="op">&amp;</span>y);
@@ -82,7 +82,7 @@
   v <span class="op">=</span> malloc(n <span class="op">*</span> <span class="kw">sizeof</span>(<span class="tp">int</span>));   <span class="cm">/* vetor com tamanho dado na execução */</span>
   <span class="kw">if</span> (v <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span> <span class="nu">1</span>;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>)
-    <span class="op">*</span>(v <span class="op">+</span> i) <span class="op">=</span> i <span class="op">*</span> i;            <span class="cm">// o mesmo que v[i] = i * i</span>
+    <span class="op">*</span>(v <span class="op">+</span> i) <span class="op">=</span> i <span class="op">*</span> i;            <span class="cm">/* o mesmo que v[i] = i * i */</span>
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) printf(<span class="st">"%d "</span>, v[i]);
   printf(<span class="st">"<span class="es">\n</span>"</span>);
   free(v);

@@ -18,7 +18,7 @@ int insere(Fila *f, int x) {
   return 1;
 }
 
-int removeFila(Fila *f) {        // supõe fila não vazia
+int removeFila(Fila *f) {        /* supõe fila não vazia */
   int x = f->v[f->ini];
   f->ini = (f->ini + 1) % N;
   f->tam--;

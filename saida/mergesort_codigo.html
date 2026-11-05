@@ -85,13 +85,13 @@
 <span class="cm">/* Merge Sort de baixo para cima: blocos de 1, 2, 4, 8, ... */</span>
 <span class="tp">void</span> mergesortIterativo(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
   <span class="tp">int</span> largura, ini, meio, fim;
-  <span class="tp">int</span> <span class="op">*</span>aux <span class="op">=</span> malloc(n <span class="op">*</span> <span class="kw">sizeof</span>(<span class="tp">int</span>));   <span class="cm">// alocado uma única vez</span>
+  <span class="tp">int</span> <span class="op">*</span>aux <span class="op">=</span> malloc(n <span class="op">*</span> <span class="kw">sizeof</span>(<span class="tp">int</span>));   <span class="cm">/* alocado uma única vez */</span>
   <span class="kw">if</span> (aux <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span>;
   <span class="kw">for</span> (largura <span class="op">=</span> <span class="nu">1</span>; largura <span class="op">&lt;</span> n; largura <span class="op">*=</span> <span class="nu">2</span>) {
     <span class="kw">for</span> (ini <span class="op">=</span> <span class="nu">0</span>; ini <span class="op">+</span> largura <span class="op">&lt;</span> n; ini <span class="op">+=</span> <span class="nu">2</span> <span class="op">*</span> largura) {
       meio <span class="op">=</span> ini <span class="op">+</span> largura <span class="op">-</span> <span class="nu">1</span>;
       fim <span class="op">=</span> ini <span class="op">+</span> <span class="nu">2</span> <span class="op">*</span> largura <span class="op">-</span> <span class="nu">1</span>;
-      <span class="kw">if</span> (fim <span class="op">&gt;</span> n <span class="op">-</span> <span class="nu">1</span>) fim <span class="op">=</span> n <span class="op">-</span> <span class="nu">1</span>;     <span class="cm">// último bloco pode ser menor</span>
+      <span class="kw">if</span> (fim <span class="op">&gt;</span> n <span class="op">-</span> <span class="nu">1</span>) fim <span class="op">=</span> n <span class="op">-</span> <span class="nu">1</span>;     <span class="cm">/* último bloco pode ser menor */</span>
       intercala(v, aux, ini, meio, fim);
     }
   }

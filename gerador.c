@@ -86,8 +86,9 @@ static Categoria cat[NUM_CAT];
 /* ---------- utilidades ---------- */
 
 static char *trim(char *s) {
+    char *fim;
     while (isspace((unsigned char)*s)) s++;
-    char *fim = s + strlen(s);
+    fim = s + strlen(s);
     while (fim > s && isspace((unsigned char)fim[-1])) *--fim = '\0';
     return s;
 }
@@ -135,16 +136,18 @@ static void esc_links(FILE *o, const char *s) {
     while (*s) {
         const char *ab = strstr(s, "[[");
         const char *fe = ab ? strstr(ab + 2, "]]") : NULL;
+        char *barra, *texto;
+        size_t n;
         if (!ab || !fe) { esc(o, s); return; }      /* sem link: resto literal */
 
-        size_t n = (size_t)(ab - s);                 /* texto antes do link */
+        n = (size_t)(ab - s);                        /* texto antes do link */
         memcpy(buf, s, n); buf[n] = '\0';
         esc(o, buf);
 
         n = (size_t)(fe - (ab + 2));                 /* conteúdo entre [[ e ]] */
         memcpy(buf, ab + 2, n); buf[n] = '\0';
-        char *barra = strchr(buf, '|');
-        char *texto = buf;
+        barra = strchr(buf, '|');
+        texto = buf;
         if (barra) { *barra = '\0'; texto = barra + 1; }
 
         fputs("<a href=\"", o);
@@ -163,8 +166,9 @@ static void checar_links(const char *s, const char *nome) {
     char alvo[256];
     while ((s = strstr(s, "[["))) {
         const char *fe = strstr(s + 2, "]]");
+        size_t n;
         if (!fe) return;
-        size_t n = strcspn(s + 2, "|]");
+        n = strcspn(s + 2, "|]");
         if (n >= sizeof alvo) n = sizeof alvo - 1;
         memcpy(alvo, s + 2, n); alvo[n] = '\0';
         if (!existe_arquivo(alvo))
@@ -174,8 +178,9 @@ static void checar_links(const char *s, const char *nome) {
 }
 
 static int reservado(const char *base) {
+    int c;
     if (strcmp(base, "index") == 0) return 1;
-    for (int c = 0; c < NUM_CAT; c++)
+    for (c = 0; c < NUM_CAT; c++)
         if (strcmp(base, CAT_SLUG[c]) == 0) return 1;
     return 0;
 }
@@ -183,10 +188,14 @@ static int reservado(const char *base) {
 /* ---------- leitura dos .txt ---------- */
 
 static void ler_arquivo(const char *caminho, const char *nome) {
-    char base[256];
+    char base[256], linha[MAX_LINHA], *ponto;
+    FILE *f;
+    Arquivo *a;
+    int primeira = 1, achou = 0;
+
     strncpy(base, nome, sizeof base - 1);
     base[sizeof base - 1] = '\0';
-    char *ponto = strrchr(base, '.');
+    ponto = strrchr(base, '.');
     if (ponto) *ponto = '\0';
 
     if (reservado(base)) {
@@ -194,21 +203,20 @@ static void ler_arquivo(const char *caminho, const char *nome) {
         return;
     }
 
-    FILE *f = fopen(caminho, "r");
+    f = fopen(caminho, "r");
     if (!f) { perror(caminho); return; }
 
     if (n_arq == cap_arq) {
         cap_arq = cap_arq ? cap_arq * 2 : 32;
         arq = checar(realloc(arq, cap_arq * sizeof *arq));
     }
-    Arquivo *a = &arq[n_arq];
+    a = &arq[n_arq];
     memset(a, 0, sizeof *a);
     strcpy(a->base, base);
 
-    char linha[MAX_LINHA];
-    int primeira = 1, achou = 0;
     while (fgets(linha, sizeof linha, f)) {
-        char *s = linha;
+        char *s = linha, *fim, *dp;
+        long n;
         if (primeira) {                         /* pula BOM do UTF-8, se houver */
             if ((unsigned char)s[0] == 0xEF && (unsigned char)s[1] == 0xBB &&
                 (unsigned char)s[2] == 0xBF) s += 3;
@@ -216,10 +224,9 @@ static void ler_arquivo(const char *caminho, const char *nome) {
         }
         while (isspace((unsigned char)*s)) s++;
 
-        char *fim;
-        long n = strtol(s, &fim, 10);
+        n = strtol(s, &fim, 10);
         if (fim == s || *fim != '.') break;     /* acabou o cabeçalho */
-        char *dp = strchr(fim, ':');
+        dp = strchr(fim, ':');
         if (!dp) break;
 
         if (n >= 1 && n <= NUM_CAT) {           /* campos 1..6: categorias */
@@ -248,8 +255,9 @@ static void ler_arquivo(const char *caminho, const char *nome) {
 static void adicionar(int c, const char *texto, int ia) {
     Categoria *C = &cat[c];
     Valor *val = NULL;
+    int i, j;
 
-    for (int i = 0; i < C->n; i++)
+    for (i = 0; i < C->n; i++)
         if (cmp_ci(C->v[i].texto, texto) == 0) { val = &C->v[i]; break; }
 
     if (!val) {
@@ -262,7 +270,7 @@ static void adicionar(int c, const char *texto, int ia) {
         strncpy(val->texto, texto, MAX_LINHA - 1);
     }
 
-    for (int j = 0; j < val->n; j++)
+    for (j = 0; j < val->n; j++)
         if (val->idx[j] == ia) return;          /* já registrado */
 
     if (val->n == val->cap) {
@@ -273,32 +281,35 @@ static void adicionar(int c, const char *texto, int ia) {
 }
 
 static int existe_arquivo(const char *base) {
-    for (int i = 0; i < n_arq; i++)
+    int i;
+    for (i = 0; i < n_arq; i++)
         if (strcmp(arq[i].base, base) == 0) return 1;
     return 0;
 }
 
 /* posição do conceito no vocabulário, ou -1 */
 static int no_vocabulario(const char *conceito) {
-    for (int k = 0; k < N_VOCAB; k++)
+    int k;
+    for (k = 0; k < N_VOCAB; k++)
         if (strcmp(VOCABULARIO[k].conceito, conceito) == 0) return k;
     return -1;
 }
 
 static void montar_categorias(void) {
-    for (int i = 0; i < n_arq; i++) {
-        char nome[300];
-        snprintf(nome, sizeof nome, "%s.txt", arq[i].base);
+    int i, c;
+    for (i = 0; i < n_arq; i++) {
+        char nome[300];                         /* base tem menos de 256 bytes */
+        sprintf(nome, "%s.txt", arq[i].base);
         checar_links(arq[i].campo[C_PROBLEMA], nome);
 
-        for (int c = 0; c < NUM_CAT; c++) {
+        for (c = 0; c < NUM_CAT; c++) {
             if (!arq[i].campo[c][0]) continue;
 
             if (CAT_MULTI[c]) {
                 /* separa na vírgula e remove os espaços das pontas */
-                char copia[MAX_LINHA];
+                char copia[MAX_LINHA], *tok;
                 strcpy(copia, arq[i].campo[c]);
-                for (char *tok = strtok(copia, ","); tok; tok = strtok(NULL, ",")) {
+                for (tok = strtok(copia, ","); tok; tok = strtok(NULL, ",")) {
                     char *t = trim(tok);
                     if (!*t) continue;
                     if (c == C_CONCEITOS && no_vocabulario(t) < 0)
@@ -333,7 +344,8 @@ static int cmp_idx(const void *a, const void *b) {
 
 /* índice do arquivo com esse nome-base, ou -1 */
 static int achar_arquivo(const char *base) {
-    for (int i = 0; i < n_arq; i++)
+    int i;
+    for (i = 0; i < n_arq; i++)
         if (strcmp(arq[i].base, base) == 0) return i;
     return -1;
 }
@@ -342,8 +354,8 @@ static int achar_arquivo(const char *base) {
 
 /* quantos arquivos têm o campo c preenchido */
 static int paginas_com(int c) {
-    int n = 0;
-    for (int i = 0; i < n_arq; i++) if (arq[i].campo[c][0]) n++;
+    int n = 0, i;
+    for (i = 0; i < n_arq; i++) if (arq[i].campo[c][0]) n++;
     return n;
 }
 
@@ -351,10 +363,9 @@ static int paginas_com(int c) {
    nó central MAC0122 ligado aos seis, que formam um anel). Cada nó é um
    link. No celular, o grafo dá lugar a uma lista com os mesmos links. */
 static void gerar_index(void) {
-    char caminho[1024];
-    snprintf(caminho, sizeof caminho, "%s/index.html", PASTA_SAIDA);
-    FILE *o = fopen(caminho, "w");
-    if (!o) { perror(caminho); return; }
+    FILE *o = fopen(PASTA_SAIDA "/index.html", "w");
+    int c;
+    if (!o) { perror(PASTA_SAIDA "/index.html"); return; }
 
     abrir_pagina(o, "Algoritmos de MAC0122", "pagina-inicio", -1, 0, NULL);
     fputs("<main class=\"inicio\">\n<div class=\"heroi\">\n"
@@ -363,12 +374,12 @@ static void gerar_index(void) {
     /* o grafo */
     fputs("<svg class=\"grafo\" viewBox=\"58 -8 684 496\" role=\"group\" "
           "aria-label=\"Os seis índices do site\">\n", o);
-    for (int c = 0; c < NUM_CAT; c++) {          /* anel entre índices vizinhos */
+    for (c = 0; c < NUM_CAT; c++) {              /* anel entre índices vizinhos */
         int d = (c + 1) % NUM_CAT;
         fprintf(o, "<line class=\"anel\" x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\"/>\n",
                 NO_X[c], NO_Y[c], NO_X[d], NO_Y[d]);
     }
-    for (int c = 0; c < NUM_CAT; c++) {
+    for (c = 0; c < NUM_CAT; c++) {
         int n = cat[c].n;
         fprintf(o, "<a class=\"no f-%s\" href=\"%s.html\" style=\"--i:%d\" "
                    "aria-label=\"%s: %d %s\">\n", CAT_SLUG[c], CAT_SLUG[c], c,
@@ -385,7 +396,7 @@ static void gerar_index(void) {
 
     /* a mesma navegação em lista, para telas estreitas */
     fputs("<ul class=\"lista-facetas\">\n", o);
-    for (int c = 0; c < NUM_CAT; c++) {
+    for (c = 0; c < NUM_CAT; c++) {
         int n = cat[c].n;
         fprintf(o, "<li><a class=\"f-%s\" href=\"%s.html\"><span class=\"qtd\">%d</span>"
                    "<span class=\"nome\">%s</span><span class=\"desc\">%d %s em %d páginas"
@@ -406,13 +417,15 @@ static void esc_sem_links(FILE *o, const char *s) {
     while (*s) {
         const char *ab = strstr(s, "[[");
         const char *fe = ab ? strstr(ab + 2, "]]") : NULL;
+        char *barra;
+        size_t n;
         if (!ab || !fe) { esc(o, s); return; }
-        size_t n = (size_t)(ab - s);
+        n = (size_t)(ab - s);
         memcpy(buf, s, n); buf[n] = '\0';
         esc(o, buf);
         n = (size_t)(fe - (ab + 2));
         memcpy(buf, ab + 2, n); buf[n] = '\0';
-        char *barra = strchr(buf, '|');
+        barra = strchr(buf, '|');
         esc(o, trim(barra ? barra + 1 : buf));
         s = fe + 2;
     }
@@ -432,24 +445,26 @@ static int cmp_ano(const void *a, const void *b) {
     return (x > y) - (x < y);
 }
 
-/* nome do período em que o ano cai: "Antiguidade", "Século XIX", "Anos 1950" */
-static void periodo(int ano, char *buf, size_t n) {
+/* nome do período em que o ano cai: "Antiguidade", "Século XIX", "Anos 1950"
+   (buf com pelo menos 32 bytes) */
+static void periodo(int ano, char *buf) {
     static const char *const ROMANO[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII",
         "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
-    if (ano <= 0)        snprintf(buf, n, "Antiguidade");
-    else if (ano < 1900) snprintf(buf, n, "Século %s", ROMANO[(ano - 1) / 100 + 1]);
-    else                 snprintf(buf, n, "Anos %d", ano / 10 * 10);
+    if (ano <= 0)        strcpy(buf, "Antiguidade");
+    else if (ano < 1900) sprintf(buf, "Século %s", ROMANO[(ano - 1) / 100 + 1]);
+    else                 sprintf(buf, "Anos %d", ano / 10 * 10);
 }
 
 static void gerar_linha_do_tempo(FILE *o) {
     Categoria *C = &cat[C_DATA];
     char per[64], ultimo[64] = "";
+    int i, j;
     qsort(C->v, C->n, sizeof *C->v, cmp_ano);
 
     fputs("<ol class=\"linha-tempo\">\n", o);
-    for (int i = 0; i < C->n; i++) {
+    for (i = 0; i < C->n; i++) {
         Valor *v = &C->v[i];
-        periodo(ano_de(v->texto), per, sizeof per);
+        periodo(ano_de(v->texto), per);
         if (strcmp(per, ultimo) != 0) {          /* começa um período novo */
             fprintf(o, "<li class=\"periodo\"><span>%s</span></li>\n", per);
             strcpy(ultimo, per);
@@ -460,7 +475,7 @@ static void gerar_linha_do_tempo(FILE *o) {
         fputs("\"><span class=\"ano\">", o);
         esc(o, v->texto);
         fputs("</span><ul class=\"obras\">\n", o);
-        for (int j = 0; j < v->n; j++) {
+        for (j = 0; j < v->n; j++) {
             Arquivo *a = &arq[v->idx[j]];
             fputs("  <li><a href=\"", o);
             href(o, a->base);
@@ -513,6 +528,7 @@ static void gerar_item_direto(FILE *o, int c, const Valor *v) {
 }
 
 static void gerar_item_grupo(FILE *o, int c, const Valor *v) {
+    int j;
     fputs("<details class=\"grupo\" id=\"", o);
     escrever_slug(o, v->texto, 0);
     fputs("\"><summary><span class=\"valor\">", o);
@@ -536,7 +552,7 @@ static void gerar_item_grupo(FILE *o, int c, const Valor *v) {
     }
 
     fputs("<ul class=\"paginas\">\n", o);
-    for (int j = 0; j < v->n; j++) {
+    for (j = 0; j < v->n; j++) {
         const Arquivo *a = &arq[v->idx[j]];
         fputs("  <li><a href=\"", o);
         href(o, a->base);
@@ -553,21 +569,23 @@ static const char *const EXEMPLO_BUSCA[NUM_CAT] = {
     "caminho mínimo, ordenar"};
 
 static void gerar_categoria(int c) {
-    char caminho[1024];
-    snprintf(caminho, sizeof caminho, "%s/%s.html", PASTA_SAIDA, CAT_SLUG[c]);
-    FILE *o = fopen(caminho, "w");
+    char caminho[1024], classe[64];             /* os slugs têm poucas letras */
+    Categoria *C = &cat[c];
+    FILE *o;
+    int np, n_grupos = 0, i;
+
+    sprintf(caminho, "%s/%s.html", PASTA_SAIDA, CAT_SLUG[c]);
+    o = fopen(caminho, "w");
     if (!o) { perror(caminho); return; }
 
-    Categoria *C = &cat[c];
     qsort(C->v, C->n, sizeof *C->v, cmp_valor);
     cat_atual = c;
 
-    char classe[64];
-    snprintf(classe, sizeof classe, "pagina-indice f-%s", CAT_SLUG[c]);
+    sprintf(classe, "pagina-indice f-%s", CAT_SLUG[c]);
     abrir_pagina(o, CAT_ROTULO[c], classe, c, 0, NULL);
 
-    int np = paginas_com(c), n_grupos = 0;
-    for (int i = 0; i < C->n; i++) if (!item_direto(c, &C->v[i])) n_grupos++;
+    np = paginas_com(c);
+    for (i = 0; i < C->n; i++) if (!item_direto(c, &C->v[i])) n_grupos++;
 
     fprintf(o, "<main class=\"indice\">\n<header class=\"cab-indice\">"
                "<span class=\"no-cat\" aria-hidden=\"true\"></span>"
@@ -595,7 +613,7 @@ static void gerar_categoria(int c) {
                   "Abrir todos</button><button class=\"acao\" type=\"button\" data-acao=\"fechar\">"
                   "Fechar todos</button></div>\n", o);
         fputs("<div class=\"grupos\">\n", o);
-        for (int i = 0; i < C->n; i++) {
+        for (i = 0; i < C->n; i++) {
             Valor *v = &C->v[i];
             qsort(v->idx, v->n, sizeof *v->idx, cmp_idx);
             if (item_direto(c, v)) gerar_item_direto(o, c, v);
@@ -613,18 +631,20 @@ static void gerar_categoria(int c) {
 
 int main(void) {
     DIR *d = opendir(PASTA_ENTRADA);
+    struct dirent *e;
+    int c;
     if (!d) { perror("Erro ao abrir " PASTA_ENTRADA); return 1; }
 
-    struct dirent *e;
     while ((e = readdir(d))) {
         size_t n = strlen(e->d_name);
-        if (n < 5) continue;
-        const char *ext = e->d_name + n - 4;
+        const char *ext;
+        char caminho[1024];
+        if (n < 5 || n + sizeof PASTA_ENTRADA + 1 > sizeof caminho) continue;
+        ext = e->d_name + n - 4;
         if (ext[0] != '.' || tolower((unsigned char)ext[1]) != 't' ||
             tolower((unsigned char)ext[2]) != 'x' || tolower((unsigned char)ext[3]) != 't') continue;
 
-        char caminho[1024];
-        snprintf(caminho, sizeof caminho, "%s/%s", PASTA_ENTRADA, e->d_name);
+        sprintf(caminho, "%s/%s", PASTA_ENTRADA, e->d_name);
         ler_arquivo(caminho, e->d_name);
     }
     closedir(d);
@@ -642,10 +662,10 @@ int main(void) {
     copiar_estilo(PASTA_SAIDA);
     copiar_arquivo(SCRIPT_INDICE, PASTA_SAIDA);
     gerar_index();
-    for (int c = 0; c < NUM_CAT; c++) gerar_categoria(c);
+    for (c = 0; c < NUM_CAT; c++) gerar_categoria(c);
 
     printf("\n%d arquivo(s) lido(s). HTMLs gerados em '%s/'.\n", n_arq, PASTA_SAIDA);
-    for (int c = 0; c < NUM_CAT; c++)
+    for (c = 0; c < NUM_CAT; c++)
         printf("  %-10s %d valor(es)\n", CAT_ROTULO[c], cat[c].n);
     return 0;
 }

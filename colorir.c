@@ -1,4 +1,4 @@
-/* Compilar: gcc -Wall -Wextra -pedantic -std=c99 colorir.c -o colorir
+/* Compilar: gcc -Wall -Wextra -pedantic -std=c89 colorir.c -o colorir
 
    Filtro que transforma código C em HTML colorido, separando por cores os
    itens léxicos: pragmas (#include, #define, ...), tipos (int, float, ...),
@@ -298,17 +298,22 @@ static void bloco(FILE *o, Texto *t, int numero, int nb, const char *arquivo) {
     fputs("</code></pre></div>\n</section>\n", o);
 }
 
-/* botão "Copiar código": copia o texto do bloco e confirma no próprio botão */
-static const char *SCRIPT_COPIAR =
+/* botão "Copiar código": copia o texto do bloco e confirma no próprio botão.
+   O C89 só garante literais de até 509 caracteres; por isso o script sai em
+   duas partes. */
+static void escrever_script_copiar(FILE *o) {
+    fputs("<script>"
     "function reserva(t){var a=document.createElement('textarea');a.value=t;"
     "a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();"
-    "try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}"
-    "document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',"
+    "try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}", o);
+    fputs("document.querySelectorAll('.copiar').forEach(function(b){b.addEventListener('click',"
     "function(){var t=b.closest('.bloco').querySelector('pre.c').textContent;"
     "function ok(){b.textContent='Copiado';b.classList.add('feito');setTimeout(function(){"
     "b.textContent='Copiar código';b.classList.remove('feito');},1800);}"
     "if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t)"
-    ".then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});";
+    ".then(ok,function(){reserva(t);ok();});}else{reserva(t);ok();}});});"
+    "</script>\n", o);
+}
 
 /* base == NULL no modo filtro: página avulsa, sem links para o resto do site */
 static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos, int nb) {
@@ -317,9 +322,13 @@ static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos,
     int c, b;
 
     /* cores dos itens léxicos (tabela CATS): ficam na própria página */
-    for (c = 0; c < N_CATS && n < sizeof css; c++)
-        n += (size_t)snprintf(css + n, sizeof css - n, ".%s{%s}", CATS[c].classe, CATS[c].css);
-    snprintf(titulo_aba, sizeof titulo_aba, "Código: %s", titulo);
+    for (c = 0; c < N_CATS; c++) {
+        if (n + strlen(CATS[c].classe) + strlen(CATS[c].css) + 4 > sizeof css) break;
+        n += (size_t)sprintf(css + n, ".%s{%s}", CATS[c].classe, CATS[c].css);
+    }
+    css[n] = '\0';
+    strcpy(titulo_aba, "Código: ");
+    strncat(titulo_aba, titulo, sizeof titulo_aba - strlen(titulo_aba) - 1);
     abrir_pagina(o, titulo_aba, "pagina-codigo", -1, base == NULL, css);
 
     fputs("<main class=\"codigo-pagina\">\n<header class=\"titulo-artigo\"><h1>", o);
@@ -341,7 +350,8 @@ static void pagina(FILE *o, const char *titulo, const char *base, Texto *blocos,
         bloco(o, &blocos[b], b + 1, nb, base ? arquivo : NULL);
     }
     fputs("</main>\n", o);
-    fechar_pagina(o, base == NULL, SCRIPT_COPIAR);
+    escrever_script_copiar(o);
+    fechar_pagina(o, base == NULL, NULL);
 }
 
 /* ---------- modo filtro ---------- */

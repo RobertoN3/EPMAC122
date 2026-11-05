@@ -149,9 +149,9 @@ No <span class="op">*</span>remove_chave(No <span class="op">*</span>r, <span cl
   <span class="kw">if</span> (x <span class="op">&lt;</span> r<span class="op">-&gt;</span>chave) r<span class="op">-&gt;</span>esq <span class="op">=</span> remove_chave(r<span class="op">-&gt;</span>esq, x);
   <span class="kw">else</span> <span class="kw">if</span> (x <span class="op">&gt;</span> r<span class="op">-&gt;</span>chave) r<span class="op">-&gt;</span>dir <span class="op">=</span> remove_chave(r<span class="op">-&gt;</span>dir, x);
   <span class="kw">else</span> <span class="kw">if</span> (r<span class="op">-&gt;</span>esq <span class="op">!=</span> <span class="ct">NULL</span> <span class="op">&amp;&amp;</span> r<span class="op">-&gt;</span>dir <span class="op">!=</span> <span class="ct">NULL</span>) {
-    r<span class="op">-&gt;</span>chave <span class="op">=</span> minimo(r<span class="op">-&gt;</span>dir)<span class="op">-&gt;</span>chave;  <span class="cm">// copia o sucessor</span>
+    r<span class="op">-&gt;</span>chave <span class="op">=</span> minimo(r<span class="op">-&gt;</span>dir)<span class="op">-&gt;</span>chave;  <span class="cm">/* copia o sucessor */</span>
     r<span class="op">-&gt;</span>dir <span class="op">=</span> remove_chave(r<span class="op">-&gt;</span>dir, r<span class="op">-&gt;</span>chave);
-  } <span class="kw">else</span> {                             <span class="cm">// zero ou um filho</span>
+  } <span class="kw">else</span> {                             <span class="cm">/* zero ou um filho */</span>
     filho <span class="op">=</span> (r<span class="op">-&gt;</span>esq <span class="op">!=</span> <span class="ct">NULL</span>) <span class="op">?</span> r<span class="op">-&gt;</span>esq <span class="op">:</span> r<span class="op">-&gt;</span>dir;
     free(r);
     <span class="kw">return</span> filho;
@@ -159,7 +159,7 @@ No <span class="op">*</span>remove_chave(No <span class="op">*</span>r, <span cl
   <span class="kw">return</span> r;
 }
 
-<span class="tp">void</span> inordem(No <span class="op">*</span>r) {                  <span class="cm">// lista em ordem crescente</span>
+<span class="tp">void</span> inordem(No <span class="op">*</span>r) {                  <span class="cm">/* lista em ordem crescente */</span>
   <span class="kw">if</span> (r <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span>;
   inordem(r<span class="op">-&gt;</span>esq);
   printf(<span class="st">"%d "</span>, r<span class="op">-&gt;</span>chave);

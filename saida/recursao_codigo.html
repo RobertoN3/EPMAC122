@@ -66,9 +66,9 @@
     printf(<span class="st">"mover disco 1 de %c para %c<span class="es">\n</span>"</span>, origem, destino);
     <span class="kw">return</span>;
   }
-  hanoi(n <span class="op">-</span> <span class="nu">1</span>, origem, aux, destino);   <span class="cm">// libera o maior disco</span>
+  hanoi(n <span class="op">-</span> <span class="nu">1</span>, origem, aux, destino);   <span class="cm">/* libera o maior disco */</span>
   printf(<span class="st">"mover disco %d de %c para %c<span class="es">\n</span>"</span>, n, origem, destino);
-  hanoi(n <span class="op">-</span> <span class="nu">1</span>, aux, destino, origem);   <span class="cm">// recoloca os n-1 discos</span>
+  hanoi(n <span class="op">-</span> <span class="nu">1</span>, aux, destino, origem);   <span class="cm">/* recoloca os n-1 discos */</span>
 }
 
 <span class="tp">int</span> main(<span class="tp">void</span>) {

@@ -98,8 +98,8 @@
   qsort(e, na, <span class="kw">sizeof</span>(Aresta), compara);     <span class="cm">/* ordena por peso */</span>
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> na <span class="op">&amp;&amp;</span> escolhidas <span class="op">&lt;</span> nv <span class="op">-</span> <span class="nu">1</span>; i<span class="op">++</span>) {
     <span class="tp">int</span> ru <span class="op">=</span> find(e[i].u), rv <span class="op">=</span> find(e[i].v);
-    <span class="kw">if</span> (ru <span class="op">!=</span> rv) {                          <span class="cm">// não forma ciclo</span>
-      pai[ru] <span class="op">=</span> rv;                          <span class="cm">// union</span>
+    <span class="kw">if</span> (ru <span class="op">!=</span> rv) {                          <span class="cm">/* não forma ciclo */</span>
+      pai[ru] <span class="op">=</span> rv;                          <span class="cm">/* union */</span>
       total <span class="op">+=</span> e[i].peso;
       escolhidas<span class="op">++</span>;
       printf(<span class="st">"aresta %d-%d (peso %d)<span class="es">\n</span>"</span>, e[i].u, e[i].v, e[i].peso);

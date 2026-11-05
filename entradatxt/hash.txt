@@ -203,13 +203,13 @@ Celula *busca(const char *chave) {
 void insere(const char *chave, int valor) {
   Celula *p = busca(chave);
   unsigned h;
-  if (p != NULL) { p->valor = valor; return; }   // já existe: atualiza
+  if (p != NULL) { p->valor = valor; return; }   /* já existe: atualiza */
   h = hash(chave);
   p = malloc(sizeof(Celula));
   p->chave = malloc(strlen(chave) + 1);
   strcpy(p->chave, chave);
   p->valor = valor;
-  p->prox = tabela[h];                           // insere no início da lista
+  p->prox = tabela[h];                           /* insere no início da lista */
   tabela[h] = p;
 }
 

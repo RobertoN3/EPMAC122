@@ -155,14 +155,14 @@ void bfs(int s, int dist[], int pai[]) {
     pai[v] = -1;
   }
   dist[s] = 0;
-  fila[fim++] = s;                       // insere a origem
+  fila[fim++] = s;                       /* insere a origem */
   while (ini < fim) {
-    u = fila[ini++];                     // remove o primeiro da fila
+    u = fila[ini++];                     /* remove o primeiro da fila */
     for (v = 0; v < nv; v++)
-      if (adj[u][v] && dist[v] == -1) {  // vizinho ainda não visitado
+      if (adj[u][v] && dist[v] == -1) {  /* vizinho ainda não visitado */
         dist[v] = dist[u] + 1;
         pai[v] = u;
-        fila[fim++] = v;                 // marca ao entrar na fila
+        fila[fim++] = v;                 /* marca ao entrar na fila */
       }
   }
 }

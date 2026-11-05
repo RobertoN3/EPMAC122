@@ -88,7 +88,7 @@
   <span class="kw">return</span> <span class="nu">1</span>;
 }
 
-<span class="tp">int</span> removeFila(Fila <span class="op">*</span>f) {        <span class="cm">// supõe fila não vazia</span>
+<span class="tp">int</span> removeFila(Fila <span class="op">*</span>f) {        <span class="cm">/* supõe fila não vazia */</span>
   <span class="tp">int</span> x <span class="op">=</span> f<span class="op">-&gt;</span>v[f<span class="op">-&gt;</span>ini];
   f<span class="op">-&gt;</span>ini <span class="op">=</span> (f<span class="op">-&gt;</span>ini <span class="op">+</span> <span class="nu">1</span>) <span class="op">%</span> N;
   f<span class="op">-&gt;</span>tam<span class="op">--</span>;

@@ -13,8 +13,8 @@ void insercao(int v[], int n) {
     /* invariante: v[0..i-1] está em ordem crescente */
     x = v[i];
     for (j = i - 1; j >= 0 && v[j] > x; j--)
-      v[j + 1] = v[j];            // desloca os maiores para a direita
-    v[j + 1] = x;                 // encaixa x no espaço aberto
+      v[j + 1] = v[j];            /* desloca os maiores para a direita */
+    v[j + 1] = x;                 /* encaixa x no espaço aberto */
     printf("i = %d: ", i);
     imprime(v, n);
   }

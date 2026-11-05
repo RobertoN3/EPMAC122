@@ -16,7 +16,7 @@ void bolha(int v[], int n) {
         trocou = 1;
       }
     }
-    if (!trocou) break;        // nenhuma troca: já está ordenado
+    if (!trocou) break;        /* nenhuma troca: já está ordenado */
   }
 }
 

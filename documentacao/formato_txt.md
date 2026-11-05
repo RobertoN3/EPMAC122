@@ -81,7 +81,8 @@ O texto vem quebrado em linhas de ~75 colunas, então o gerador **não** pode tr
 
 - `REFERENCIAS:` sozinha numa linha abre a seção; cada referência é uma linha `- ...`. Fica na mesma página.
 - O código C fica entre as linhas `INICIO_CODIGO_C` e `FIM_CODIGO_C`, depois das referências. Ele vai para uma página HTML separada e colorida. Um TXT pode ter mais de um bloco.
-- Todo código compila sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e roda.
+- Todo código compila sem avisos com `gcc -Wall -Wextra -pedantic -std=c89` e roda.
+- Por ser C89: comentários só com `/* */` (nada de `//`), declarações no começo do bloco (nada de `for (int i = 0; ...)`), sem `snprintf` nem `%zu`, e literais de texto com até 509 caracteres.
 
 ## Páginas (41)
 

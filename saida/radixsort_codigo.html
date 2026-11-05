@@ -88,7 +88,7 @@
   <span class="tp">int</span> cont[BASE] <span class="op">=</span> {<span class="nu">0</span>}, i, d;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) cont[(v[i] <span class="op">/</span> exp) <span class="op">%</span> BASE]<span class="op">++</span>;     <span class="cm">/* contar */</span>
   <span class="kw">for</span> (d <span class="op">=</span> <span class="nu">1</span>; d <span class="op">&lt;</span> BASE; d<span class="op">++</span>) cont[d] <span class="op">+=</span> cont[d <span class="op">-</span> <span class="nu">1</span>];       <span class="cm">/* acumular */</span>
-  <span class="kw">for</span> (i <span class="op">=</span> n <span class="op">-</span> <span class="nu">1</span>; i <span class="op">&gt;=</span> <span class="nu">0</span>; i<span class="op">--</span>) {         <span class="cm">// de trás para a frente: estável</span>
+  <span class="kw">for</span> (i <span class="op">=</span> n <span class="op">-</span> <span class="nu">1</span>; i <span class="op">&gt;=</span> <span class="nu">0</span>; i<span class="op">--</span>) {         <span class="cm">/* de trás para a frente: estável */</span>
     d <span class="op">=</span> (v[i] <span class="op">/</span> exp) <span class="op">%</span> BASE;
     aux[<span class="op">--</span>cont[d]] <span class="op">=</span> v[i];
   }

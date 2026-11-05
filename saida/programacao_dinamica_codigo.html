@@ -86,9 +86,9 @@
   <span class="kw">for</span> (c <span class="op">=</span> <span class="nu">0</span>; c <span class="op">&lt;=</span> C; c<span class="op">++</span>) M[<span class="nu">0</span>][c] <span class="op">=</span> <span class="nu">0</span>;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
     <span class="kw">for</span> (c <span class="op">=</span> <span class="nu">0</span>; c <span class="op">&lt;=</span> C; c<span class="op">++</span>) {
-      M[i][c] <span class="op">=</span> M[i <span class="op">-</span> <span class="nu">1</span>][c];                         <span class="cm">// não leva o objeto i</span>
+      M[i][c] <span class="op">=</span> M[i <span class="op">-</span> <span class="nu">1</span>][c];                         <span class="cm">/* não leva o objeto i */</span>
       <span class="kw">if</span> (peso[i] <span class="op">&lt;=</span> c <span class="op">&amp;&amp;</span> valor[i] <span class="op">+</span> M[i <span class="op">-</span> <span class="nu">1</span>][c <span class="op">-</span> peso[i]] <span class="op">&gt;</span> M[i][c])
-        M[i][c] <span class="op">=</span> valor[i] <span class="op">+</span> M[i <span class="op">-</span> <span class="nu">1</span>][c <span class="op">-</span> peso[i]];  <span class="cm">// leva o objeto i</span>
+        M[i][c] <span class="op">=</span> valor[i] <span class="op">+</span> M[i <span class="op">-</span> <span class="nu">1</span>][c <span class="op">-</span> peso[i]];  <span class="cm">/* leva o objeto i */</span>
     }
   }
   <span class="kw">return</span> M[n][C];

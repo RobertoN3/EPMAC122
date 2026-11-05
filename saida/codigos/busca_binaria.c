@@ -6,8 +6,8 @@ int buscaBinaria(int v[], int n, int x) {
   while (ini <= fim) {
     m = ini + (fim - ini) / 2;     /* evita estouro de ini+fim */
     if (v[m] == x) return m;
-    if (x < v[m]) fim = m - 1;     // descarta a metade direita
-    else          ini = m + 1;     // descarta a metade esquerda
+    if (x < v[m]) fim = m - 1;     /* descarta a metade direita */
+    else          ini = m + 1;     /* descarta a metade esquerda */
   }
   return -1;
 }
@@ -15,7 +15,7 @@ int buscaBinaria(int v[], int n, int x) {
 /* versão recursiva no intervalo fechado [ini, fim] */
 int buscaRec(int v[], int ini, int fim, int x) {
   int m;
-  if (ini > fim) return -1;        // trecho vazio: não está
+  if (ini > fim) return -1;        /* trecho vazio: não está */
   m = (ini + fim) / 2;
   if (v[m] == x) return m;
   if (x < v[m]) return buscaRec(v, ini, m - 1, x);

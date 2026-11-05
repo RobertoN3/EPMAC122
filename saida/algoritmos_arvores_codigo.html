@@ -28,7 +28,7 @@
 <li><code class="op">+=</code> operador</li>
 </ul>
 <section class="bloco">
-<div class="bloco-barra"><span>83 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/algoritmos_arvores.c" download>Baixar algoritmos_arvores.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="bloco-barra"><span>86 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/algoritmos_arvores.c" download>Baixar algoritmos_arvores.c</a><button class="copiar" type="button">Copiar código</button></span></div>
 <div class="codigo"><pre class="nl" aria-hidden="true">1
 2
 3
@@ -111,7 +111,10 @@
 80
 81
 82
-83</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+83
+84
+85
+86</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
 
 <span class="kw">typedef</span> <span class="tp">struct</span> No {
     <span class="tp">int</span> valor;
@@ -140,11 +143,13 @@
 
 <span class="tp">int</span> altura(<span class="kw">const</span> No <span class="op">*</span>raiz)
 {
+    <span class="tp">int</span> esquerda, direita;
+
     <span class="kw">if</span> (raiz <span class="op">==</span> <span class="ct">NULL</span>) {
         <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>; <span class="cm">/* Faz a altura de uma folha ser zero. */</span>
     }
-    <span class="tp">int</span> esquerda <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>esquerdo);
-    <span class="tp">int</span> direita <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>direito);
+    esquerda <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>esquerdo);
+    direita <span class="op">=</span> altura(raiz<span class="op">-&gt;</span>direito);
     <span class="kw">return</span> <span class="nu">1</span> <span class="op">+</span> (esquerda <span class="op">&gt;</span> direita <span class="op">?</span> esquerda <span class="op">:</span> direita);
 }
 
@@ -159,11 +164,12 @@
     <span class="tp">int</span> correto <span class="op">=</span> nos <span class="op">==</span> nos_esperados <span class="op">&amp;&amp;</span> folhas <span class="op">==</span> folhas_esperadas <span class="op">&amp;&amp;</span>
                   h <span class="op">==</span> altura_esperada;
 
-    printf(<span class="st">"%s: nos = %zu, folhas = %zu, altura = %d [%s]<span class="es">\n</span>"</span>,
-           nome, nos, folhas, h, correto <span class="op">?</span> <span class="st">"OK"</span> <span class="op">:</span> <span class="st">"ERRO"</span>);
+    printf(<span class="st">"%s: nos = %lu, folhas = %lu, altura = %d [%s]<span class="es">\n</span>"</span>,
+           nome, (<span class="tp">unsigned</span> <span class="tp">long</span>)nos, (<span class="tp">unsigned</span> <span class="tp">long</span>)folhas, h, correto <span class="op">?</span> <span class="st">"OK"</span> <span class="op">:</span> <span class="st">"ERRO"</span>);
     <span class="kw">if</span> (<span class="op">!</span>correto) {
-        fprintf(<span class="ct">stderr</span>, <span class="st">"Esperado: nos = %zu, folhas = %zu, altura = %d<span class="es">\n</span>"</span>,
-                nos_esperados, folhas_esperadas, altura_esperada);
+        fprintf(<span class="ct">stderr</span>, <span class="st">"Esperado: nos = %lu, folhas = %lu, altura = %d<span class="es">\n</span>"</span>,
+                (<span class="tp">unsigned</span> <span class="tp">long</span>)nos_esperados, (<span class="tp">unsigned</span> <span class="tp">long</span>)folhas_esperadas,
+                altura_esperada);
     }
     <span class="kw">return</span> correto;
 }
@@ -183,7 +189,7 @@
     nos[<span class="nu">2</span>].esquerdo <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">4</span>];
     nos[<span class="nu">2</span>].direito <span class="op">=</span> <span class="op">&amp;</span>nos[<span class="nu">5</span>];
 
-    <span class="cm">// Todos os testes sao executados, mesmo se algum falhar.</span>
+    <span class="cm">/* Todos os testes sao executados, mesmo se algum falhar. */</span>
     falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore de seis nos"</span>, <span class="op">&amp;</span>nos[<span class="nu">0</span>], <span class="nu">6</span>, <span class="nu">3</span>, <span class="nu">2</span>);
     falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore vazia"</span>, <span class="ct">NULL</span>, <span class="nu">0</span>, <span class="nu">0</span>, <span class="op">-</span><span class="nu">1</span>);
     falhas <span class="op">+=</span> <span class="op">!</span>conferir(<span class="st">"Arvore com um no"</span>, <span class="op">&amp;</span>unico, <span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">0</span>);

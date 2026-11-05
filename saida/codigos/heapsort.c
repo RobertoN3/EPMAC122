@@ -10,7 +10,7 @@ void troca(int v[], int i, int j) {
 void desce(int v[], int n, int i) {
   int f;                               /* maior filho de i */
   while (2 * i + 1 < n) {
-    f = 2 * i + 1;                     // filho esquerdo
+    f = 2 * i + 1;                     /* filho esquerdo */
     if (f + 1 < n && v[f + 1] > v[f]) f++;
     if (v[i] >= v[f]) break;           /* já é heap */
     troca(v, i, f);
@@ -23,7 +23,7 @@ void heapsort(int v[], int n) {
   for (i = n / 2 - 1; i >= 0; i--)     /* construção: O(n) */
     desce(v, n, i);
   for (fim = n - 1; fim > 0; fim--) {
-    troca(v, 0, fim);                  // o maior vai para o fim
+    troca(v, 0, fim);                  /* o maior vai para o fim */
     desce(v, fim, 0);
   }
 }

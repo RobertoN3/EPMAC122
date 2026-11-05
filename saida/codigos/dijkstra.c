@@ -15,9 +15,9 @@ void dijkstra(int peso[NV][NV], int s, int dist[], int pai[]) {
     for (i = 0; i < NV; i++)
       if (!fixado[i] && dist[i] != INF && (u == -1 || dist[i] < dist[u]))
         u = i;
-    if (u == -1) break;                        // restantes inalcançáveis
+    if (u == -1) break;                        /* restantes inalcançáveis */
     fixado[u] = 1;
-    for (v = 0; v < NV; v++)                   // relaxa arestas de u
+    for (v = 0; v < NV; v++)                   /* relaxa arestas de u */
       if (peso[u][v] && !fixado[v] && dist[u] + peso[u][v] < dist[v]) {
         dist[v] = dist[u] + peso[u][v];
         pai[v] = u;

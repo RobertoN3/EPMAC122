@@ -14,7 +14,7 @@ void contagem(int v[], int aux[], int n, int exp) {
   int cont[BASE] = {0}, i, d;
   for (i = 0; i < n; i++) cont[(v[i] / exp) % BASE]++;     /* contar */
   for (d = 1; d < BASE; d++) cont[d] += cont[d - 1];       /* acumular */
-  for (i = n - 1; i >= 0; i--) {         // de trás para a frente: estável
+  for (i = n - 1; i >= 0; i--) {         /* de trás para a frente: estável */
     d = (v[i] / exp) % BASE;
     aux[--cont[d]] = v[i];
   }

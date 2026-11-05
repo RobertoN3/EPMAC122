@@ -39,9 +39,9 @@ No *remove_chave(No *r, int x) {
   if (x < r->chave) r->esq = remove_chave(r->esq, x);
   else if (x > r->chave) r->dir = remove_chave(r->dir, x);
   else if (r->esq != NULL && r->dir != NULL) {
-    r->chave = minimo(r->dir)->chave;  // copia o sucessor
+    r->chave = minimo(r->dir)->chave;  /* copia o sucessor */
     r->dir = remove_chave(r->dir, r->chave);
-  } else {                             // zero ou um filho
+  } else {                             /* zero ou um filho */
     filho = (r->esq != NULL) ? r->esq : r->dir;
     free(r);
     return filho;
@@ -49,7 +49,7 @@ No *remove_chave(No *r, int x) {
   return r;
 }
 
-void inordem(No *r) {                  // lista em ordem crescente
+void inordem(No *r) {                  /* lista em ordem crescente */
   if (r == NULL) return;
   inordem(r->esq);
   printf("%d ", r->chave);

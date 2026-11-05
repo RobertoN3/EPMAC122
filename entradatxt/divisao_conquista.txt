@@ -188,11 +188,11 @@ void intercala(int v[], int ini, int meio, int fim) {
 
 /* Divisão e conquista: dividir, conquistar, combinar */
 void mergesort(int v[], int ini, int fim) {
-  if (ini < fim) {                    // caso base: 0 ou 1 elemento
-    int meio = (ini + fim) / 2;       // dividir
-    mergesort(v, ini, meio);          // conquistar a 1a metade
-    mergesort(v, meio + 1, fim);      // conquistar a 2a metade
-    intercala(v, ini, meio, fim);     // combinar
+  if (ini < fim) {                    /* caso base: 0 ou 1 elemento */
+    int meio = (ini + fim) / 2;       /* dividir */
+    mergesort(v, ini, meio);          /* conquistar a 1a metade */
+    mergesort(v, meio + 1, fim);      /* conquistar a 2a metade */
+    intercala(v, ini, meio, fim);     /* combinar */
   }
 }
 

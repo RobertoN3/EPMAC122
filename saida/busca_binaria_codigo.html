@@ -66,8 +66,8 @@
   <span class="kw">while</span> (ini <span class="op">&lt;=</span> fim) {
     m <span class="op">=</span> ini <span class="op">+</span> (fim <span class="op">-</span> ini) <span class="op">/</span> <span class="nu">2</span>;     <span class="cm">/* evita estouro de ini+fim */</span>
     <span class="kw">if</span> (v[m] <span class="op">==</span> x) <span class="kw">return</span> m;
-    <span class="kw">if</span> (x <span class="op">&lt;</span> v[m]) fim <span class="op">=</span> m <span class="op">-</span> <span class="nu">1</span>;     <span class="cm">// descarta a metade direita</span>
-    <span class="kw">else</span>          ini <span class="op">=</span> m <span class="op">+</span> <span class="nu">1</span>;     <span class="cm">// descarta a metade esquerda</span>
+    <span class="kw">if</span> (x <span class="op">&lt;</span> v[m]) fim <span class="op">=</span> m <span class="op">-</span> <span class="nu">1</span>;     <span class="cm">/* descarta a metade direita */</span>
+    <span class="kw">else</span>          ini <span class="op">=</span> m <span class="op">+</span> <span class="nu">1</span>;     <span class="cm">/* descarta a metade esquerda */</span>
   }
   <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>;
 }
@@ -75,7 +75,7 @@
 <span class="cm">/* versão recursiva no intervalo fechado [ini, fim] */</span>
 <span class="tp">int</span> buscaRec(<span class="tp">int</span> v[], <span class="tp">int</span> ini, <span class="tp">int</span> fim, <span class="tp">int</span> x) {
   <span class="tp">int</span> m;
-  <span class="kw">if</span> (ini <span class="op">&gt;</span> fim) <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>;        <span class="cm">// trecho vazio: não está</span>
+  <span class="kw">if</span> (ini <span class="op">&gt;</span> fim) <span class="kw">return</span> <span class="op">-</span><span class="nu">1</span>;        <span class="cm">/* trecho vazio: não está */</span>
   m <span class="op">=</span> (ini <span class="op">+</span> fim) <span class="op">/</span> <span class="nu">2</span>;
   <span class="kw">if</span> (v[m] <span class="op">==</span> x) <span class="kw">return</span> m;
   <span class="kw">if</span> (x <span class="op">&lt;</span> v[m]) <span class="kw">return</span> buscaRec(v, ini, m <span class="op">-</span> <span class="nu">1</span>, x);

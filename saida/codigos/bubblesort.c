@@ -13,7 +13,7 @@ int bolha(int v[], int n) {
         trocas++;
       }
     }
-    if (!trocou) break;           // passada sem trocas: está ordenado
+    if (!trocou) break;           /* passada sem trocas: está ordenado */
   }
   return trocas;
 }

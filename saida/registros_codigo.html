@@ -86,7 +86,7 @@
   <span class="tp">int</span> i, j;
   Aluno x;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
-    x <span class="op">=</span> t[i];                    <span class="cm">// copia o registro inteiro</span>
+    x <span class="op">=</span> t[i];                    <span class="cm">/* copia o registro inteiro */</span>
     <span class="kw">for</span> (j <span class="op">=</span> i <span class="op">-</span> <span class="nu">1</span>; j <span class="op">&gt;=</span> <span class="nu">0</span> <span class="op">&amp;&amp;</span> t[j].nota <span class="op">&lt;</span> x.nota; j<span class="op">--</span>)
       t[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> t[j];
     t[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> x;

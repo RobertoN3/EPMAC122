@@ -139,7 +139,7 @@
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> TAM; i<span class="op">++</span>)
     <span class="kw">for</span> (j <span class="op">=</span> <span class="nu">0</span>; j <span class="op">&lt;</span> TAM; j<span class="op">++</span>) {
       deg[i][j] <span class="op">=</span> j <span class="op">*</span> <span class="nu">255</span> <span class="op">/</span> (TAM <span class="op">-</span> <span class="nu">1</span>);
-      neg[i][j] <span class="op">=</span> <span class="nu">255</span> <span class="op">-</span> deg[i][j];       <span class="cm">// negativo: max - valor</span>
+      neg[i][j] <span class="op">=</span> <span class="nu">255</span> <span class="op">-</span> deg[i][j];       <span class="cm">/* negativo: max - valor */</span>
     }
   <span class="kw">if</span> (<span class="op">!</span>grava_pgm(<span class="st">"degrade.pgm"</span>, deg, <span class="nu">255</span>) <span class="op">||</span> <span class="op">!</span>grava_pgm(<span class="st">"negativo.pgm"</span>, neg, <span class="nu">255</span>)) <span class="kw">return</span> <span class="nu">1</span>;
 

@@ -25,7 +25,7 @@ int mdc_euclides(int a, int b, int mostrar) {
 }
 
 int mdc_rec(int a, int b) {
-  return b == 0 ? a : mdc_rec(b, a % b);   // recursão de cauda
+  return b == 0 ? a : mdc_rec(b, a % b);   /* recursão de cauda */
 }
 
 void compara(int a, int b) {

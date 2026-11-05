@@ -71,7 +71,8 @@ Os três programas são independentes, mas as páginas que eles geram apontam um
 
 ## 8. Garantir que os exemplos estão certos
 
-- Todo código C dos TXT precisa compilar sem avisos com `gcc -Wall -Wextra -pedantic -std=c99` e rodar. Conferimos isso a cada mudança, extraindo os blocos dos 31 TXT automaticamente.
+- Todo código C dos TXT precisa compilar sem avisos com `gcc -Wall -Wextra -pedantic -std=c89` e rodar. Conferimos isso a cada mudança, extraindo os blocos dos 31 TXT automaticamente.
+- No fim, o professor pediu C89 em vez de C99. Tivemos de trocar os comentários `//` por `/* */`, subir as declarações para o começo dos blocos (o C89 não aceita `for (int i = 0; ...)`), trocar `snprintf` e `%zu`, que não existem no C89, e dividir um texto longo do colorir.c. Conferimos que os 41 exemplos davam a mesma saída e que o site gerado ficava idêntico, byte a byte.
 - Os exemplos passo a passo do texto (tabela da mochila, execução de Dijkstra e Kruskal, passadas do Radix Sort) foram montados com os mesmos dados dos programas, e conferimos se a saída de cada programa batia com o texto. Também tivemos de cuidar de afirmações numéricas fáceis de errar, como "13! já não cabe num int de 32 bits".
 
 ## 9. Git e trabalho em dupla

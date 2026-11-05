@@ -28,7 +28,7 @@
 <li><code class="op">+=</code> operador</li>
 </ul>
 <section class="bloco">
-<div class="bloco-barra"><span>77 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/estabilidade.c" download>Baixar estabilidade.c</a><button class="copiar" type="button">Copiar código</button></span></div>
+<div class="bloco-barra"><span>84 linhas</span><span class="bloco-acoes"><a class="baixar" href="codigos/estabilidade.c" download>Baixar estabilidade.c</a><button class="copiar" type="button">Copiar código</button></span></div>
 <div class="codigo"><pre class="nl" aria-hidden="true">1
 2
 3
@@ -105,7 +105,14 @@
 74
 75
 76
-77</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
+77
+78
+79
+80
+81
+82
+83
+84</pre><pre class="c"><code><span class="pp">#include</span> <span class="pf">&lt;stdio.h&gt;</span><span class="pp"></span>
 
 <span class="kw">typedef</span> <span class="tp">struct</span> {
     <span class="tp">char</span> nome[<span class="nu">32</span>];
@@ -115,7 +122,9 @@
 <span class="cm">/* Estavel: registros com nota igual nao sao deslocados pela chave. */</span>
 <span class="tp">void</span> insertion_sort(Aluno vetor[], <span class="tp">size_t</span> n)
 {
-    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="tp">size_t</span> i;
+
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
         Aluno chave <span class="op">=</span> vetor[i];
         <span class="tp">size_t</span> j <span class="op">=</span> i;
 
@@ -131,10 +140,12 @@
    Mesmo selecionar o primeiro minimo nao impede essa inversao. */</span>
 <span class="tp">void</span> selecao_direta(Aluno vetor[], <span class="tp">size_t</span> n)
 {
-    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="tp">size_t</span> i, j;
+
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
         <span class="tp">size_t</span> menor <span class="op">=</span> i;
 
-        <span class="kw">for</span> (<span class="tp">size_t</span> j <span class="op">=</span> i <span class="op">+</span> <span class="nu">1</span>; j <span class="op">&lt;</span> n; j<span class="op">++</span>) {
+        <span class="kw">for</span> (j <span class="op">=</span> i <span class="op">+</span> <span class="nu">1</span>; j <span class="op">&lt;</span> n; j<span class="op">++</span>) {
             <span class="kw">if</span> (vetor[j].nota <span class="op">&lt;</span> vetor[menor].nota) {
                 menor <span class="op">=</span> j;
             }
@@ -149,8 +160,10 @@
 
 <span class="tp">void</span> imprimir(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>titulo, <span class="kw">const</span> Aluno vetor[], <span class="tp">size_t</span> n)
 {
+    <span class="tp">size_t</span> i;
+
     printf(<span class="st">"%s<span class="es">\n</span>"</span>, titulo);
-    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
         printf(<span class="st">"  %s: nota %d<span class="es">\n</span>"</span>, vetor[i].nome, vetor[i].nota);
     }
     printf(<span class="st">"<span class="es">\n</span>"</span>);
@@ -166,9 +179,10 @@
     Aluno estavel[<span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>]];
     Aluno instavel[<span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>]];
     <span class="kw">const</span> <span class="tp">size_t</span> n <span class="op">=</span> <span class="kw">sizeof</span> original <span class="op">/</span> <span class="kw">sizeof</span> original[<span class="nu">0</span>];
+    <span class="tp">size_t</span> i;
 
-    <span class="cm">// As duas ordenacoes recebem a mesma sequencia inicial.</span>
-    <span class="kw">for</span> (<span class="tp">size_t</span> i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="cm">/* As duas ordenacoes recebem a mesma sequencia inicial. */</span>
+    <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
         estavel[i] <span class="op">=</span> original[i];
         instavel[i] <span class="op">=</span> original[i];
     }

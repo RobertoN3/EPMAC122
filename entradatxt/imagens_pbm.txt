@@ -174,7 +174,7 @@ int main(void) {
   for (i = 0; i < TAM; i++)
     for (j = 0; j < TAM; j++) {
       deg[i][j] = j * 255 / (TAM - 1);
-      neg[i][j] = 255 - deg[i][j];       // negativo: max - valor
+      neg[i][j] = 255 - deg[i][j];       /* negativo: max - valor */
     }
   if (!grava_pgm("degrade.pgm", deg, 255) || !grava_pgm("negativo.pgm", neg, 255)) return 1;
 

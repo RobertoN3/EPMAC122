@@ -109,7 +109,7 @@
       printf(<span class="st">"aresta %d-%d (peso %d)<span class="es">\n</span>"</span>, pai[u], u, peso[pai[u]][u]);
       total <span class="op">+=</span> peso[pai[u]][u];
     }
-    <span class="kw">for</span> (v <span class="op">=</span> <span class="nu">0</span>; v <span class="op">&lt;</span> nv; v<span class="op">++</span>)            <span class="cm">// atualiza os vizinhos de u</span>
+    <span class="kw">for</span> (v <span class="op">=</span> <span class="nu">0</span>; v <span class="op">&lt;</span> nv; v<span class="op">++</span>)            <span class="cm">/* atualiza os vizinhos de u */</span>
       <span class="kw">if</span> (peso[u][v] <span class="op">&amp;&amp;</span> <span class="op">!</span>na_arvore[v] <span class="op">&amp;&amp;</span> peso[u][v] <span class="op">&lt;</span> custo[v]) {
         custo[v] <span class="op">=</span> peso[u][v];
         pai[v] <span class="op">=</span> u;

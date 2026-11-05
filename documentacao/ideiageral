@@ -66,10 +66,10 @@ Terceiro programa. Para cada TXT com código entre `INICIO_CODIGO_C` e `FIM_CODI
 # Como gerar o site
 
 ```
-gcc -Wall -Wextra -pedantic -std=c99 gerador.c -o gerador
-gcc -Wall -Wextra -pedantic -std=c99 gerador_conteudo.c -o gerador_conteudo
-gcc -Wall -Wextra -pedantic -std=c99 colorir.c -o colorir
-gcc -Wall -Wextra -pedantic -std=c99 exportar.c -o exportar
+gcc -Wall -Wextra -pedantic -std=c89 gerador.c -o gerador
+gcc -Wall -Wextra -pedantic -std=c89 gerador_conteudo.c -o gerador_conteudo
+gcc -Wall -Wextra -pedantic -std=c89 colorir.c -o colorir
+gcc -Wall -Wextra -pedantic -std=c89 exportar.c -o exportar
 ./gerador && ./gerador_conteudo && ./colorir && ./exportar
 ```
 

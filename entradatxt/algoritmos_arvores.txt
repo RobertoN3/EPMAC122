@@ -171,11 +171,13 @@ size_t contar_folhas(const No *raiz)
 
 int altura(const No *raiz)
 {
+    int esquerda, direita;
+
     if (raiz == NULL) {
         return -1; /* Faz a altura de uma folha ser zero. */
     }
-    int esquerda = altura(raiz->esquerdo);
-    int direita = altura(raiz->direito);
+    esquerda = altura(raiz->esquerdo);
+    direita = altura(raiz->direito);
     return 1 + (esquerda > direita ? esquerda : direita);
 }
 
@@ -190,11 +192,12 @@ int conferir(const char *nome, const No *raiz,
     int correto = nos == nos_esperados && folhas == folhas_esperadas &&
                   h == altura_esperada;
 
-    printf("%s: nos = %zu, folhas = %zu, altura = %d [%s]\n",
-           nome, nos, folhas, h, correto ? "OK" : "ERRO");
+    printf("%s: nos = %lu, folhas = %lu, altura = %d [%s]\n",
+           nome, (unsigned long)nos, (unsigned long)folhas, h, correto ? "OK" : "ERRO");
     if (!correto) {
-        fprintf(stderr, "Esperado: nos = %zu, folhas = %zu, altura = %d\n",
-                nos_esperados, folhas_esperadas, altura_esperada);
+        fprintf(stderr, "Esperado: nos = %lu, folhas = %lu, altura = %d\n",
+                (unsigned long)nos_esperados, (unsigned long)folhas_esperadas,
+                altura_esperada);
     }
     return correto;
 }
@@ -214,7 +217,7 @@ int main(void)
     nos[2].esquerdo = &nos[4];
     nos[2].direito = &nos[5];
 
-    // Todos os testes sao executados, mesmo se algum falhar.
+    /* Todos os testes sao executados, mesmo se algum falhar. */
     falhas += !conferir("Arvore de seis nos", &nos[0], 6, 3, 2);
     falhas += !conferir("Arvore vazia", NULL, 0, 0, -1);
     falhas += !conferir("Arvore com um no", &unico, 1, 1, 0);

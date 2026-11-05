@@ -59,7 +59,7 @@
     <span class="cm">/* invariante: v[0..i-1] ordenado e &lt;= v[i..n-1] */</span>
     menor <span class="op">=</span> i;
     <span class="kw">for</span> (j <span class="op">=</span> i <span class="op">+</span> <span class="nu">1</span>; j <span class="op">&lt;</span> n; j<span class="op">++</span>)
-      <span class="kw">if</span> (v[j] <span class="op">&lt;</span> v[menor]) menor <span class="op">=</span> j;   <span class="cm">// escolha gulosa: o menor restante</span>
+      <span class="kw">if</span> (v[j] <span class="op">&lt;</span> v[menor]) menor <span class="op">=</span> j;   <span class="cm">/* escolha gulosa: o menor restante */</span>
     aux <span class="op">=</span> v[i]; v[i] <span class="op">=</span> v[menor]; v[menor] <span class="op">=</span> aux;
   }
 }
