@@ -18,9 +18,9 @@ Exemplo, para o algoritmo de Kruskal (na pasta onde está kruskal.c):
 
 OS QUATRO PROGRAMAS DO EP (geram o site)
 ----------------------------------------
-Na pasta do repositório, onde estão também slug.h, layout.h, txt.h,
-estilo.css e indice.js (incluídos ou copiados pelos programas) e a pasta
-entradatxt/ com os TXT:
+Na pasta dos fontes dos programas, junto com slug.h, layout.h, txt.h,
+estilo.css e indice.js (incluídos ou copiados pelos programas) e com a
+pasta entradatxt/ dos TXT:
 
     gcc -Wall -Wextra -pedantic -std=c99 -o gerador gerador.c
     gcc -Wall -Wextra -pedantic -std=c99 -o gerador_conteudo gerador_conteudo.c
