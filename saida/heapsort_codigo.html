@@ -88,7 +88,7 @@
 <span class="tp">void</span> desce(<span class="tp">int</span> v[], <span class="tp">int</span> n, <span class="tp">int</span> i) {
   <span class="tp">int</span> f;                               <span class="cm">/* maior filho de i */</span>
   <span class="kw">while</span> (<span class="nu">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="nu">1</span> <span class="op">&lt;</span> n) {
-    f <span class="op">=</span> <span class="nu">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="nu">1</span>;                     <span class="cm">// filho esquerdo</span>
+    f <span class="op">=</span> <span class="nu">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="nu">1</span>;                     <span class="cm">/* filho esquerdo */</span>
     <span class="kw">if</span> (f <span class="op">+</span> <span class="nu">1</span> <span class="op">&lt;</span> n <span class="op">&amp;&amp;</span> v[f <span class="op">+</span> <span class="nu">1</span>] <span class="op">&gt;</span> v[f]) f<span class="op">++</span>;
     <span class="kw">if</span> (v[i] <span class="op">&gt;=</span> v[f]) <span class="kw">break</span>;           <span class="cm">/* já é heap */</span>
     troca(v, i, f);
@@ -101,7 +101,7 @@
   <span class="kw">for</span> (i <span class="op">=</span> n <span class="op">/</span> <span class="nu">2</span> <span class="op">-</span> <span class="nu">1</span>; i <span class="op">&gt;=</span> <span class="nu">0</span>; i<span class="op">--</span>)     <span class="cm">/* construção: O(n) */</span>
     desce(v, n, i);
   <span class="kw">for</span> (fim <span class="op">=</span> n <span class="op">-</span> <span class="nu">1</span>; fim <span class="op">&gt;</span> <span class="nu">0</span>; fim<span class="op">--</span>) {
-    troca(v, <span class="nu">0</span>, fim);                  <span class="cm">// o maior vai para o fim</span>
+    troca(v, <span class="nu">0</span>, fim);                  <span class="cm">/* o maior vai para o fim */</span>
     desce(v, fim, <span class="nu">0</span>);
   }
 }

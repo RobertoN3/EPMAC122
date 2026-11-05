@@ -16,16 +16,16 @@ int particiona(int v[], int ini, int fim) {
       troca(v, i, j);
     }
   }
-  troca(v, i + 1, fim);              // pivô na posição definitiva
+  troca(v, i + 1, fim);              /* pivô na posição definitiva */
   return i + 1;
 }
 
 void quicksort(int v[], int ini, int fim) {
   int p;
-  if (ini >= fim) return;            // 0 ou 1 elemento
-  p = particiona(v, ini, fim);       // dividir (todo o trabalho está aqui)
+  if (ini >= fim) return;            /* 0 ou 1 elemento */
+  p = particiona(v, ini, fim);       /* dividir (todo o trabalho está aqui) */
   quicksort(v, ini, p - 1);
-  quicksort(v, p + 1, fim);          // combinar: nada a fazer
+  quicksort(v, p + 1, fim);          /* combinar: nada a fazer */
 }
 
 int main(void) {

@@ -45,7 +45,7 @@ int main(void) {
   printf("Listas de adjacencia:\n");
   for (u = 0; u < nv; u++) {
     printf("%d:", u);
-    for (p = lista[u]; p != NULL; p = p->prox)   // percorre os vizinhos
+    for (p = lista[u]; p != NULL; p = p->prox)   /* percorre os vizinhos */
       printf(" %d", p->vizinho);
     printf("\n");
   }

@@ -183,7 +183,7 @@ No <span class="op">*</span>numero(<span class="tp">int</span> x) { <span class=
   }
 }
 
-<span class="tp">void</span> libera(No <span class="op">*</span>r) {            <span class="cm">// pós-ordem: filhos antes do pai</span>
+<span class="tp">void</span> libera(No <span class="op">*</span>r) {            <span class="cm">/* pós-ordem: filhos antes do pai */</span>
   <span class="kw">if</span> (r <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span>;
   libera(r<span class="op">-&gt;</span>esq);
   libera(r<span class="op">-&gt;</span>dir);

@@ -102,14 +102,14 @@
     pai[v] <span class="op">=</span> <span class="op">-</span><span class="nu">1</span>;
   }
   dist[s] <span class="op">=</span> <span class="nu">0</span>;
-  fila[fim<span class="op">++</span>] <span class="op">=</span> s;                       <span class="cm">// insere a origem</span>
+  fila[fim<span class="op">++</span>] <span class="op">=</span> s;                       <span class="cm">/* insere a origem */</span>
   <span class="kw">while</span> (ini <span class="op">&lt;</span> fim) {
-    u <span class="op">=</span> fila[ini<span class="op">++</span>];                     <span class="cm">// remove o primeiro da fila</span>
+    u <span class="op">=</span> fila[ini<span class="op">++</span>];                     <span class="cm">/* remove o primeiro da fila */</span>
     <span class="kw">for</span> (v <span class="op">=</span> <span class="nu">0</span>; v <span class="op">&lt;</span> nv; v<span class="op">++</span>)
-      <span class="kw">if</span> (adj[u][v] <span class="op">&amp;&amp;</span> dist[v] <span class="op">==</span> <span class="op">-</span><span class="nu">1</span>) {  <span class="cm">// vizinho ainda não visitado</span>
+      <span class="kw">if</span> (adj[u][v] <span class="op">&amp;&amp;</span> dist[v] <span class="op">==</span> <span class="op">-</span><span class="nu">1</span>) {  <span class="cm">/* vizinho ainda não visitado */</span>
         dist[v] <span class="op">=</span> dist[u] <span class="op">+</span> <span class="nu">1</span>;
         pai[v] <span class="op">=</span> u;
-        fila[fim<span class="op">++</span>] <span class="op">=</span> v;                 <span class="cm">// marca ao entrar na fila</span>
+        fila[fim<span class="op">++</span>] <span class="op">=</span> v;                 <span class="cm">/* marca ao entrar na fila */</span>
       }
   }
 }

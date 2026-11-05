@@ -173,13 +173,13 @@ void intercala(int v[], int aux[], int ini, int meio, int fim) {
 /* Merge Sort de baixo para cima: blocos de 1, 2, 4, 8, ... */
 void mergesortIterativo(int v[], int n) {
   int largura, ini, meio, fim;
-  int *aux = malloc(n * sizeof(int));   // alocado uma única vez
+  int *aux = malloc(n * sizeof(int));   /* alocado uma única vez */
   if (aux == NULL) return;
   for (largura = 1; largura < n; largura *= 2) {
     for (ini = 0; ini + largura < n; ini += 2 * largura) {
       meio = ini + largura - 1;
       fim = ini + 2 * largura - 1;
-      if (fim > n - 1) fim = n - 1;     // último bloco pode ser menor
+      if (fim > n - 1) fim = n - 1;     /* último bloco pode ser menor */
       intercala(v, aux, ini, meio, fim);
     }
   }

@@ -197,9 +197,9 @@ void hanoi(int n, char origem, char destino, char aux) {
     printf("mover disco 1 de %c para %c\n", origem, destino);
     return;
   }
-  hanoi(n - 1, origem, aux, destino);   // libera o maior disco
+  hanoi(n - 1, origem, aux, destino);   /* libera o maior disco */
   printf("mover disco %d de %c para %c\n", n, origem, destino);
-  hanoi(n - 1, aux, destino, origem);   // recoloca os n-1 discos
+  hanoi(n - 1, aux, destino, origem);   /* recoloca os n-1 discos */
 }
 
 int main(void) {

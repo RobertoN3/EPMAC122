@@ -25,7 +25,7 @@ typedef struct { unsigned char b[BYTES]; } ConjBits;
 int bit_pertence(const ConjBits *c, int x) { return (c->b[x / 8] >> (x % 8)) & 1; }
 void bit_insere(ConjBits *c, int x) { c->b[x / 8] |= (unsigned char)(1u << (x % 8)); }
 void bit_remove(ConjBits *c, int x) { c->b[x / 8] &= (unsigned char)~(1u << (x % 8)); }
-void bit_esvazia(ConjBits *c) { int i; for (i = 0; i < BYTES; i++) c->b[i] = 0; } // O(U)
+void bit_esvazia(ConjBits *c) { int i; for (i = 0; i < BYTES; i++) c->b[i] = 0; } /* O(U) */
 
 void bit_imprime(const char *nome, const ConjBits *c) {
   int x;

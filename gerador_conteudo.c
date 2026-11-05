@@ -1,4 +1,4 @@
-/* Compilar: gcc -Wall -Wextra -pedantic -std=c99 gerador_conteudo.c -o gerador_conteudo */
+/* Compilar: gcc -Wall -Wextra -pedantic -std=c89 gerador_conteudo.c -o gerador_conteudo */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,7 +79,7 @@ static char *caminho(const char *pasta, const char *base, const char *ext) {
     size_t n = strlen(pasta) + strlen(base) + strlen(ext) + 2;
     char *s = malloc(n);
     if (!s) { perror("malloc"); exit(EXIT_FAILURE); }
-    snprintf(s, n, "%s/%s%s", pasta, base, ext);
+    sprintf(s, "%s/%s%s", pasta, base, ext);  /* n bytes bastam */
     return s;
 }
 

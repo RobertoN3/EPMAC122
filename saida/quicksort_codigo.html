@@ -84,16 +84,16 @@
       troca(v, i, j);
     }
   }
-  troca(v, i <span class="op">+</span> <span class="nu">1</span>, fim);              <span class="cm">// pivô na posição definitiva</span>
+  troca(v, i <span class="op">+</span> <span class="nu">1</span>, fim);              <span class="cm">/* pivô na posição definitiva */</span>
   <span class="kw">return</span> i <span class="op">+</span> <span class="nu">1</span>;
 }
 
 <span class="tp">void</span> quicksort(<span class="tp">int</span> v[], <span class="tp">int</span> ini, <span class="tp">int</span> fim) {
   <span class="tp">int</span> p;
-  <span class="kw">if</span> (ini <span class="op">&gt;=</span> fim) <span class="kw">return</span>;            <span class="cm">// 0 ou 1 elemento</span>
-  p <span class="op">=</span> particiona(v, ini, fim);       <span class="cm">// dividir (todo o trabalho está aqui)</span>
+  <span class="kw">if</span> (ini <span class="op">&gt;=</span> fim) <span class="kw">return</span>;            <span class="cm">/* 0 ou 1 elemento */</span>
+  p <span class="op">=</span> particiona(v, ini, fim);       <span class="cm">/* dividir (todo o trabalho está aqui) */</span>
   quicksort(v, ini, p <span class="op">-</span> <span class="nu">1</span>);
-  quicksort(v, p <span class="op">+</span> <span class="nu">1</span>, fim);          <span class="cm">// combinar: nada a fazer</span>
+  quicksort(v, p <span class="op">+</span> <span class="nu">1</span>, fim);          <span class="cm">/* combinar: nada a fazer */</span>
 }
 
 <span class="tp">int</span> main(<span class="tp">void</span>) {

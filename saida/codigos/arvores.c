@@ -67,7 +67,7 @@ int avalia(No *r) {
   }
 }
 
-void libera(No *r) {            // pós-ordem: filhos antes do pai
+void libera(No *r) {            /* pós-ordem: filhos antes do pai */
   if (r == NULL) return;
   libera(r->esq);
   libera(r->dir);

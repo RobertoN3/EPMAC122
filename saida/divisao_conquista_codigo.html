@@ -85,11 +85,11 @@
 
 <span class="cm">/* Divisão e conquista: dividir, conquistar, combinar */</span>
 <span class="tp">void</span> mergesort(<span class="tp">int</span> v[], <span class="tp">int</span> ini, <span class="tp">int</span> fim) {
-  <span class="kw">if</span> (ini <span class="op">&lt;</span> fim) {                    <span class="cm">// caso base: 0 ou 1 elemento</span>
-    <span class="tp">int</span> meio <span class="op">=</span> (ini <span class="op">+</span> fim) <span class="op">/</span> <span class="nu">2</span>;       <span class="cm">// dividir</span>
-    mergesort(v, ini, meio);          <span class="cm">// conquistar a 1a metade</span>
-    mergesort(v, meio <span class="op">+</span> <span class="nu">1</span>, fim);      <span class="cm">// conquistar a 2a metade</span>
-    intercala(v, ini, meio, fim);     <span class="cm">// combinar</span>
+  <span class="kw">if</span> (ini <span class="op">&lt;</span> fim) {                    <span class="cm">/* caso base: 0 ou 1 elemento */</span>
+    <span class="tp">int</span> meio <span class="op">=</span> (ini <span class="op">+</span> fim) <span class="op">/</span> <span class="nu">2</span>;       <span class="cm">/* dividir */</span>
+    mergesort(v, ini, meio);          <span class="cm">/* conquistar a 1a metade */</span>
+    mergesort(v, meio <span class="op">+</span> <span class="nu">1</span>, fim);      <span class="cm">/* conquistar a 2a metade */</span>
+    intercala(v, ini, meio, fim);     <span class="cm">/* combinar */</span>
   }
 }
 

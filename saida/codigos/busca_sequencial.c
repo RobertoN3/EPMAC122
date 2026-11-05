@@ -26,7 +26,7 @@ int busca_sentinela(int v[], int n, int x) {
     j++;
   }
   cmp_fim++;
-  return j < n ? j : -1;   // parou no sentinela: x não estava no vetor
+  return j < n ? j : -1;   /* parou no sentinela: x não estava no vetor */
 }
 
 void testa(int v[], int n, int x) {

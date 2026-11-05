@@ -31,7 +31,7 @@ int prim(int nv, int s) {
       printf("aresta %d-%d (peso %d)\n", pai[u], u, peso[pai[u]][u]);
       total += peso[pai[u]][u];
     }
-    for (v = 0; v < nv; v++)            // atualiza os vizinhos de u
+    for (v = 0; v < nv; v++)            /* atualiza os vizinhos de u */
       if (peso[u][v] && !na_arvore[v] && peso[u][v] < custo[v]) {
         custo[v] = peso[u][v];
         pai[v] = u;

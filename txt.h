@@ -79,14 +79,16 @@ static int identificador(const char *s) {
 static char *caminho(const char *pasta, const char *base, const char *ext) {
     size_t n = strlen(pasta) + strlen(base) + strlen(ext) + 2;
     char *s = checar(malloc(n));
-    snprintf(s, n, "%s/%s%s", pasta, base, ext);
+    sprintf(s, "%s/%s%s", pasta, base, ext);  /* n bytes bastam */
     return s;
 }
 
-/* nome do arquivo .c do bloco: kruskal.c, ou kruskal_2.c a partir do 2º */
+/* nome do arquivo .c do bloco: kruskal.c, ou kruskal_2.c a partir do 2º.
+   Se não couber em tam bytes, dest fica vazio. */
 static void nome_arquivo(char *dest, size_t tam, const char *base, int numero) {
-    if (numero == 1) snprintf(dest, tam, "%s.c", base);
-    else             snprintf(dest, tam, "%s_%d.c", base, numero);
+    if (strlen(base) + 16 > tam) { if (tam) dest[0] = '\0'; return; }
+    if (numero == 1) sprintf(dest, "%s.c", base);
+    else             sprintf(dest, "%s_%d.c", base, numero);
 }
 
 /* o que interessa de um TXT para os códigos */

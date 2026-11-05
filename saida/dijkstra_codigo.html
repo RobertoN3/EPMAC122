@@ -86,9 +86,9 @@
     <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> NV; i<span class="op">++</span>)
       <span class="kw">if</span> (<span class="op">!</span>fixado[i] <span class="op">&amp;&amp;</span> dist[i] <span class="op">!=</span> INF <span class="op">&amp;&amp;</span> (u <span class="op">==</span> <span class="op">-</span><span class="nu">1</span> <span class="op">||</span> dist[i] <span class="op">&lt;</span> dist[u]))
         u <span class="op">=</span> i;
-    <span class="kw">if</span> (u <span class="op">==</span> <span class="op">-</span><span class="nu">1</span>) <span class="kw">break</span>;                        <span class="cm">// restantes inalcançáveis</span>
+    <span class="kw">if</span> (u <span class="op">==</span> <span class="op">-</span><span class="nu">1</span>) <span class="kw">break</span>;                        <span class="cm">/* restantes inalcançáveis */</span>
     fixado[u] <span class="op">=</span> <span class="nu">1</span>;
-    <span class="kw">for</span> (v <span class="op">=</span> <span class="nu">0</span>; v <span class="op">&lt;</span> NV; v<span class="op">++</span>)                   <span class="cm">// relaxa arestas de u</span>
+    <span class="kw">for</span> (v <span class="op">=</span> <span class="nu">0</span>; v <span class="op">&lt;</span> NV; v<span class="op">++</span>)                   <span class="cm">/* relaxa arestas de u */</span>
       <span class="kw">if</span> (peso[u][v] <span class="op">&amp;&amp;</span> <span class="op">!</span>fixado[v] <span class="op">&amp;&amp;</span> dist[u] <span class="op">+</span> peso[u][v] <span class="op">&lt;</span> dist[v]) {
         dist[v] <span class="op">=</span> dist[u] <span class="op">+</span> peso[u][v];
         pai[v] <span class="op">=</span> u;

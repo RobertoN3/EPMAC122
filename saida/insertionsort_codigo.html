@@ -70,8 +70,8 @@
     <span class="cm">/* invariante: v[0..i-1] está em ordem crescente */</span>
     x <span class="op">=</span> v[i];
     <span class="kw">for</span> (j <span class="op">=</span> i <span class="op">-</span> <span class="nu">1</span>; j <span class="op">&gt;=</span> <span class="nu">0</span> <span class="op">&amp;&amp;</span> v[j] <span class="op">&gt;</span> x; j<span class="op">--</span>)
-      v[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> v[j];            <span class="cm">// desloca os maiores para a direita</span>
-    v[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> x;                 <span class="cm">// encaixa x no espaço aberto</span>
+      v[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> v[j];            <span class="cm">/* desloca os maiores para a direita */</span>
+    v[j <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> x;                 <span class="cm">/* encaixa x no espaço aberto */</span>
     printf(<span class="st">"i = %d: "</span>, i);
     imprime(v, n);
   }

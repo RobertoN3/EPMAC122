@@ -22,16 +22,19 @@ typedef struct {
 /* Os nos das listas pertencem ao proprio grafo: nao copiar a estrutura. */
 int construir(Grafo *g, int n, const Aresta arestas[], size_t m)
 {
+    int u, v;
+    size_t i;
+
     if (n < 0 || n > MAX_VERTICES || m > MAX_ARESTAS) {
         return 0;
     }
     g->n = n;
-    for (int u = 0; u < n; u++) {
+    for (u = 0; u < n; u++) {
         g->lista[u] = NULL;
     }
-    for (size_t i = 0; i < m; i++) {
-        int u = arestas[i].origem;
-        int v = arestas[i].destino;
+    for (i = 0; i < m; i++) {
+        u = arestas[i].origem;
+        v = arestas[i].destino;
         if (u < 0 || u >= n || v < 0 || v >= n) {
             return 0;
         }
@@ -51,23 +54,25 @@ int ordenar(const Grafo *g, int ordem[])
     int inicio = 0;
     int fim = 0;
     int quantidade = 0;
+    int u, v;
+    const No *p;
 
-    for (int u = 0; u < g->n; u++) {
-        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
+    for (u = 0; u < g->n; u++) {
+        for (p = g->lista[u]; p != NULL; p = p->proximo) {
             grau[p->destino]++;
         }
     }
-    for (int u = 0; u < g->n; u++) {
+    for (u = 0; u < g->n; u++) {
         if (grau[u] == 0) {
             fila[fim++] = u;              /* fontes iniciais */
         }
     }
     while (inicio < fim) {
-        int u = fila[inicio++];
+        u = fila[inicio++];
         ordem[quantidade++] = u;
-        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
-            int v = p->destino;
-            grau[v]--;                    // "remove" a aresta u->v
+        for (p = g->lista[u]; p != NULL; p = p->proximo) {
+            v = p->destino;
+            grau[v]--;                    /* "remove" a aresta u->v */
             if (grau[v] == 0) {
                 fila[fim++] = v;
             }
@@ -80,18 +85,21 @@ int ordenar(const Grafo *g, int ordem[])
 int ordem_valida(const Grafo *g, const int ordem[])
 {
     int posicao[MAX_VERTICES];
-    for (int u = 0; u < g->n; u++) {
+    int u, i;
+    const No *p;
+
+    for (u = 0; u < g->n; u++) {
         posicao[u] = -1;
     }
-    for (int i = 0; i < g->n; i++) {
-        int u = ordem[i];
+    for (i = 0; i < g->n; i++) {
+        u = ordem[i];
         if (u < 0 || u >= g->n || posicao[u] != -1) {
             return 0;
         }
         posicao[u] = i;
     }
-    for (int u = 0; u < g->n; u++) {
-        for (const No *p = g->lista[u]; p != NULL; p = p->proximo) {
+    for (u = 0; u < g->n; u++) {
+        for (p = g->lista[u]; p != NULL; p = p->proximo) {
             if (posicao[u] >= posicao[p->destino]) {
                 return 0;
             }
@@ -105,16 +113,18 @@ int testar(const char *nome, const Aresta arestas[], size_t m,
 {
     Grafo g;
     int ordem[MAX_VERTICES];
+    int quantidade, tem_ciclo, i;
+
     if (!construir(&g, 4, arestas, m)) {
         fprintf(stderr, "Erro ao construir o grafo.\n");
         return 0;
     }
-    int quantidade = ordenar(&g, ordem);
-    int tem_ciclo = quantidade < g.n;
+    quantidade = ordenar(&g, ordem);
+    tem_ciclo = quantidade < g.n;
 
     printf("%s\n", nome);
     printf("%s", tem_ciclo ? "Prefixo processado:" : "Ordem topologica:");
-    for (int i = 0; i < quantidade; i++) {
+    for (i = 0; i < quantidade; i++) {
         printf(" %d", ordem[i] + 1);
     }
     printf("\n");

@@ -40,8 +40,8 @@ static int copiar_arquivo(const char *nome, const char *pasta) {
     size_t n;
     int ok = 1;
 
-    if (snprintf(destino, sizeof destino, "%s/%s", pasta, nome) >= (int)sizeof destino)
-        return -1;
+    if (strlen(pasta) + strlen(nome) + 2 > sizeof destino) return -1;
+    sprintf(destino, "%s/%s", pasta, nome);
     in = fopen(nome, "rb");
     if (!in) {
         fprintf(stderr, "[aviso] %s não encontrado: copie-o para a pasta do programa\n", nome);

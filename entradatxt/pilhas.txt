@@ -165,21 +165,21 @@ int  vazia(void)      { return t == 0; }
 /* devolve 1 se os símbolos ()[]{} de s estão balanceados */
 int balanceada(const char *s) {
   int i;
-  char c;
+  char c, a;
   t = 0;
   for (i = 0; s[i] != '\0'; i++) {
     c = s[i];
     if (c == '(' || c == '[' || c == '{') {
-      if (t == MAX) return 0;            // pilha cheia
+      if (t == MAX) return 0;            /* pilha cheia */
       empilha(c);
     } else if (c == ')' || c == ']' || c == '}') {
       if (vazia()) return 0;             /* fecha sem ter aberto */
-      char a = desempilha();
+      a = desempilha();
       if ((c == ')' && a != '(') || (c == ']' && a != '[') ||
           (c == '}' && a != '{')) return 0;
     }
   }
-  return vazia();                        // sobrou algo aberto?
+  return vazia();                        /* sobrou algo aberto? */
 }
 
 int main(void) {

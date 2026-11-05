@@ -17,7 +17,7 @@ void ordenaPorNota(Aluno t[], int n) {
   int i, j;
   Aluno x;
   for (i = 1; i < n; i++) {
-    x = t[i];                    // copia o registro inteiro
+    x = t[i];                    /* copia o registro inteiro */
     for (j = i - 1; j >= 0 && t[j].nota < x.nota; j--)
       t[j + 1] = t[j];
     t[j + 1] = x;

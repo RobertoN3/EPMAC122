@@ -134,7 +134,7 @@ No <span class="op">*</span>lista[MAXV];
   printf(<span class="st">"Listas de adjacencia:<span class="es">\n</span>"</span>);
   <span class="kw">for</span> (u <span class="op">=</span> <span class="nu">0</span>; u <span class="op">&lt;</span> nv; u<span class="op">++</span>) {
     printf(<span class="st">"%d:"</span>, u);
-    <span class="kw">for</span> (p <span class="op">=</span> lista[u]; p <span class="op">!=</span> <span class="ct">NULL</span>; p <span class="op">=</span> p<span class="op">-&gt;</span>prox)   <span class="cm">// percorre os vizinhos</span>
+    <span class="kw">for</span> (p <span class="op">=</span> lista[u]; p <span class="op">!=</span> <span class="ct">NULL</span>; p <span class="op">=</span> p<span class="op">-&gt;</span>prox)   <span class="cm">/* percorre os vizinhos */</span>
       printf(<span class="st">" %d"</span>, p<span class="op">-&gt;</span>vizinho);
     printf(<span class="st">"<span class="es">\n</span>"</span>);
   }

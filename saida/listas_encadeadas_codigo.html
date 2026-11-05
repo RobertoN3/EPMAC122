@@ -132,7 +132,7 @@ Celula <span class="op">*</span>buscaAnterior(<span class="tp">int</span> x, Cel
 <span class="cm">/* remove a primeira célula com conteúdo x */</span>
 <span class="tp">void</span> removeX(<span class="tp">int</span> x, Celula <span class="op">*</span>cabeca) {
   Celula <span class="op">*</span>ant <span class="op">=</span> buscaAnterior(x, cabeca), <span class="op">*</span>lixo;
-  <span class="kw">if</span> (ant <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span>;          <span class="cm">// x não está na lista</span>
+  <span class="kw">if</span> (ant <span class="op">==</span> <span class="ct">NULL</span>) <span class="kw">return</span>;          <span class="cm">/* x não está na lista */</span>
   lixo <span class="op">=</span> ant<span class="op">-&gt;</span>prox;
   ant<span class="op">-&gt;</span>prox <span class="op">=</span> lixo<span class="op">-&gt;</span>prox;
   free(lixo);

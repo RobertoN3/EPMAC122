@@ -130,7 +130,7 @@ void ordena_contagem(int v[], int n) {
   int freq[U + 1] = {0}, aux[N], i;
   for (i = 0; i < n; i++) freq[v[i] + 1]++;       /* 1) contar (índice + 1) */
   for (i = 1; i <= U; i++) freq[i] += freq[i - 1]; /* 2) acumular */
-  for (i = 0; i < n; i++) aux[freq[v[i]]++] = v[i]; // 3) distribuir
+  for (i = 0; i < n; i++) aux[freq[v[i]]++] = v[i]; /* 3) distribuir */
   for (i = 0; i < n; i++) v[i] = aux[i];
 }
 

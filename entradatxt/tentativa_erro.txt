@@ -209,7 +209,7 @@ int pode(int lin, int c) {
 /* tentativa e erro: tenta todas as colunas da linha lin */
 void rainhas(int lin, int n) {
   int c, i;
-  if (lin == n) {                // solução completa encontrada
+  if (lin == n) {                /* solução completa encontrada */
     total++;
     if (total == 1) {
       printf("Primeira solucao:\n");
@@ -219,8 +219,8 @@ void rainhas(int lin, int n) {
   }
   for (c = 0; c < n; c++) {
     if (pode(lin, c)) {
-      col[lin] = c;              // tenta
-      rainhas(lin + 1, n);       // avança; ao retornar, volta atrás
+      col[lin] = c;              /* tenta */
+      rainhas(lin + 1, n);       /* avança; ao retornar, volta atrás */
     }
   }
 }

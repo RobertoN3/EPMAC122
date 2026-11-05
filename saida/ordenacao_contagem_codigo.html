@@ -82,7 +82,7 @@
   <span class="tp">int</span> freq[U <span class="op">+</span> <span class="nu">1</span>] <span class="op">=</span> {<span class="nu">0</span>}, aux[N], i;
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) freq[v[i] <span class="op">+</span> <span class="nu">1</span>]<span class="op">++</span>;       <span class="cm">/* 1) contar (índice + 1) */</span>
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> U; i<span class="op">++</span>) freq[i] <span class="op">+=</span> freq[i <span class="op">-</span> <span class="nu">1</span>]; <span class="cm">/* 2) acumular */</span>
-  <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) aux[freq[v[i]]<span class="op">++</span>] <span class="op">=</span> v[i]; <span class="cm">// 3) distribuir</span>
+  <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) aux[freq[v[i]]<span class="op">++</span>] <span class="op">=</span> v[i]; <span class="cm">/* 3) distribuir */</span>
   <span class="kw">for</span> (i <span class="op">=</span> <span class="nu">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) v[i] <span class="op">=</span> aux[i];
 }
 

@@ -108,13 +108,13 @@ Celula <span class="op">*</span>busca(<span class="kw">const</span> <span class=
 <span class="tp">void</span> insere(<span class="kw">const</span> <span class="tp">char</span> <span class="op">*</span>chave, <span class="tp">int</span> valor) {
   Celula <span class="op">*</span>p <span class="op">=</span> busca(chave);
   <span class="tp">unsigned</span> h;
-  <span class="kw">if</span> (p <span class="op">!=</span> <span class="ct">NULL</span>) { p<span class="op">-&gt;</span>valor <span class="op">=</span> valor; <span class="kw">return</span>; }   <span class="cm">// já existe: atualiza</span>
+  <span class="kw">if</span> (p <span class="op">!=</span> <span class="ct">NULL</span>) { p<span class="op">-&gt;</span>valor <span class="op">=</span> valor; <span class="kw">return</span>; }   <span class="cm">/* já existe: atualiza */</span>
   h <span class="op">=</span> hash(chave);
   p <span class="op">=</span> malloc(<span class="kw">sizeof</span>(Celula));
   p<span class="op">-&gt;</span>chave <span class="op">=</span> malloc(strlen(chave) <span class="op">+</span> <span class="nu">1</span>);
   strcpy(p<span class="op">-&gt;</span>chave, chave);
   p<span class="op">-&gt;</span>valor <span class="op">=</span> valor;
-  p<span class="op">-&gt;</span>prox <span class="op">=</span> tabela[h];                           <span class="cm">// insere no início da lista</span>
+  p<span class="op">-&gt;</span>prox <span class="op">=</span> tabela[h];                           <span class="cm">/* insere no início da lista */</span>
   tabela[h] <span class="op">=</span> p;
 }
 

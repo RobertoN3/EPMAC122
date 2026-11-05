@@ -1,4 +1,4 @@
-/* Compilar: gcc -Wall -Wextra -pedantic -std=c99 exportar.c -o exportar
+/* Compilar: gcc -Wall -Wextra -pedantic -std=c89 exportar.c -o exportar
 
    Exporta os códigos C dos TXT para arquivos próprios, prontos para
    compilar, e escreve o COMO_COMPILAR.txt, que diz como compilar e rodar
@@ -139,17 +139,17 @@ static void como_compilar(void) {
                "Windows com MinGW). No Windows, o programa gerado se chama nome.exe e "
                "roda com nome.exe em vez de ./nome.", "");
     fputs("\nExemplo, para o algoritmo de Kruskal (na pasta onde está kruskal.c):\n\n"
-          "    gcc -Wall -Wextra -pedantic -std=c99 -o kruskal kruskal.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c89 -o kruskal kruskal.c\n"
           "    ./kruskal\n\n", o);
     fputs("OS QUATRO PROGRAMAS DO EP (geram o site)\n"
           "----------------------------------------\n", o);
-    quebrar(o, "Na pasta do repositório, onde estão também slug.h, layout.h, txt.h, "
-               "estilo.css e indice.js (incluídos ou copiados pelos programas) e a pasta "
-               "entradatxt/ com os TXT:", "");
-    fputs("\n    gcc -Wall -Wextra -pedantic -std=c99 -o gerador gerador.c\n"
-          "    gcc -Wall -Wextra -pedantic -std=c99 -o gerador_conteudo gerador_conteudo.c\n"
-          "    gcc -Wall -Wextra -pedantic -std=c99 -o colorir colorir.c\n"
-          "    gcc -Wall -Wextra -pedantic -std=c99 -o exportar exportar.c\n"
+    quebrar(o, "Na pasta dos fontes dos programas, junto com slug.h, layout.h, txt.h, "
+               "estilo.css e indice.js (incluídos ou copiados pelos programas) e com a "
+               "pasta entradatxt/ dos TXT:", "");
+    fputs("\n    gcc -Wall -Wextra -pedantic -std=c89 -o gerador gerador.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c89 -o gerador_conteudo gerador_conteudo.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c89 -o colorir colorir.c\n"
+          "    gcc -Wall -Wextra -pedantic -std=c89 -o exportar exportar.c\n"
           "    ./gerador\n    ./gerador_conteudo\n    ./colorir\n    ./exportar\n\n", o);
     quebrar(o, "gerador gera index.html e as seis páginas indexadoras; gerador_conteudo, "
                "uma página de explicação por TXT; colorir, o filtro de cores, uma página "
@@ -159,7 +159,7 @@ static void como_compilar(void) {
                "saida/index.html. O colorir também funciona como filtro para qualquer "
                "arquivo C: ./colorir -f < programa.c > programa.html", "");
     for (i = 0; i < nprogs; i++) arquivos += progs[i].nb;
-    snprintf(titulo, sizeof titulo, "OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (%d programas em %d páginas)",
+    sprintf(titulo, "OS CÓDIGOS DE EXEMPLO DAS PÁGINAS (%d programas em %d páginas)",
              arquivos, nprogs);
     fprintf(o, "\n\n%s\n", titulo);
     for (i = (int)strlen(titulo) - 2; i > 0; i--) fputc('-', o);   /* o "Ó" e o "Á" têm 2 bytes */
@@ -171,11 +171,11 @@ static void como_compilar(void) {
         for (b = 1; b <= p->nb; b++) {
             char arquivo[300], exe[300];
             nome_arquivo(arquivo, sizeof arquivo, p->base, b);
-            snprintf(exe, sizeof exe, "%s", arquivo);
+            strcpy(exe, arquivo);
             exe[strlen(exe) - 2] = '\0';                  /* tira o ".c" */
             if (b == 1) fprintf(o, "%s\n", p->titulo);
             fprintf(o, "  Arquivo:  %s\n", arquivo);
-            fprintf(o, "  Compilar: gcc -Wall -Wextra -pedantic -std=c99 -o %s %s%s\n",
+            fprintf(o, "  Compilar: gcc -Wall -Wextra -pedantic -std=c89 -o %s %s%s\n",
                     exe, arquivo, p->usa_math ? " -lm" : "");
             fprintf(o, "  Rodar:    ./%s\n", exe);
         }

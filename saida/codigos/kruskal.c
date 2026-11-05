@@ -25,8 +25,8 @@ int kruskal(int nv, Aresta e[], int na) {
   qsort(e, na, sizeof(Aresta), compara);     /* ordena por peso */
   for (i = 0; i < na && escolhidas < nv - 1; i++) {
     int ru = find(e[i].u), rv = find(e[i].v);
-    if (ru != rv) {                          // não forma ciclo
-      pai[ru] = rv;                          // union
+    if (ru != rv) {                          /* não forma ciclo */
+      pai[ru] = rv;                          /* union */
       total += e[i].peso;
       escolhidas++;
       printf("aresta %d-%d (peso %d)\n", e[i].u, e[i].v, e[i].peso);

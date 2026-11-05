@@ -90,7 +90,7 @@
 <span class="cm">/* tentativa e erro: tenta todas as colunas da linha lin */</span>
 <span class="tp">void</span> rainhas(<span class="tp">int</span> lin, <span class="tp">int</span> n) {
   <span class="tp">int</span> c, i;
-  <span class="kw">if</span> (lin <span class="op">==</span> n) {                <span class="cm">// solução completa encontrada</span>
+  <span class="kw">if</span> (lin <span class="op">==</span> n) {                <span class="cm">/* solução completa encontrada */</span>
     total<span class="op">++</span>;
     <span class="kw">if</span> (total <span class="op">==</span> <span class="nu">1</span>) {
       printf(<span class="st">"Primeira solucao:<span class="es">\n</span>"</span>);
@@ -100,8 +100,8 @@
   }
   <span class="kw">for</span> (c <span class="op">=</span> <span class="nu">0</span>; c <span class="op">&lt;</span> n; c<span class="op">++</span>) {
     <span class="kw">if</span> (pode(lin, c)) {
-      col[lin] <span class="op">=</span> c;              <span class="cm">// tenta</span>
-      rainhas(lin <span class="op">+</span> <span class="nu">1</span>, n);       <span class="cm">// avança; ao retornar, volta atrás</span>
+      col[lin] <span class="op">=</span> c;              <span class="cm">/* tenta */</span>
+      rainhas(lin <span class="op">+</span> <span class="nu">1</span>, n);       <span class="cm">/* avança; ao retornar, volta atrás */</span>
     }
   }
 }

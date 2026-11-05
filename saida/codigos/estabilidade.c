@@ -8,7 +8,9 @@ typedef struct {
 /* Estavel: registros com nota igual nao sao deslocados pela chave. */
 void insertion_sort(Aluno vetor[], size_t n)
 {
-    for (size_t i = 1; i < n; i++) {
+    size_t i;
+
+    for (i = 1; i < n; i++) {
         Aluno chave = vetor[i];
         size_t j = i;
 
@@ -24,10 +26,12 @@ void insertion_sort(Aluno vetor[], size_t n)
    Mesmo selecionar o primeiro minimo nao impede essa inversao. */
 void selecao_direta(Aluno vetor[], size_t n)
 {
-    for (size_t i = 0; i < n; i++) {
+    size_t i, j;
+
+    for (i = 0; i < n; i++) {
         size_t menor = i;
 
-        for (size_t j = i + 1; j < n; j++) {
+        for (j = i + 1; j < n; j++) {
             if (vetor[j].nota < vetor[menor].nota) {
                 menor = j;
             }
@@ -42,8 +46,10 @@ void selecao_direta(Aluno vetor[], size_t n)
 
 void imprimir(const char *titulo, const Aluno vetor[], size_t n)
 {
+    size_t i;
+
     printf("%s\n", titulo);
-    for (size_t i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         printf("  %s: nota %d\n", vetor[i].nome, vetor[i].nota);
     }
     printf("\n");
@@ -59,9 +65,10 @@ int main(void)
     Aluno estavel[sizeof original / sizeof original[0]];
     Aluno instavel[sizeof original / sizeof original[0]];
     const size_t n = sizeof original / sizeof original[0];
+    size_t i;
 
-    // As duas ordenacoes recebem a mesma sequencia inicial.
-    for (size_t i = 0; i < n; i++) {
+    /* As duas ordenacoes recebem a mesma sequencia inicial. */
+    for (i = 0; i < n; i++) {
         estavel[i] = original[i];
         instavel[i] = original[i];
     }
