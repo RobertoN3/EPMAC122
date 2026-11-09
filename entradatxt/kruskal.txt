@@ -3,7 +3,7 @@
 3. Autores: Joseph Kruskal
 4. Data: 1956
 5. Conceitos: Grafos, Árvores, Árvore espalhada mínima, Conjuntos disjuntos, Ordenação
-6. Problema: Dado um [[grafos|grafo]] não dirigido e conexo com pesos nas arestas, determinar sua árvore espalhada mínima
+6. Problema: Dado um [[grafos|grafo]] não dirigido e conexo com pesos nas arestas, determinar sua [[kruskal|árvore espalhada mínima]], isto é, a [[arvores|árvore]] que liga todos os vértices com a menor soma de pesos
 7. Titulo: Algoritmo de Kruskal
 
 ## O problema da árvore espalhada mínima

@@ -10,6 +10,7 @@
 #include <direct.h>
 #endif
 #include "slug.h"
+#include "cabecalho.h"
 #include "layout.h"
 
 static const char *entrada = "entradatxt", *saida = "saida";
@@ -285,32 +286,28 @@ static int gerar(const char *base) {
     int primeira = 1, falha, k;
     if (!f) { perror(in); free(in); free(out); return 0; }
     while ((linha = ler_linha(f))) {
-        char *s = linha, *fim;
-        long numero;
+        char *s = linha;
+        const char *valor;
+        int numero;
         if (primeira && strlen(s) >= 3 && !memcmp(s, "\xef\xbb\xbf", 3)) s += 3;
         primeira = 0;
         s = trim(s);
         if (!*s) { free(linha); break; }
-        numero = strtol(s, &fim, 10);
-        if (fim == s || *fim != '.' || !(fim = strchr(fim, ':'))) {
+        numero = campo_cabecalho(s, &valor);    /* "1. Tecnica:" ou "Tecnica:" */
+        if (!numero) {
             fprintf(stderr, "%s: cabeçalho inválido\n", in);
             free(linha); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
             fclose(f); free(in); free(out); return 0;
         }
-        if (numero >= 1 && numero <= N_CAMPOS) {      /* campos 1 a 6 e Titulo */
-            s = trim(fim + 1);
-            free(campo[numero]); campo[numero] = malloc(strlen(s) + 1);
-            if (!campo[numero]) { perror("malloc"); exit(EXIT_FAILURE); }
-            strcpy(campo[numero], s);
-        }
+        free(campo[numero]); campo[numero] = malloc(strlen(valor) + 1);
+        if (!campo[numero]) { perror("malloc"); exit(EXIT_FAILURE); }
+        strcpy(campo[numero], valor);
         free(linha);
     }
-    titulo = campo[7];
-    if (!titulo || !*titulo) {
-        fprintf(stderr, "%s: Titulo obrigatório ausente\n", in);
-        for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);
-        fclose(f); free(in); free(out); return 0;
-    }
+    /* título da página: Titulo; sem ele, o Algoritmo; sem os dois, o nome do arquivo */
+    titulo = campo[CAMPO_TITULO];
+    if (!titulo || !*titulo) titulo = campo[CAMPO_ALGORITMO];
+    if (!titulo || !*titulo) titulo = (char *)base;
     o = fopen(out, "w");
     if (!o) {
         perror(out); for (k = 1; k <= N_CAMPOS; k++) free(campo[k]);

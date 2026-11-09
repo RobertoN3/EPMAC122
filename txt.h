@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "cabecalho.h"
 
 static void *checar(void *p) {
     if (!p) { perror("memória"); exit(EXIT_FAILURE); }
@@ -114,15 +115,20 @@ static int ler_txt(const char *arq, CodigoTxt *r) {
         primeira = 0;
 
         if (cabecalho) {                       /* do cabeçalho, só o Titulo */
-            char *t = trim(s), *fim;
-            long num = strtol(t, &fim, 10);
-            if (!*t || fim == t || *fim != '.' || !(fim = strchr(fim, ':'))) {
+            const char *valor;
+            char *t = trim(s);
+            int num = *t ? campo_cabecalho(t, &valor) : 0;
+            if (!num) {
                 cabecalho = 0;
             } else {
-                if (num == 7) {
+                if (num == CAMPO_ALGORITMO && !r->titulo) {   /* reserva, sem Titulo */
+                    r->titulo = checar(malloc(strlen(valor) + 1));
+                    strcpy(r->titulo, valor);
+                }
+                if (num == CAMPO_TITULO) {
                     free(r->titulo);
-                    r->titulo = checar(malloc(strlen(fim + 1) + 1));
-                    strcpy(r->titulo, trim(fim + 1));
+                    r->titulo = checar(malloc(strlen(valor) + 1));
+                    strcpy(r->titulo, valor);
                 }
                 free(linha);
                 continue;

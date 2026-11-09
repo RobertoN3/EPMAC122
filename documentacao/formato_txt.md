@@ -10,7 +10,7 @@ Regras que os 41 TXT de `entradatxt/` seguem e que o gerador deve implementar.
 3. Autores: Joseph Kruskal
 4. Data: 1956
 5. Conceitos: Grafos, Árvores, Árvore espalhada mínima, Conjuntos disjuntos, Ordenação
-6. Problema: Dado um [[grafos|grafo]] não dirigido e conexo com pesos nas arestas, determinar sua árvore espalhada mínima
+6. Problema: Dado um [[grafos|grafo]] não dirigido e conexo com pesos nas arestas, determinar sua [[kruskal|árvore espalhada mínima]], isto é, a [[arvores|árvore]] que liga todos os vértices com a menor soma de pesos
 7. Titulo: Algoritmo de Kruskal
 
 ## Primeira seção
@@ -31,13 +31,14 @@ FIM_CODIGO_C
 ## Cabeçalho
 
 - Linhas `N. Rotulo: valor`, com N de 1 a 7, na ordem. Cada campo ocupa uma única linha.
+- Os programas também aceitam o cabeçalho sem número, como no enunciado (`Tecnica: Método guloso`). O campo é reconhecido pelo nome, sem diferenciar maiúsculas nem acentos (`Técnica`, `TECNICA` e `tecnica` valem; `Autor` e `Conceito` também). O número só decide quando o nome não é conhecido. A leitura fica no `cabecalho.h`, comum aos quatro programas.
 - O cabeçalho termina na primeira linha em branco.
 - Campo vazio ou desconhecido: a linha é omitida. Não usar `?`, "Desconhecido", "Tradição".
 - Tecnica, Autores, Data e Conceitos aceitam vários valores separados por vírgula. O gerador separa na vírgula e remove os espaços das pontas (`trim`).
 - **Tecnica**: só as quatro do enunciado: Método guloso, Divisão e conquista, Tentativa e erro, Programação dinâmica. As páginas de técnica (`metodo_guloso`, `divisao_conquista`, `tentativa_erro`, `programacao_dinamica`) se listam na própria técnica.
 - **Autores e Data** se referem ao que está em Algoritmo, ou ao Titulo quando Algoritmo está vazio. No índice: "Joseph Kruskal (Kruskal para árvore espalhada mínima)" e "1956: Kruskal para árvore espalhada mínima".
 - **Problema** começa com "Dado/Dada/Dados" e existe só onde há um problema concreto. Páginas de técnica e de fundamento (eficiência, ponteiros, registros) não têm Problema.
-- **Titulo** é obrigatório. Ele dá nome à página e aos links nos índices.
+- **Titulo** dá nome à página e aos links nos índices. Todos os nossos TXT o têm; num TXT sem Titulo, os programas usam o Algoritmo e, sem ele, o nome do arquivo.
 
 ## Vocabulário fechado de Conceitos
 

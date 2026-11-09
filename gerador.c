@@ -9,13 +9,13 @@
 #include <direct.h>
 #endif
 #include "slug.h"
+#include "cabecalho.h"
 #include "layout.h"
 
 #define PASTA_ENTRADA "entradatxt"
 #define PASTA_SAIDA   "saida"
 #define MAX_LINHA     4096
 #define NUM_CAT       6
-#define CAMPO_TITULO  7      /* "7. Titulo:" nomeia a página; não é categoria */
 
 /* Regras do formato: documentacao/formato_txt.md */
 
@@ -215,8 +215,9 @@ static void ler_arquivo(const char *caminho, const char *nome) {
     strcpy(a->base, base);
 
     while (fgets(linha, sizeof linha, f)) {
-        char *s = linha, *fim, *dp;
-        long n;
+        char *s = linha;
+        const char *valor;
+        int n;
         if (primeira) {                         /* pula BOM do UTF-8, se houver */
             if ((unsigned char)s[0] == 0xEF && (unsigned char)s[1] == 0xBB &&
                 (unsigned char)s[2] == 0xBF) s += 3;
@@ -224,22 +225,21 @@ static void ler_arquivo(const char *caminho, const char *nome) {
         }
         while (isspace((unsigned char)*s)) s++;
 
-        n = strtol(s, &fim, 10);
-        if (fim == s || *fim != '.') break;     /* acabou o cabeçalho */
-        dp = strchr(fim, ':');
-        if (!dp) break;
+        trim(s);
+        n = campo_cabecalho(s, &valor);         /* "1. Tecnica:" ou "Tecnica:" */
+        if (!n) break;                          /* acabou o cabeçalho */
 
-        if (n >= 1 && n <= NUM_CAT) {           /* campos 1..6: categorias */
-            strncpy(a->campo[n - 1], trim(dp + 1), MAX_LINHA - 1);
+        if (n <= NUM_CAT) {                     /* campos 1..6: categorias */
+            strncpy(a->campo[n - 1], valor, MAX_LINHA - 1);
             achou = 1;
-        } else if (n == CAMPO_TITULO) {         /* campo 7: título da página */
-            strncpy(a->titulo, trim(dp + 1), MAX_LINHA - 1);
-        }                                       /* outros números são ignorados */
+        } else {                                /* campo 7: título da página */
+            strncpy(a->titulo, valor, MAX_LINHA - 1);
+        }
     }
     fclose(f);
 
     if (!achou) {
-        printf("[ignorado] %s: sem cabeçalho numerado\n", nome);
+        printf("[ignorado] %s: sem cabeçalho (Tecnica:, Algoritmo:, ...)\n", nome);
         return;
     }
 

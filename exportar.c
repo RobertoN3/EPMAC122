@@ -143,7 +143,7 @@ static void como_compilar(void) {
           "    ./kruskal\n\n", o);
     fputs("OS QUATRO PROGRAMAS DO EP (geram o site)\n"
           "----------------------------------------\n", o);
-    quebrar(o, "Na pasta dos fontes dos programas, junto com slug.h, layout.h, txt.h, "
+    quebrar(o, "Na pasta dos fontes dos programas, junto com slug.h, layout.h, txt.h, cabecalho.h, "
                "estilo.css e indice.js (incluídos ou copiados pelos programas) e com a "
                "pasta entradatxt/ dos TXT:", "");
     fputs("\n    gcc -Wall -Wextra -pedantic -std=c89 -o gerador gerador.c\n"
