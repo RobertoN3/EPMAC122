@@ -9,7 +9,7 @@ O desenvolvimento será feito por etapas, discutindo as decisões antes de imple
 
 # Formato dos TXT
 
-- Manter os campos existentes do cabeçalho numerado: Tecnica, Algoritmo, Autores, Data, Conceitos e Problema. Campos ausentes ou vazios devem ser ignorados.
+- Manter os campos existentes do cabeçalho: Tecnica, Algoritmo, Autores, Data, Conceitos e Problema, numerados (`1. Tecnica:`) ou não (`Tecnica:`, como no enunciado). Campos ausentes ou vazios devem ser ignorados.
 - Acrescentar o marcador Titulo. Proposta a confirmar: usar `7. Titulo: ...`, preservando a numeração existente. O título identifica a página e o texto de seus links, mas não cria uma sétima categoria.
 - Um TXT pode tratar apenas de um conceito, sem algoritmo. Exemplo: um arquivo sobre grafos pode ter Titulo e Conceitos, sem os demais campos.
 - Em Conceitos, o separador entre conceitos é exatamente vírgula seguida de espaço (`, `).

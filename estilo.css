@@ -424,9 +424,10 @@ main.inicio { max-width: 1240px; }   /* a página inicial usa mais largura */
 .copiar:hover { background: var(--tinta); color: #fff; }
 .copiar.feito { background: var(--f-conceitos); border-color: var(--f-conceitos); color: #fff; }
 .codigo { display: flex; overflow-x: auto; }
-.codigo pre { margin: 0; padding: 14px 16px; font: 14px/1.55 var(--mono); tab-size: 4; }
+.codigo pre { margin: 0; padding: 14px 16px; font: 14px/22px var(--mono); tab-size: 4; }
 .codigo .nl { color: #9AA0B4; text-align: right; border-right: 1px solid var(--linha); background: #F0F1F5; user-select: none; }
 .codigo .c { flex: 1; }
+.codigo code { font: inherit; }    /* sem isso, o navegador usa a monospace padrão no código */
 
 /* ---------- movimento reduzido ---------- */
 
